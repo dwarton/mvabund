@@ -1,0 +1,94 @@
+useDynLib(mvabund)
+
+export(RcppVersion,
+       as.mvabund,
+       anova.manylm, 
+       anova.manyglm,
+       anova.manyany,
+       anova.traitglm,
+       boxplot.mvabund, 
+       boxplot.mvformula,
+       best.r.sq,
+       cv.glm1path,
+       deviance.manylm,
+       extend.x.formula, 
+       formulaUnimva,
+       glm1,
+       glm1path,
+       is.mvabund,
+       is.mvformula,
+       mvabund, 
+       mvformula,
+       manylm, 
+       manyglm, 
+       manyany,
+       predict.manylm,
+       predict.manyglm,
+       predict.traitglm,
+       print.manyglm,
+       print.anova.manyany,
+       print.anova.manylm, 
+       print.summary.manylm, 
+       print.anova.manyglm, 
+       print.summary.manyglm, 
+       print.mvformula,
+       plotMvaFactor, 
+       plotFormulafeature, 
+       plot.glm1path,
+       plot.mvabund,
+       plot.manylm,
+       plot.manyglm,
+       plot.manyany,
+       plot.mvformula,
+       ridgeParamEst,
+       residuals.glm1path,
+       residuals.manyany, 
+       residuals.manyglm, 
+       summary.manylm,
+       summary.manyglm,
+       shiftpoints,
+       traitglm,
+       unabund       
+       )
+
+exportClasses(mvabund, mvformula)
+
+exportMethods(meanvar.plot)
+
+import(Rcpp, MASS, graphics, methods, tweedie, statmod, parallel)
+importFrom(stats,dpois, ppois, qpois, rpois)
+importFrom(stats,dbinom, pbinom, qbinom, rbinom)
+importFrom(stats,dnbinom, pnbinom, qnbinom, rnbinom)
+
+S3method(extractAIC, manyglm)
+S3method(logLik, manyglm)
+S3method(logLik, manylm)
+S3method(logLik, manyany)
+S3method(anova, manyany)
+S3method(anova, manyglm)
+S3method(anova, manylm)
+S3method(anova, traitglm)
+S3method(summary, manyglm)
+S3method(summary, manylm)
+S3method(predict, manyglm)
+S3method(predict, manylm)
+S3method(predict, traitglm)
+S3method(deviance, manylm)
+S3method(residuals, manyany)
+S3method(residuals, manyglm)
+S3method(residuals, glm1path)
+S3method(plot, manyany)
+S3method(plot, manyglm)
+S3method(plot, manylm)
+S3method(plot, mvabund)
+S3method(plot, mvformula)
+S3method(plot, glm1path)
+S3method(boxplot, mvabund)
+S3method(boxplot, mvformula)
+S3method(print, anova.manyany)
+S3method(print, anova.manyglm)
+S3method(print, anova.manylm)
+S3method(print, manyglm)
+S3method(print, mvformula)
+S3method(print, summary.manyglm)
+S3method(print, summary.manylm)
