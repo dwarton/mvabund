@@ -295,7 +295,7 @@ int setMonteCarlo(glm *model, gsl_matrix *XBeta, gsl_matrix *Sigma)
           gsl_matrix_scale (XBeta, scale);
        }
    }
-   else if (model->mmRef->model == NB) {
+   else if (model->mmRef->model == NBIN) {
        // Adjusting the intercept to account for random effects
        //  i.e., M = X * beta - 0.5 * var 
        // var = log(1+phi)    
@@ -341,7 +341,7 @@ int McSample(glm *model, gsl_rng *rnd, gsl_matrix *XBeta, gsl_matrix *Sigma, gsl
    gsl_vector_view yj;
    double eij, mij, yij;
 
-   if (model->mmRef->model == NB){  // Poisson log-normal
+   if (model->mmRef->model == NBIN){  // Poisson log-normal
       for (j=0; j<nRows; j++) {
           yj = gsl_matrix_row(bY, j);
           semirmvnorm(rnd, nVars, Sigma, &yj.vector); // random effect

@@ -62,8 +62,10 @@
 // model
 #define LM 0
 #define POISSON 1
-#define NB 2
+#define NBIN 2
 #define BIN 3
+// link function
+#define CLOGLOG 1
 // shrinkage
 #define NOSHRINK 0
 #define IDENTITY 1
@@ -162,6 +164,7 @@ typedef struct GroupMatrix{
 typedef struct RegressionMethod{
     // regression methods
     unsigned int model;
+    unsigned int speclink;
     unsigned int varStab;
     unsigned int estiMethod;
     double tol;
@@ -268,7 +271,8 @@ class glm
 	   gsl_matrix *sqrt1_Hii;
            gsl_matrix *PitRes;
 
-           unsigned int n; // used in binomial and logistic regression
+           unsigned int n; // used in binomial regression
+           unsigned int speclink; // used in binomial regression
            unsigned int rdf;
 	   double *theta, *ll, *dev, *aic;
 	   unsigned int *iterconv;  
@@ -341,15 +345,32 @@ class BinGlm : public PoissonGlm
     public: // public functions
            BinGlm(const reg_Method *);
            virtual ~BinGlm();
-//    private: // logit link and property functions          
+//    private: // property functions          
            double link(double mui) const // pi=mui/n
-               { return log(mui/(n-mui)); }
+                 { if (speclink==CLOGLOG)
+	              return log(-log(1-mui)); 
+	           else  // default logit
+                      return log(mui/(n-mui)); 
+		   }
            double invLink(double ei) const
-                { return n*exp(ei)/(1+exp(ei)); }
+                 { if (speclink==CLOGLOG)
+		      return MAX(mintol, MIN(1-mintol, 1-exp(-exp(ei))));
+		   else  // default logit
+                      return n*exp(ei)/(1+exp(ei)); 
+		 }
            double LinkDash(double mui) const
-                { return n/MAX(mintol, mui*(n-mui)); }
+                 { if (speclink==CLOGLOG)
+		      return 1/MAX(mintol, (mui-1)*log(1-mui));
+		   else  // default logit
+                      return n/MAX(mintol, mui*(n-mui)); 
+		 }
            double weifunc(double mui, double a) const
-                { return mui*(1-mui/n); }
+                 { if (speclink==CLOGLOG)
+                     return ((1-mui)*log(1-mui))*((1-mui)*log(1-mui))/MAX(mintol, (mui*(1-mui))); 
+		   else  // default logit
+                     return mui*(1-mui/n); 
+		 }
+	   // others the same
            double varfunc(double mui, double a) const
                 { return mui*(1-mui/n); } // n*pi*(1-pi)
            double llfunc(double yi, double mui, double a) const
@@ -422,6 +443,7 @@ class NBinGlm : public PoissonGlm // Y~NB(n, p)
 	   double getfAfAdash (double th, unsigned int id, unsigned int limit);
 	   double thetaML(double th0, unsigned int id, unsigned int limit);
 };
+
 
 
 // base test class
