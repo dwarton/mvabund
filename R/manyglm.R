@@ -88,13 +88,13 @@ offset <- as.vector(model.offset(mf))
 	     "(marked by 'succ' and 'fail', see 'binstruc')")
 	}     
        if (all(is.wholenumber(Y)) & (length(Y[Y>1]>0))) {
-           if ( linkfunc == 1 )
+           if ( linkfun == 1 )
               stop("Count data are fitted to the binomial regression. Conisder a transformation first.")
 	   else     
               warning("Count data are fitted to the binomial regression. Conisder a transformation first.")
        }
        if ( (length(Y[Y<0])>0) | (length(Y[Y>1]>0)) ) {
-           if (linkfunc == 1) 
+           if (linkfun == 1) 
               stop("Data exceeds the range [0, 1].")     
 	   else    
               warning("Data exceeds the range [0, 1].")     

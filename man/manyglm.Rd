@@ -5,7 +5,7 @@
   \code{manyglm} is used to fit generalized linear models to high-dimensional data, such as multivariate abundance data in ecology. This is the base model-fitting function - see \code{plot.manyglm} for assumption checking, and \code{anova.manyglm} or \code{summary.manyglm} for significance testing.
 }
 \usage{
-manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL, 
+manyglm(formula, family="negative.binomial", link="logit", K=1, data=NULL, subset=NULL, 
     na.action=options("na.action"), theta.method = "PHI", model = FALSE,
     x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL, 
     tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10, 
@@ -23,8 +23,9 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     'binomial', 'negative.binomial'. Further improvement will include options
     of specifying the link function and calling to a family function defined 
     in \code{\link{family}}.
-   }
-\item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
+  }
+  \item{link}{the generalized linear model link function, defaults to \sQuote{logit}.}
+   \item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
    \item{data}{an optional data frame, list or environment (or object
     coercible by \code{\link{as.data.frame}} to a data frame) containing
     the variables in the model. If not found in \code{data}, the variables 
