@@ -1,28 +1,7 @@
-# Sample .travis.yml for R projects.
-#
-# See https://github.com/craigcitro/r-travis 
-#     https://github.com/eddelbuettel/r-travis/
-
-sudo: required                                     
-
-language: c
-
-before_install:
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-
-install:
-  # we can install these packages as prebuild apt-get binaries which is faster
-  - ./travis-tool.sh install_aptget libgsl0-dev r-cran-rcpp r-cran-mass
-  # these are installed from CRAN in source form
-  - ./travis-tool.sh install_r RcppGSL tweedie statmod
-
-script: 
-  - ./travis-tool.sh run_tests
-
-notifications:
-  email:
-    on_success: change
-    on_failure: change
-
+language: R
+rvm:
+ - "3.0"
+ - "3.2"
+ - R CMD check 
+# uncomment this line if your project needs to run something other than `R CMD check`:
+# script: bundle exec rspec spec
