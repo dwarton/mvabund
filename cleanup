@@ -1,8 +1,7 @@
 
 rm -rf confdefs.h config.log config.status \
 	src/*.o src/*.so src/*.a src/*.d src/*.dll src/*.rc \
-	src/Makedeps src/Makevars \
-	autom4te.cache \
+	src/Makedeps autom4te.cache \
 	inst/lib/*
 test -d inst/lib && rmdir inst/lib
 find . -name \*~ -exec rm {} \;
