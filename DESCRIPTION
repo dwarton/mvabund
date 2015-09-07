@@ -14,10 +14,3 @@ Depends: R (>= 3.0.0)
 Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
-Repository: R-Forge
-Packaged: 2015-08-26 00:41:47 UTC; ywang
-NeedsCompilation: yes
-Date/Publication: 2015-08-17 02:08:55
-Repository/R-Forge/Project: mvabund
-Repository/R-Forge/Revision: 133
-Repository/R-Forge/DateTimeStamp: 2015-08-17 02:08:55
