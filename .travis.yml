@@ -1,0 +1,7 @@
+language: R
+rvm:
+ - "3.0"
+ - "3.2"
+ - R CMD check 
+# uncomment this line if your project needs to run something other than `R CMD check`:
+# script: bundle exec rspec spec

@@ -38,18 +38,11 @@ List RtoAnovaCpp(const List & rparam,
     mm.punit = as<unsigned int>(rparam["punit"]);
     mm.rsquare = as<unsigned int>(rparam["rsquare"]);
 
-// for debug
-//    Rprintf("Input param arguments:\n tol=%g, nboot=%d, cor_type=%d, shrink_param=%g, test_type=%d, resamp=%d, reprand=%d\n",mm.tol, mm.nboot, mm.corr, mm.shrink_param, mm.test, mm.resamp, mm.reprand);
-
     unsigned int nRows = Y.nrow();
-    unsigned int nVars = Y.ncol();
-    unsigned int nParam = X.ncol();
     unsigned int nModels = isXvarIn.nrow();
-// for debug
-//    Rprintf("nRows=%d, nVars=%d, nParam=%d\n", nRows, nVars, nParam);
 
     // Rcpp -> gsl
-    unsigned int i, j, k;
+    unsigned int i, j;
 
 // initialize anova class
     AnovaTest anova(&mm, Y, X, isXvarIn);
@@ -146,7 +139,6 @@ List RtoGlmAnova(const List & sparam,
     tm.nParam = nParam;
 
     // do stuff	
-    unsigned int i, j, k;
     clock_t clk_start, clk_end;
     clk_start = clock();
 
@@ -169,11 +161,6 @@ List RtoGlmAnova(const List & sparam,
         tm.nboot = bIDr.nrow();
         myTest.bootID = gsl_matrix_alloc(tm.nboot,nRows);
         gsl_matrix_memcpy(myTest.bootID, bIDr);
-//        for (i=0; i<tm.nboot; i++)
-//        for (j=0; j<nRows; j++) {
-//            gsl_matrix_set(myTest.bootID, i, j, bIDr(i, j));
-//            Rprintf("%d ", gsl_matrix_get(myTest.bootID, i, j));
-//        }
     }  
 
     // resampling test
@@ -233,13 +220,6 @@ List RtoGlm(const List & rparam,
     mm.maxiter2 = as<unsigned int>(rparam["maxiter2"]);
     mm.warning = as<unsigned int>(rparam["warning"]);
 
-    unsigned int nRows = Y.nrow();
-    unsigned int nVars = Y.ncol();
-    unsigned int nParam = X.ncol();
-
-    // Rcpp -> gsl
-    unsigned int i, j, k;
-       
     // do stuff	
     PoissonGlm pfit(&mm);
     BinGlm lfit(&mm);
@@ -260,11 +240,11 @@ List RtoGlm(const List & rparam,
        Named("sqrt.1_Hii") = RcppGSL::Matrix(glmPtr[mtype]->sqrt1_Hii),
        Named("var.estimator") = RcppGSL::Matrix(glmPtr[mtype]->Var),
        Named("sqrt.weight") = RcppGSL::Matrix(glmPtr[mtype]->wHalf),
-       Named("theta")=NumericVector(glmPtr[mtype]->theta, glmPtr[mtype]->theta+nVars),
-       Named("two.loglike")=NumericVector(glmPtr[mtype]->ll, glmPtr[mtype]->ll+nVars),
-       Named("aic")=NumericVector(glmPtr[mtype]->aic, glmPtr[mtype]->aic+nVars),
-       Named("deviance")=NumericVector(glmPtr[mtype]->dev, glmPtr[mtype]->dev+nVars),
-       Named("iter")=NumericVector(glmPtr[mtype]->iterconv, glmPtr[mtype]->iterconv+nVars)
+       Named("theta")=NumericVector(glmPtr[mtype]->theta, glmPtr[mtype]->theta+Y.ncol()),
+       Named("two.loglike")=NumericVector(glmPtr[mtype]->ll, glmPtr[mtype]->ll+Y.ncol()),
+       Named("aic")=NumericVector(glmPtr[mtype]->aic, glmPtr[mtype]->aic+Y.ncol()),
+       Named("deviance")=NumericVector(glmPtr[mtype]->dev, glmPtr[mtype]->dev+Y.ncol()),
+       Named("iter")=NumericVector(glmPtr[mtype]->iterconv, glmPtr[mtype]->iterconv+Y.ncol())
     );
 
     // clear objects
@@ -321,7 +301,6 @@ List RtoGlmSmry(const List & sparam,
     clock_t clk_start, clk_end;
     clk_start = clock();
 
-    unsigned int i, j, k;
     // Glm fit
     PoissonGlm pfit(&mm);
     BinGlm lfit(&mm);
@@ -424,7 +403,7 @@ List RtoSmryCpp(const List & rparam,
 //  clock_t clk_start, clk_end;
 //  clk_start = clock();
 
-    unsigned int i, j, k;
+    unsigned int i, j;
 
     // initialize summary class
     Summary smry(&mm, Y, X);
