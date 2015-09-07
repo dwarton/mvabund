@@ -1,3 +1,5 @@
+// -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
 // Interface between R and anova.cpp (Rcpp API >= 0.7.11)
 //
 // Author: Yi Wang (yi dot wang at unsw dot edu dot au)
@@ -7,6 +9,7 @@
 
 
 #include <RcppGSL.h>
+#include "mvabund_types.h"
 extern "C"{
 #include "resampTest.h"
 #include "time.h"
@@ -14,16 +17,17 @@ extern "C"{
 
 using namespace Rcpp;
 
-// declare a dependency on the RcppGSL package; also activates plugin
+// declare a dependency on the headers in the RcppGSL package;
+// also activates plugin
 // [[Rcpp::depends(RcppGSL)]]
 
 // declare the function to be 'exported' to R
 // [[Rcpp::export]]
 List RtoAnovaCpp(const List & rparam,
-                       RcppGSL::Matrix & Y,
-                       RcppGSL::Matrix & X,
-                       RcppGSL::Matrix & isXvarIn,
-                       SEXP bIDsexp)
+                 RcppGSL::Matrix & Y,
+                 RcppGSL::Matrix & X,
+                 RcppGSL::Matrix & isXvarIn,
+                 Rcpp::Nullable & bID)
 {
     // pass parameters
     mv_Method mm;	
@@ -41,35 +45,26 @@ List RtoAnovaCpp(const List & rparam,
     unsigned int nRows = Y.nrow();
     unsigned int nModels = isXvarIn.nrow();
 
-    // Rcpp -> gsl
-    unsigned int i, j;
-
 // initialize anova class
     AnovaTest anova(&mm, Y, X, isXvarIn);
 	
 // Resampling indices
-    if ( !Rf_isNumeric(bIDsexp) || !Rf_isMatrix(bIDsexp) ) {
-//      Rprintf("Calc bootID on the fly.\n");
-     }
-    else {
+    if (bID.isNotNull()) {
         if ( mm.resamp == SCOREBOOT ) {
-            RcppGSL::Matrix bIDr(bIDsexp);
-            mm.nboot = bIDr.nrow();	   
-            anova.bootID = gsl_matrix_alloc(mm.nboot, nRows);
-            gsl_matrix_memcpy(anova.bootID, bIDr);
-//	    for (i=0; i<mm.nboot; i++)
-//	    for (j=0; j<nRows; j++)
-//                gsl_matrix_set(anova.bootID, i, j, bIDr(i, j));
-	 }
-	else{
-	    IntegerMatrix bIDr(bIDsexp);
-            mm.nboot = bIDr.nrow();	   
-	    anova.bootID = gsl_matrix_alloc(mm.nboot, nRows);
-	    // integer -> double
-	    for (i=0; i<mm.nboot; i++)
-            for (j=0; j<nRows; j++)
-                gsl_matrix_set(anova.bootID, i, j, bIDr(i, j)-1);
-    }  } 
+            RcppGSL::Matrix m(bID);
+            mm.nboot = m.nrow();	   
+            anova.bootID = m;
+        } else{
+            Rcpp::NumericMatrix M(bID);
+            // we currently cannot do 'M = M - 1;' on a NumericMatrix
+            // but we can on a NumericVector so we take a detour
+            Rcpp::NumericVector V(M);
+            V = V - 1;
+            RcppGSL::Matrix m(Rcpp::wrap(V)); // V still has matrix dims from M
+            mm.nboot = m.nrow();	   
+	    anova.bootID = m;
+        }
+    } 
 
     // resampling test
     anova.resampTest();
@@ -100,7 +95,7 @@ List RtoGlmAnova(const List & sparam,
                  RcppGSL::Matrix & X,
                  RcppGSL::Matrix & O,
                  RcppGSL::Matrix & isXvarIn,
-                 SEXP bIDsexp,
+                 Rcpp::Nullable & bID,
                  RcppGSL::Vector & lambda)
 {
     // pass regression parameters
@@ -153,14 +148,10 @@ List RtoGlmAnova(const List & sparam,
 
     GlmTest myTest(&tm);
     // Resampling indices
-    if ( !Rf_isNumeric(bIDsexp) || !Rf_isMatrix(bIDsexp) ) {
-//        Rprintf("Calc bootID on the fly.\n");
-     }
-    else {
-        RcppGSL::Matrix bIDr(bIDsexp);
-        tm.nboot = bIDr.nrow();
-        myTest.bootID = gsl_matrix_alloc(tm.nboot,nRows);
-        gsl_matrix_memcpy(myTest.bootID, bIDr);
+    if ( bID.isNotNull() ) {
+        RcppGSL::Matrix m(bID);
+        tm.nboot = m.nrow();
+        myTest.bootID = m;
     }  
 
     // resampling test
@@ -260,7 +251,7 @@ List RtoGlmSmry(const List & sparam,
                 RcppGSL::Matrix & Y,
                 RcppGSL::Matrix & X,
                 RcppGSL::Matrix & O,
-                SEXP bIDsexp,
+                Rcpp::Nullable & bID,
                 RcppGSL::Vector & lambda)
 {
     // Pass regression parameters
@@ -312,21 +303,10 @@ List RtoGlmSmry(const List & sparam,
 
     GlmTest myTest(&tm);    
     // Resampling indices
-    if ( !Rf_isNumeric(bIDsexp) || !Rf_isMatrix(bIDsexp) ) {
-//        Rprintf("Calc bootID on the fly.\n");
-    }	   
-    else {
-        // NumericMatrix assigns array elements column-by-column
-        RcppGSL::Matrix bIDr(bIDsexp);
-        tm.nboot = bIDr.nrow();        
-        myTest.bootID = gsl_matrix_alloc(tm.nboot,nRows);
-        gsl_matrix_memcpy(myTest.bootID, bIDr);
-        // gsl_matrix_view_array assigns elements row-by-row
-//        for (i=0; i<tm.nboot; i++)
-//        for (j=0; j<nRows; j++) {
-//            gsl_matrix_set(myTest.bootID, i, j, bIDr(i, j));
-//            Rprintf("%d ", gsl_matrix_get(myTest.bootID, i, j));
-//        }
+    if ( bID.isNotNull() ) {
+        RcppGSL::Matrix m(bID);
+        tm.nboot = m.nrow();        
+        myTest.bootID = m;
     }
     // resampling test
     myTest.summary(glmPtr[mtype]);
@@ -381,7 +361,7 @@ List RtoGlmSmry(const List & sparam,
 List RtoSmryCpp(const List & rparam,
                 RcppGSL::Matrix & Y,
                 RcppGSL::Matrix & X,
-                SEXP bIDsexp)
+                Rcpp::Nullable & bID)
 {
     // pass regression parameters
     mv_Method mm;	
@@ -403,37 +383,27 @@ List RtoSmryCpp(const List & rparam,
 //  clock_t clk_start, clk_end;
 //  clk_start = clock();
 
-    unsigned int i, j;
-
     // initialize summary class
     Summary smry(&mm, Y, X);
 	
     // Resampling indices
-    if ( !Rf_isNumeric(bIDsexp) || !Rf_isMatrix(bIDsexp) ) {
-//        Rprintf("Calc bootID on the fly.\n");
-    }	   
-    else {
+    if ( bID.isNotNull() ) {
         if ( mm.resamp == SCOREBOOT ) {
-            RcppGSL::Matrix bIDr(bIDsexp);
-            mm.nboot = bIDr.nrow();	   
-            smry.bootID = gsl_matrix_alloc(mm.nboot, nRows);
-            gsl_matrix_memcpy(smry.bootID, bIDr);
-//            for (i=0; i<mm.nboot; i++)
-//            for (j=0; j<nRows; j++)
-//                gsl_matrix_set(smry.bootID, i, j, bIDr(i, j));
-	}
-        else{
-	    IntegerMatrix bIDr(bIDsexp);
-            mm.nboot = bIDr.nrow();	   
-	    smry.bootID = gsl_matrix_alloc(mm.nboot, nRows);
-//            gsl_matrix_memcpy(smry.bootID, bIDr);
-//            gsl_matrix_add_constant(smry.bootID, -1.0);
-	    // integer -> double
-	    for (i=0; i<mm.nboot; i++)
-            for (j=0; j<nRows; j++)
-                gsl_matrix_set(smry.bootID, i, j, bIDr(i, j)-1);
-    }   } 
-
+            RcppGSL::Matrix m(bID);
+            mm.nboot = m.nrow();	   
+            smry.bootID = m;
+	} else{
+            Rcpp::NumericMatrix M(bID);
+            // we currently cannot do 'M = M - 1;' on a NumericMatrix
+            // but we can on a NumericVector so we take a detour
+            Rcpp::NumericVector V(M);
+            V = V - 1;
+            RcppGSL::Matrix m(Rcpp::wrap(V)); // V still has matrix dims from M
+            mm.nboot = m.nrow();	   
+	    smry.bootID = m;
+        }
+    }    
+  
 // resampling test
     smry.resampTest();
 //    smry.display();
