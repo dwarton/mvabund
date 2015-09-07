@@ -55,12 +55,9 @@ List RtoAnovaCpp(const List & rparam,
             mm.nboot = m.nrow();	   
             anova.bootID = m;
         } else{
-            Rcpp::NumericMatrix M(bID);
-            // we currently cannot do 'M = M - 1;' on a NumericMatrix
-            // but we can on a NumericVector so we take a detour
-            Rcpp::NumericVector V(M);
-            V = V - 1;
-            RcppGSL::Matrix m(Rcpp::wrap(V)); // V still has matrix dims from M
+            RcppGSL::Matrix m(bID);
+            // we currently cannot do 'M = M - 1;' on a Matrix
+            gsl_matrix_add_constant(m, -1);
             mm.nboot = m.nrow();	   
 	    anova.bootID = m;
         }
@@ -393,12 +390,9 @@ List RtoSmryCpp(const List & rparam,
             mm.nboot = m.nrow();	   
             smry.bootID = m;
 	} else{
-            Rcpp::NumericMatrix M(bID);
-            // we currently cannot do 'M = M - 1;' on a NumericMatrix
-            // but we can on a NumericVector so we take a detour
-            Rcpp::NumericVector V(M);
-            V = V - 1;
-            RcppGSL::Matrix m(Rcpp::wrap(V)); // V still has matrix dims from M
+            RcppGSL::Matrix m(bID);
+            // we currently cannot do 'M = M - 1;' on a Matrix
+            gsl_matrix_add_constant(m, -1);
             mm.nboot = m.nrow();	   
 	    smry.bootID = m;
         }
