@@ -52,15 +52,14 @@ List RtoAnovaCpp(const List & rparam,
     if (bID.isNotNull()) {
         if ( mm.resamp == SCOREBOOT ) {
             RcppGSL::Matrix m(bID);
-            mm.nboot = m.nrow();	   
-            anova.bootID = m;
-        } else{
-            RcppGSL::Matrix m(bID);
+        }
+        else {
+            RcppGSL::Matrix<unsigned int> m(bID);
             // we currently cannot do 'M = M - 1;' on a Matrix
             gsl_matrix_add_constant(m, -1);
-            mm.nboot = m.nrow();	   
-	    anova.bootID = m;
         }
+        mm.nboot = m.nrow();	   
+        anova.bootID = m;
     } 
 
     // resampling test
@@ -387,15 +386,13 @@ List RtoSmryCpp(const List & rparam,
     if ( bID.isNotNull() ) {
         if ( mm.resamp == SCOREBOOT ) {
             RcppGSL::Matrix m(bID);
-            mm.nboot = m.nrow();	   
-            smry.bootID = m;
 	} else{
-            RcppGSL::Matrix m(bID);
+            RcppGSL::Matrix<unsigned int> m(bID);
             // we currently cannot do 'M = M - 1;' on a Matrix
             gsl_matrix_add_constant(m, -1);
-            mm.nboot = m.nrow();	   
-	    smry.bootID = m;
         }
+        mm.nboot = m.nrow();	   
+        smry.bootID = m;
     }    
   
 // resampling test
