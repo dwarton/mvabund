@@ -81,16 +81,30 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
    else if (cor.type == "R")
       shrink.param <- 0 
 
+
     if (!is.null(bootID)) {
-       nBoot<-dim(bootID)[2]
-       if (is.integer(bootID)) {
-           cat(paste("Input bootID matrix being used for testing.","\n"))
-       }		         
-       else {
-           bootID <- NULL
-	   cat(paste("Invalid bootID. Calculate bootID matrix on the fly.","\n"))
+       nBoot<-dim(bootID)[1]
+       if (max(bootID)>nRows) {
+          bootID <- NULL
+          cat(paste("Invalid bootID -- sample id larger than no. of observations. Generate bootID matrix on the fly.","\n"))
        }
-    }
+       else {
+          if (resamp == "score") {
+             cat(paste("Using <double> bootID from input for score resampling.","\n"))
+          }
+          else { # all other methods resample the matrix index 
+             if (is.integer(bootID)) {
+                 cat(paste("Using <int> bootID matrix from input.","\n"))
+                 if (max(bootID)==nRows) # to fit the format in C i.e. (0, nObs-1)
+                     bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
+             }
+             else {
+                 bootID <- NULL
+                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Generate bootID matrix on the fly.","\n"))
+            }
+         }
+      }
+   }
 
 
     if (studentize) st <- 1
@@ -110,7 +124,6 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
     params <- list(tol=tol, nboot=nBoot, cor_type=corr, shrink_param=shrink.param, test_type=testype, resamp=resam, reprand=rep.seed, studentize=st, punit=pu, rsquare=rsq)
 
     ######## Call Summary Rcpp #########
-#    val <- .Call("RtoSmryCpp", params, Y, X, bootID, PACKAGE="mvabund")
     val <- RtoSmryCpp(params, Y, X, bootID)
 
     ######## Collect Summary Values ########
