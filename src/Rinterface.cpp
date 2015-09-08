@@ -54,7 +54,7 @@ List RtoAnovaCpp(const List & rparam,
             RcppGSL::Matrix m(bID);
         }
         else {
-            RcppGSL::Matrix<unsigned int> m(bID);
+            RcppGSL::Matrix<int> m(bID);
             // we currently cannot do 'M = M - 1;' on a Matrix
             gsl_matrix_add_constant(m, -1);
         }
@@ -387,7 +387,7 @@ List RtoSmryCpp(const List & rparam,
         if ( mm.resamp == SCOREBOOT ) {
             RcppGSL::Matrix m(bID);
 	} else{
-            RcppGSL::Matrix<unsigned int> m(bID);
+            RcppGSL::Matrix<int> m(bID);
             // we currently cannot do 'M = M - 1;' on a Matrix
             gsl_matrix_add_constant(m, -1);
         }
