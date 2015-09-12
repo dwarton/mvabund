@@ -27,7 +27,7 @@ List RtoAnovaCpp(const List & rparam,
                  RcppGSL::Matrix & Y,
                  RcppGSL::Matrix & X,
                  RcppGSL::Matrix & isXvarIn,
-                 Rcpp::Nullable & bID)
+                 Rcpp::Nullable<RcppGSL::Matrix> & bID)
 {
     // pass parameters
     mv_Method mm;	
@@ -84,7 +84,7 @@ List RtoGlmAnova(const List & sparam,
                  RcppGSL::Matrix & X,
                  RcppGSL::Matrix & O,
                  RcppGSL::Matrix & isXvarIn,
-                 Rcpp::Nullable & bID,
+                 Rcpp::Nullable<RcppGSL::Matrix> & bID,
                  RcppGSL::Vector & lambda)
 {
     // pass regression parameters
@@ -240,7 +240,7 @@ List RtoGlmSmry(const List & sparam,
                 RcppGSL::Matrix & Y,
                 RcppGSL::Matrix & X,
                 RcppGSL::Matrix & O,
-                Rcpp::Nullable & bID,
+                Rcpp::Nullable<RcppGSL::Matrix> & bID,
                 RcppGSL::Vector & lambda)
 {
     // Pass regression parameters
@@ -350,7 +350,7 @@ List RtoGlmSmry(const List & sparam,
 List RtoSmryCpp(const List & rparam,
                 RcppGSL::Matrix & Y,
                 RcppGSL::Matrix & X,
-                Rcpp::Nullable & bID)
+                Rcpp::Nullable<RcppGSL::Matrix> & bID)
 {
     // pass regression parameters
     mv_Method mm;	
