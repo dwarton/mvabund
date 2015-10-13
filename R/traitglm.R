@@ -1,8 +1,6 @@
 traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, method="manyglm", composition=FALSE, col.intercepts = TRUE, ...  )
 {
 
-#  form = ~Bare.ground+Canopy.cover+Femur.length+Pilosity+Bare.ground:Femur.length+Bare.ground:Pilosity+Canopy.cover:Femur.length+Canopy.cover:Pilosity
-  
 #subfunctions get.design and get.polys defined below.
   
   # extract any arguments that work with cv.glm1path and save separately so they are not passed to glm1path.
@@ -76,9 +74,6 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   X = X.des$X
   l <- as.vector(as.matrix(L))
   
-#    require(Matrix)
-#    require(MASS)
-
   if( method=="cv.glm1path" || method=="glm1path" )
   {
     if( "block" %in% names(dots) )
@@ -105,8 +100,6 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   ft$fourth.corner = matrix( coef(ft)[X.des$is.4th.corner], length(X.des$names.Q), length(X.des$names.R) )
   ft$fourth.corner = provideDimnames(ft$fourth,base=list(X.des$names.Q,X.des$names.R))
 
-#  dimnames(ft$fourth.corner)[[1]] = X.des$names.Q
-#  dimnames(ft$fourth.corner)[[2]] = X.des$names.R
 #    ft$fourth.corner = Matrix(fourth.corner, sparse=T)
   # cat("\n")
   # cat("Fourth corner matrix:    ")
@@ -400,7 +393,7 @@ get.design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TR
       n.Q = sum(is.lin.Q)
       ref.R = rep(1:n.R,each=n.Q)
       ref.Q = rep(1:n.Q,n.R)
-      X.RQ = X.R[,ref.R] * X.Q[,ref.Q]
+      X.RQ = as.matrix( X.R[,ref.R] * X.Q[,ref.Q] )
       dimnames(X.RQ)[[2]] = paste(dimnames(X.R)[[2]][ref.R], dimnames(X.Q)[[2]][ref.Q], sep=":")
       if(is.scaling.given==F)
       {
