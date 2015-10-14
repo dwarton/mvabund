@@ -56,9 +56,6 @@ exportClasses(mvabund, mvformula)
 exportMethods(meanvar.plot)
 
 import(Rcpp, MASS, graphics, methods, tweedie, statmod, parallel)
-importFrom(stats,dpois, ppois, qpois, rpois)
-importFrom(stats,dbinom, pbinom, qbinom, rbinom)
-importFrom(stats,dnbinom, pnbinom, qnbinom, rnbinom)
 
 S3method(extractAIC, manyglm)
 S3method(logLik, manyglm)
@@ -92,3 +89,17 @@ S3method(print, manyglm)
 S3method(print, mvformula)
 S3method(print, summary.manyglm)
 S3method(print, summary.manylm)
+
+importFrom("grDevices", "bmp", "dev.cur", "dev.interactive", "dev.list", "dev.off", "dev.set",
+           "jpeg", "palette", "pdf", "png", "postscript", "rainbow")
+importFrom("stats", ".getXlevels", "as.formula", "binomial", "coef", "contrasts", "contrasts<-",
+           "cov", "dbinom", "dnbinom", "dpois", "dcauchy", "deviance", "df.residual", "dfbeta",
+           "dnorm", "fitted", "formula", "gaussian", "glm", "is.empty.model", "lm", "loess.smooth",
+           "logLik", "make.link", "model.frame", "model.matrix", "model.offset", "model.response",
+           "model.weights", "na.exclude", "na.fail", "na.omit", "na.pass", "naprint", "naresid",
+           "pbinom", "pcauchy", "pf", "pnbinom", "pnorm", "poisson", "poly", "ppois", "predict",
+           "predict.glm", "predict.lm", "printCoefmat", "qbinom", "qcauchy", "qnbinom", "qnorm",
+           "qpois", "quantile", "rbinom", "reformulate", "residuals", "rnbinom", "rpois", "runif",
+           "sd", "symnum", "terms", "update", "var", "variable.names", "weighted.residuals",
+           "weights") 
+importFrom("utils", "data", "flush.console", "installed.packages")

@@ -106,20 +106,33 @@ summary.manyglm <- function(object, resamp="pit.trap", test="wald", p.uni="none"
        warning("bootID not supplied. Calc bootID on the fly (default)...")
        ld.perm <- FALSE
     }
-    else if (is.integer(bootID)) {
+
+    if (!is.null(bootID)) {
        ld.perm <- TRUE
        nBoot <- dim(bootID)[1]
-       cat(paste("Using bootID matrix from input.","\n"))
-           if (max(bootID)==nRows) # to fit the format in C i.e.(0, nRows-1)
-               bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)       
-                  if (max(bootID)>nRows)
-       cat(paste("Invalid bootID -- sample id larger than no. of observations. Calculate bootID matrix on the fly.","\n"))
+       if (max(bootID)>nRows) {
+          bootID <- NULL
+          cat(paste("Invalid bootID -- sample id larger than no. of observations. Generate bootID matrix on the fly.","\n"))
+       }
+       else {
+          if (resamp == "score") {
+             cat(paste("Using <double> bootID from input for score resampling.","\n"))
+          }
+          else { # all other methods resample the matrix index 
+             if (is.integer(bootID)) {
+                 cat(paste("Using <int> bootID matrix from input.","\n"))
+                 if (max(bootID)==nRows) # to fit the format in C i.e. (0, nObs-1)
+                     bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
+             }
+             else {
+                 bootID <- NULL
+                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Generate bootID matrix on the fly.","\n"))
+            }
+         }
+      }
     }
-    else if (ld.perm && !is.integer(bootID)){
-       warning("Invalid bootID -- sample id should be integer numbers up to the no. of observations. Calc bootID on the fly.")
-       ld.perm <- FALSE
-       bootID <- NULL
-    }
+
+
 
     if (corrnum == 2 | resampnum==5 ) {
        # get the shrinkage estimates

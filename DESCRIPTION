@@ -1,7 +1,7 @@
 Package: mvabund
 Title: Statistical Methods for Analysing Multivariate Abundance Data
-Version: 3.11.3
-Date: 2015-09-01
+Version: 3.11.4
+Date: 2015-09-04
 Author: Yi Wang, Ulrike Naumann, Stephen Wright and David Warton
 Maintainer: David Warton <David.Warton@unsw.edu.au>
 Description: A set of tools for displaying, modeling and analysing
@@ -14,10 +14,3 @@ Depends: R (>= 3.0.0)
 Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
-Repository: R-Forge
-Packaged: 2015-08-26 00:41:47 UTC; ywang
-NeedsCompilation: yes
-Date/Publication: 2015-08-17 02:08:55
-Repository/R-Forge/Project: mvabund
-Repository/R-Forge/Revision: 133
-Repository/R-Forge/DateTimeStamp: 2015-08-17 02:08:55
