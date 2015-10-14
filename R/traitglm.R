@@ -131,7 +131,10 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   ft$scaling = X.des$scaling
   ft$call=match.call()
 
-  ft$formula = formula
+  if(is.null(formula)==FALSE & get.fourth==FALSE) # if formula was user-entered but not we exclude 4th corner, redefine it
+    ft$formula = X.des$formula
+  else
+    ft$formula = formula
 
   class(ft)=c("traitglm",class(ft))
   return( ft )
@@ -434,47 +437,66 @@ get.design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TR
   {
     # construct design matrix X (minus any spp and site terms)
     rowReps = rep(1:n.sites, times=n.spp)
-    R.i     = R.des$X[rowReps,]
+    R.i     = data.frame(R.des$X[rowReps,])
+    names(R.i) = names(R.des$X)
     colReps = rep(1:n.spp, each=n.sites)
-    Q.i     = Q.des$X[colReps,]
+    Q.i     = data.frame(Q.des$X[colReps,])
+    names(Q.i) = names(Q.des$X)
     X       = model.matrix(formula,cbind(R.i,Q.i))
     
     # now extract fourth corner as a matrix with just one column
     tt       = terms(formula)
     facts    = attr(tt,"factors")
-    is.env   = charmatch(names(R.des$X),dimnames(facts)[[1]])
-    is.env   = is.env[is.na(is.env)==FALSE]
-    is.trait = charmatch(names(Q.des$X),dimnames(facts)[[1]])
-    is.trait = is.trait[is.na(is.trait)==FALSE]
-    if(length(is.env)==1) #get a vector saying which terms involve env variables
-      which.env = facts[is.env,]>0
+    which.env   = charmatch(names(R.des$X),dimnames(facts)[[1]])
+    which.env   = which.env[is.na(which.env)==FALSE]
+    which.trait = charmatch(names(Q.des$X),dimnames(facts)[[1]])
+    which.trait = which.trait[is.na(which.trait)==FALSE]
+    if(length(which.env)==1) #get a vector saying which terms involve env variables
+      is.env = facts[which.env,]>0
     else
     {
-      if(length(is.env)==0)
-         which.env=FALSE
+      if(length(which.env)==0)
+         is.env = logical(0)
       else
-         which.env = apply(facts[is.env,],2,sum)>0
+         is.env = apply(facts[which.env,],2,sum)>0
     }
-    if(length(is.trait)==1) #get a vector saying which terms involve traits
-      which.trait = facts[is.trait,]>0
+    if(length(which.trait)==1) #get a vector saying which terms involve traits
+      is.trait = facts[which.trait,]>0
     else
     {
-      if(length(is.trait)==0)
-        which.trait=FALSE
+      if(length(which.trait)==0)
+        is.trait = logical(0)
       else
-        which.trait = apply(facts[is.trait,],2,sum)>0
+        is.trait = apply(facts[which.trait,],2,sum)>0
     }
-    is.4th.term   = which.env & which.trait # 4th corner terms (involve both env and traits)
-    is.4th.corner = is.4th.term[attr(X,"assign")] #coefs for 4th corner, missing a FALSE for intercept though
-    names.R = "coef"
-    if(attr(tt,"intercept")==1) #so get rid of intercept in X so everything matches up
+    is.4th.term = is.env & is.trait # 4th corner terms (involve both env and traits)
+    if(get.fourth==TRUE)
+      is.4th.corner = is.4th.term[attr(X,"assign")] #logical for whether columns of X are 4th corner, missing a FALSE for intercept though
+    else
+      is.4th.corner = rep( FALSE, length(attr(X,"assign")) ) #set them all to FALSE if no 4th corner terms to be included in model
+
+    if(attr(tt,"intercept")==1) # get rid of intercept in X so everything matches up
     {
       names.Q = dimnames(X)[[2]][c(FALSE,is.4th.corner)]
       X = as.matrix(X[,-1]) # as.matrix include in case it is reduced to a vector
     }
     else
       names.Q = dimnames(X)[[2]][is.4th.corner]
+    names.R = "coef"
     
+    # if no 4th corner terms in model, kick them out of X, make is.4th.corner empty, reconstruct formula to ditch 4th terms
+    if(get.fourth==FALSE)
+    {
+      X = as.matrix(X[,-which(is.4th.term==TRUE)])
+      is.4th.corner = c()
+      if(sum(is.4th.term==FALSE)>0)
+      {
+        formula = paste0(dimnames(facts)[[2]][is.4th.term==FALSE],collapse="+")
+        formula = as.formula(paste0("~",formula))
+      }
+      else
+        formula=as.formula("~1")
+    }
     # add on spp and site terms, and add to is.4th.corner too:
     X = cbind(X.spp,X.site,X)
     is.4th.corner = c(rep(FALSE, dim(X.spp)[2]+dim(X.site)[2]), is.4th.corner)
@@ -488,5 +510,5 @@ get.design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TR
   else #otherwise penalty can be empty
     penalty = NULL
 
-  return(list(X=X, is.4th.corner=is.4th.corner, names.R=names.R, names.Q=names.Q, penalty=penalty, any.penalty=any.penalty, scaling=scaling) )  
+  return(list(X=X, is.4th.corner=is.4th.corner, names.R=names.R, names.Q=names.Q, penalty=penalty, any.penalty=any.penalty, scaling=scaling, formula=formula) )  
 }
