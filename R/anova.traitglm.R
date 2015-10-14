@@ -2,8 +2,8 @@ anova.traitglm <- function(object, ..., nBoot=99, resamp="pit.trap", test="LR", 
 {
     if("manyglm" %in% class(object) == FALSE)
       stop("Sorry, the anova function only works for traitglm objects fitted using manyglm.")
-
-    n.sites    = dim(object$L)[1]
+  
+      n.sites    = dim(object$L)[1]
     n.spp      = dim(object$L)[2]
     if(is.null(bootID))
     {
@@ -27,6 +27,10 @@ anova.traitglm <- function(object, ..., nBoot=99, resamp="pit.trap", test="LR", 
       env.times.trait = object
       object$call$get.fourth = FALSE
       env.plus.trait = eval(object$call)
+
+      #exception handling - don't call anova if there are no fourth corner terms in the model
+      if(length(env.times.trait$fourth.corner)==0)
+         stop("Sorry, your trait model has no fourth corner terms in it so you can't call anova without specifying an alternate model too")
       an = anova.manyglm(env.plus.trait, env.times.trait, nBoot=nBoot, resamp=resamp, test=test, block=block, show.time=show.time, bootID=bootID)
     }
     else
