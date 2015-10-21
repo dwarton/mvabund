@@ -3,6 +3,7 @@
 ## R-Studio ##
 ##############
 .Proj.user/
+.Rproj.user/
 .Rhistory
 .Rbuildignore
 ## end DW additions

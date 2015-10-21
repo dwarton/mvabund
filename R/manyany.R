@@ -143,12 +143,12 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
 
     if(get.what=="details"||get.what=="models")
     {
-      fits[,i.var] = fitted(manyfit[[i.var]])
+      fits[is.na(data$y)==FALSE,i.var] = fitted(manyfit[[i.var]])
       # if(fn=="lmer")
       #   etas[,i.var] = manyfit[[i.var]]@eta
       # else
       #   etas[,i.var] = predict(manyfit[[i.var]])
-      etas[,i.var] = switch(fn,
+      etas[is.na(data$y)==FALSE,i.var] = switch(fn,
                             "lmer"=manyfit[[i.var]]@eta,
                             "clm"=predict(manyfit[[i.var]],type="linear.predictor",newdata=data[,names(data)!="y"])$eta1[,1],
                             predict(manyfit[[i.var]])
