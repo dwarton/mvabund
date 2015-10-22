@@ -53,7 +53,7 @@ mf <- match.call(expand.dots = FALSE)
 m  <- match(c("formula", "data", "subset", "na.action", "offset"), names(mf), 0)
 mf <- mf[c(1, m)]
 
-mf$drop.unused.levels <- TRUE
+mf$drop.unused.levels <- FALSE
 mf[[1]] <- as.name("model.frame")
 data <- mf <- eval(mf, parent.frame())    # Obtain the model.frame. 
 mt <-  attr(mf, "terms")  # Obtain the model terms.

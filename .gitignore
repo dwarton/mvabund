@@ -6,6 +6,7 @@
 .Rproj.user/
 .Rhistory
 .Rbuildignore
+.RProj
 ## end DW additions
 
 #################
@@ -224,3 +225,4 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+.Rproj.user
