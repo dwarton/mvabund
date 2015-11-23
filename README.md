@@ -4,7 +4,7 @@ Statistical Methods for Analysing Multivariate Abundance Data
 
 ### Authors
 
-Yi Wang, Ulrike Naumann, Stephen Wright and David Warton
+Yi Wang, Ulrike Naumann, Stephen Wright, Dirk Eddelbuettel and David Warton
 
 ### License
 
