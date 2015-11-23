@@ -39,6 +39,9 @@ block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
   \item{na.action}{Default set to \code{exclude} (for details see
     \code{\link{na.exclude}}) to avoid errors when NA's in predictors.}
   \item{\dots}{further arguments passed to the fitting function.}
+  \item{x}{an object of class "manyany", usually, a result of a call to
+  \code{\link[mvabund:manyany]{manyany}}.}
+  \item{digits}{how many digits to include in the printed anova table.}
 }
 \details{
 
