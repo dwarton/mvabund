@@ -35,7 +35,7 @@ residuals.manyglm<- function(object, ...)
     for(i.var in 1:n.vars)
       params[[i.var]] = list(q=object$y[,i.var], mu=object$fitted[,i.var], sd=sqrt(sigma2[i.var]))
   } 
-  else stop (paste("'family'", family, "not recognized"))
+  else stop (paste("'family'", object$family, "not recognized"))
   
   resids=matrix(NA,n.rows,n.vars)
   dimnames(resids)[[1]] = rownames(object$y)
