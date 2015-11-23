@@ -1,28 +1,9 @@
 anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$block, nCores = 1, bootID=NULL, replace=TRUE)
 {
-# analysis of variance comparing object1 (null) to object2 (alternative)
-# uses the PIT-trap
-# unadjusted univariate P-values only at this stage
-# block is a factor specifying the sampling level to be resampled. For example, if data have multiple
-#  rows of records for each site, e.g. multi-species data with entries for different species on different
-#  rows, you can use your site ID variable as the block argument to resample sites only, for valid
-#  cross-site inferences despite within-site species correlation. Well, valid assuming sites are independent.
-#  You could do similarly for a repeated measures design to make inferences robust to temporal autocorrelation.
-#  Note that block needs to be balanced to use a residual resampling approach, e.g. equal number of species
-#  entries for each site (i.e. include rows for zero abundances too). Default is resampling rows (if
-#  composition=TRUE in the manyany command, this means resampling rows of data as originally sent to manyany).
-# replace=F for PIT-permutation, replace=T for PIT-trap
-# 
-# glmm fans - Sorry, we can't verify the method for random effects models yet
-#  Probably needs resampling of random effects as well as observed data.
-#  At best is approx valid for mixed models only for conditional inference (conditional on observed random effects)
-#
-# EXAMPLES
-#
-# ft=manyany("glm",abund,data=X,y~1,family="poisson")
-# ftSoil=manyany("glm",abund,data=X,y~soil.dry,family="poisson")
-# an=anova(ft,ftSoil,p.uni="unadjusted")
-
+  #set default na.action to exclude in order to not change dimensions of anything when NA's are present
+  naOptInit = getOption("na.action")
+  options(na.action="na.exclude")
+  
   object1 = object 
   # get object 2
     dots <- list(...)
@@ -163,6 +144,7 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
     result = list(stat=stat,p=p,uni.test=statj,uni.p=pj,stat.i=stat.i,statj.i=statj.i,p.uni=p.uni,nBoot=nBoot) 
   if(p.uni=="none")
     result = list(stat=stat,p=p,stat.i=stat.i,p.uni=p.uni,nBoot=nBoot) 
+  options(na.action=naOptInit) #restore previous default for na.action
 
   class(result) = "anova.manyany"
   return(result)  
@@ -219,7 +201,7 @@ bootAnova = function(bootRows,...)
     yMat=data.frame(yMat)
   argList$object1$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
   argList$object2$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
-  
+
   stati.i  = rep(NA,nBooti)
   statj.ii = matrix(NA,argList$n.vars,nBooti)
   
@@ -260,13 +242,14 @@ bootAnova = function(bootRows,...)
     if(argList$object1$family[[1]]$family=="ordinal")
       is.zeroton = apply(yMat,2,function(x) length(table(x)))==1
     else
-      is.zeroton = apply(yMat,2,sum)==0
+      is.zeroton = apply(yMat,2,sum,na.rm=TRUE)==0
     assign(as.character(argList$object1$call[[3]]),yMat[,is.zeroton==FALSE]) 
     assign(as.character(argList$object2$call[[3]]),yMat[,is.zeroton==FALSE]) 
 
     #re-fit manyany functions and calculate test stats using the resampled yMat:
     if(sum(is.zeroton==FALSE)>0)
     {
+#      recover()  
       ft.1i=eval(argList$object1$call)
       ft.2i=eval(argList$object2$call)
       statj.ii[is.zeroton==FALSE,iBoot]=2 * ( logLik(ft.2i)-logLik(ft.1i) )

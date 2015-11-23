@@ -25,6 +25,7 @@ export(RcppVersion,
        predict.manylm,
        predict.manyglm,
        predict.traitglm,
+       print.manyany,
        print.manyglm,
        print.anova.manyany,
        print.anova.manylm, 
@@ -85,6 +86,7 @@ S3method(boxplot, mvformula)
 S3method(print, anova.manyany)
 S3method(print, anova.manyglm)
 S3method(print, anova.manylm)
+S3method(print, manyany)
 S3method(print, manyglm)
 S3method(print, mvformula)
 S3method(print, summary.manyglm)

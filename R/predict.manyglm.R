@@ -46,7 +46,8 @@ predict.manyglm=function(object,newdata = NULL,type = c("link", "response",
 	for(iVar in 1:nVar)
 	{
 	       fam = switch(object$family,
-	             "binomial"=binomial(),
+	             "binomial(link=logit)"=binomial(),
+	             "binomial(link=cloglog)"=binomial("cloglog"),
 	             "poisson"=poisson(),
 	             "gaussian"=gaussian(),
 	             "negative.binomial"=negative.binomial(theta=object$theta[iVar])

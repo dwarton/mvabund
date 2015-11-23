@@ -5,34 +5,41 @@
 
 manyglm <- function (formula, family="negative.binomial", K=1, data=NULL, subset=NULL, na.action=options("na.action"), theta.method = "PHI", model = FALSE, x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL, tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10, show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE, show.warning=FALSE, offset, ... ) {
 
-#if (data!=NULL) attach(data)
-# tasmX <- as.matrix(tasmX, "numeric")  
-# get family and link
-#fam <- call$family
-#family.char <- as.character(fam)
+# start by converting any family objects that can be handled over to character strings 
+if(class(family)=="family"){
+  if(family$family=="binomial" & family$link=="cloglog")
+    family="cloglog"
+  if(family$family=="binomial" & family$link=="logit")
+    family="binomial"
+  if(family$family=="poisson" & family$link=="log")
+    family="poisson"
+  if(family$family=="gaussian" & family$link=="identity")
+    family="gaussian"
+}
+  
 if ( is.character(family) ) {
-    if (substr(family,1,1) == "g") {
+    if (substr(family,1,3) == "gau") {
        familynum <- 0 # gaussian
        familyname <- "gaussian"
        linkfun <- 0 # not meaningful
     }   
-    else if (substr(family,1,1) == "p") {
+    else if (substr(family,1,3) == "poi") {
        familynum <- 1   #poisson
        familyname <- "poisson"
        linkfun <- 0 # not meaningful      
     }   
-    else if (substr(family,1,1) == "n") {
+    else if (substr(family,1,3) == "neg") {
        familynum <- 2  #neg bin
        familyname <- "negative.binomial"
        linkfun <- 0 # not meaningful      
     }   
-    else if (substr(family,1,1) == "b") {
+    else if (substr(family,1,3) == "bin") {
        familynum <- 3  #logistic/binomial       
        familyname <- "binomial(link=logit)"
        link = "logit"  #by default
        linkfun <- 0    #logit link
     }   
-    else if (substr(family,1,1) == "c") {
+    else if (substr(family,1,3) == "clo") {
        familynum <- 3  #binomial(cloglog)
        familyname <- "binomial(link=cloglog)"
        link = "cloglog"
