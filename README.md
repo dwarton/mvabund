@@ -1,8 +1,6 @@
 ## mvabund [![Build Status](https://travis-ci.org/aliceyiwang/mvabund.svg)](https://travis-ci.org/aliceyiwang/mvabund) [![License](http://img.shields.io/badge/license-LGPL%20%28%3E=%202.1%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/mvabund)](http://cran.rstudio.com/package=mvabund) [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](http://www.r-pkg.org/pkg/mvabund)
-<<<<<<< HEAD
 
 =======
->>>>>>> f685ba1b12b0f187d7cef11fd5155b8e1a7cf7b0
 
 Statistical Methods for Analysing Multivariate Abundance Data
 
