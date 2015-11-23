@@ -47,7 +47,11 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
     {
       if (object$family == "negbinomial" || object$family == "negative.binomial")
         object$family = negative.binomial(theta=1/object$phi)
-      else    
+      else if (object$family == "binomial(link=logit)")
+        object$family = binomial()
+      else if (object$family == "binomial(link=cloglog)")
+        object$family = binomial("cloglog")
+      else
         family = get(family, mode = "function", envir = parent.frame())
     }
     

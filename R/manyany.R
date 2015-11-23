@@ -1,4 +1,4 @@
-manyany = function(fn, yMat, formula, data, family="negative.binomial", composition = FALSE, block = NULL, get.what="details", var.power=NA, ...)
+manyany = function(fn, yMat, formula, data, family="negative.binomial", composition = FALSE, block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
 {
   #MANYANY - applies a function of your choice to each column of YMAT and computes logLik by taxon.
   # FN is a character vector giving the name of the function to be applied to each taxon.  e.g. "glm"
@@ -115,6 +115,16 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
         fam[[i.var]] = negative.binomial(10^6)
         fam[[i.var]]$family = family[[i.var]]
       }
+      else if (family[[i.var]] == "binomial(link=logit)")
+      {
+        fam[[i.var]] = binomial()
+        fam[[i.var]]$family = family[[i.var]]
+      }
+      else if (family[[i.var]] == "binomial(link=cloglog)")
+      {
+        fam[[i.var]] = binomial("cloglog")
+        fam[[i.var]]$family = family[[i.var]]
+      }
       else
       {
         fam.fn = get(fam[[i.var]], mode = "function", envir = parent.frame())        
@@ -136,15 +146,16 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
   for(i.var in 1:n.vars)
   {
     data$y = yMat[,i.var]
-    manyfit[[i.var]] = do.call(fn, list(formula=formula, family=family[[i.var]], data=data, ...)) #note use of family argument as originally specified
+    manyfit[[i.var]] = do.call(fn, list(formula=formula, family=family[[i.var]], data=data, na.action=na.action, ...)) #note use of family argument as originally specified
     logL[i.var]  = logLik(manyfit[[i.var]])
     if(is.na(logL[i.var]))
       logL[i.var] = -0.5*deviance(manyfit[[i.var]]) #just in case logL function is undefined, e.g. tweedie 
 
     if(get.what=="details"||get.what=="models")
     {
-      fits[,i.var] = fitted(manyfit[[i.var]])
-      # if(fn=="lmer")
+            fits[,i.var] = fitted(manyfit[[i.var]])
+
+          # if(fn=="lmer")
       #   etas[,i.var] = manyfit[[i.var]]@eta
       # else
       #   etas[,i.var] = predict(manyfit[[i.var]])
@@ -154,7 +165,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
                             predict(manyfit[[i.var]])
                          )
       #need to then truncate as if on logit scale...
-      if(fam[[i.var]]$family=="binomial" || fam[[i.var]]$family=="ordinal") #truncate linear predictor to more reasonable range
+      if(substr(fam[[i.var]]$family,1,3)=="bin" || fam[[i.var]]$family=="ordinal") #truncate linear predictor to more reasonable range
       {
         etas[,i.var] = pmax(etas[,i.var], fam[[i.var]]$linkfun(tol)/2)
         etas[,i.var] = pmin(etas[,i.var], fam[[i.var]]$linkfun(1-tol)/2)
@@ -186,7 +197,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       }
       if(fam[[i.var]]$family=="poisson")
         params[[i.var]] = list(q=yMat[,i.var],lambda=fits[,i.var])
-      if(fam[[i.var]]$family=="binomial")
+      if(substr(fam[[i.var]]$family,1,3)=="bin")
         params[[i.var]] = list(q=yMat[,i.var],prob=fits[,i.var],size=1)
       if(fam[[i.var]]$family=="Tweedie")
         params[[i.var]] = list(q=yMat[,i.var], power=var.power[i.var], mu=fits[,i.var], phi=summary(manyfit[[i.var]])$disp)
@@ -241,7 +252,9 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
     dimnames(resids) = yNames
     dimnames(fits)   = yNames
     dimnames(etas)   = yNames
-    object=list(logL=logL,fitted.values=fits,residuals=resids,linear.predictor=etas,family=fam, coefficients = coefs, call=call,params=params,model=model.frame(manyfit[[i.var]]), terms = terms(manyfit[[i.var]]), formula=formula, block=block, composition=composition, get.what=get.what)
+    mf = if(any(names(manyfit[[i.var]])=="data")) manyfit[[i.var]]$data else model.frame(manyfit[[i.var]])
+    object=list(logL=logL,fitted.values=fits,residuals=resids,linear.predictor=etas,family=fam, coefficients = coefs, call=call,params=params,model=mf, terms = terms(manyfit[[i.var]]), formula=formula, block=block, composition=composition, get.what=get.what)
+#    object=list(logL=logL,fitted.values=fits,residuals=resids,linear.predictor=etas,family=fam, coefficients = coefs, call=call,params=params,model=model.frame(manyfit[[i.var]]), terms = terms(manyfit[[i.var]]), formula=formula, block=block, composition=composition, get.what=get.what)
   }
   if(get.what=="models") #also return the model fits, if requested
   {
@@ -253,19 +266,19 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
 } #end manyany function
 
 
-print.manyany <- function(object, digits = max(3L, getOption("digits") - 3L),...)
+print.manyany <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
-  n.vars = dim(object$fitted)[2]
-  cat("\nCall:  ", paste(deparse(object$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
-  cat("Number of rows:\t   ", dim(object$fitted)[1], "\t Number of columns:\t   ", n.vars)
+  n.vars = dim(x$fitted)[2]
+  cat("\nCall:  ", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+  cat("Number of rows:\t   ", dim(x$fitted)[1], "\t Number of columns:\t   ", n.vars)
   cat("\n")
-  cat("Number of parameters in model:\t   ", length(unlist(object)))
+  cat("Number of parameters in model:\t   ", length(unlist(x)))
   cat("\n\n")
-  cat("Residual Deviance:\t   ", format(signif(-2*sum(object$logL), digits)))
+  cat("Residual Deviance:\t   ", format(signif(-2*sum(x$logL), digits)))
   cat("\n\n")
   cat("Dunn-Smyth Residuals:")
   cat("\n")
-  cat(summary(qnorm(as.vector(object$residuals))))
+  cat(summary(qnorm(as.vector(x$residuals))))
   cat("\n\n-")
 }
   
@@ -310,7 +323,7 @@ residuals.manyany<- function(object, ...)
         pfn = "pnbinom"
       if(family[[i.var]]$family=="poisson")
         pfn = "ppois"
-      if(family[[i.var]]$family=="binomial")
+      if(substr(family[[i.var]]$family,1,3)=="bin")
         pfn = "pbinom"
       if(family[[i.var]]$family=="gaussian")
       {

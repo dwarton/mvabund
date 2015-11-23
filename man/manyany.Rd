@@ -1,12 +1,14 @@
 \name{manyany}
 \alias{manyany}
+\alias{print.manyany}
 \title{Fitting Many Univariate Models to Multivariate Abundance Data}
 \description{
   \code{manyany} is used to fit many univariate models (GLMs, GAMs, otherwise) to high-dimensional data, such as multivariate abundance data in ecology. This is the base model-fitting function - see \code{plot.manyany} for assumption checking, and \code{anova.manyany} for significance testing.
 }
 \usage{
 manyany(fn, yMat, formula, data, family="negative.binomial", composition = FALSE, 
-block = NULL, get.what="details", var.power=NA, ...)
+block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
+\method{print}{manyany}(x, digits = max(3L, getOption("digits") - 3L), ...) 
 }
 \arguments{
   \item{fn}{a character string giving the name of the function for the univariate
@@ -34,7 +36,12 @@ block = NULL, get.what="details", var.power=NA, ...)
     predicted values and residuals in output, "models" also returns the fitted objects
     for each model, "none" returns just the log-likelihood (mostly for internal use).}
   \item{var.power}{the power parameter, if using the tweedie distribution.}
+  \item{na.action}{Default set to \code{exclude} (for details see
+    \code{\link{na.exclude}}) to avoid errors when NA's in predictors.}
   \item{\dots}{further arguments passed to the fitting function.}
+  \item{x}{an object of class "manyany", usually, a result of a call to
+  \code{\link[mvabund:manyany]{manyany}}.}
+  \item{digits}{how many digits to include in the printed anova table.}
 }
 \details{
 

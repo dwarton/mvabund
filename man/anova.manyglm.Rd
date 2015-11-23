@@ -34,8 +34,8 @@ step-down resampling procedure.
 \item{show.warning}{logical. Whether to display warning messages in the operation procedure.}
 \item{rep.seed}{logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.}
 \item{bootID}{an integer matrix where each row specifies bootstrap id's in each resampling run. When \code{bootID} is supplied, \code{nBoot} is set to the number of rows in \code{bootID}. Default is \code{NULL}.}
-\item{x}{an object of class "summary.manyglm", usually, a result of a call to
-\code{\link[mvabund:summary.manyglm]{summary.manyglm}}.}
+\item{x}{an object of class "anova.manyglm", usually, a result of a call to
+\code{\link[mvabund:anova.manyglm]{anova.manyglm}}.}
 }
 
 \details{

@@ -15,19 +15,19 @@ residuals.manyglm<- function(object, ...)
     for(i.var in 1:n.vars)
       params[[i.var]]=list(q=object$y[,i.var],mu=object$fitted[,i.var],size=object$theta[i.var])
   } 
-  if(object$family=="poisson")
+  else if(object$family=="poisson")
   {
       pfn = "ppois"
       for(i.var in 1:n.vars)
         params[[i.var]]=list(q=object$y[,i.var],lambda=object$fitted[,i.var])
   }    
-  if(object$family=="binomial")
+  else if (substr(object$family,1,3) == "bin" || "clo")
   {
     pfn = "pbinom"
     for(i.var in 1:n.vars)
       params[[i.var]]=list(q=object$y[,i.var], size=1, prob=object$fitted[,i.var] )
   }
-  if(object$family=="gaussian")
+  else if(object$family=="gaussian")
   {
     pfn = "pnorm"
     df.residual = n.rows - dim(coef(object))[1]
@@ -35,7 +35,8 @@ residuals.manyglm<- function(object, ...)
     for(i.var in 1:n.vars)
       params[[i.var]] = list(q=object$y[,i.var], mu=object$fitted[,i.var], sd=sqrt(sigma2[i.var]))
   } 
-
+  else stop (paste("'family'", family, "not recognized"))
+  
   resids=matrix(NA,n.rows,n.vars)
   dimnames(resids)[[1]] = rownames(object$y)
   dimnames(resids)[[2]] = names(object$y)
