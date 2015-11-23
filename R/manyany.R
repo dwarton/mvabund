@@ -266,19 +266,19 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
 } #end manyany function
 
 
-print.manyany <- function(object, digits = max(3L, getOption("digits") - 3L),...)
+print.manyany <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
-  n.vars = dim(object$fitted)[2]
-  cat("\nCall:  ", paste(deparse(object$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
-  cat("Number of rows:\t   ", dim(object$fitted)[1], "\t Number of columns:\t   ", n.vars)
+  n.vars = dim(x$fitted)[2]
+  cat("\nCall:  ", paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+  cat("Number of rows:\t   ", dim(x$fitted)[1], "\t Number of columns:\t   ", n.vars)
   cat("\n")
-  cat("Number of parameters in model:\t   ", length(unlist(object)))
+  cat("Number of parameters in model:\t   ", length(unlist(x)))
   cat("\n\n")
-  cat("Residual Deviance:\t   ", format(signif(-2*sum(object$logL), digits)))
+  cat("Residual Deviance:\t   ", format(signif(-2*sum(x$logL), digits)))
   cat("\n\n")
   cat("Dunn-Smyth Residuals:")
   cat("\n")
-  cat(summary(qnorm(as.vector(object$residuals))))
+  cat(summary(qnorm(as.vector(x$residuals))))
   cat("\n\n-")
 }
   
