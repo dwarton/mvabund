@@ -50,11 +50,13 @@ summary.manyglm <- function(object, resamp="pit.trap", test="wald", p.uni="none"
         if (any(w < 0)) stop("negative 'weights' not allowed")
     }
 
-    if (object$family == "poisson") familynum <- 1
-    else if (object$family == "negative.binomial") familynum <- 2
-    else if (object$family == "binomial") familynum <- 3 
-    else stop("'family' not defined. Choose one of 'poisson', 'negative.binomial', 'binomial' for an manyglm object") 
+    # the following values need to be converted to integer types  
 
+        if (substr(object$family,1,1) == "p") familynum <- 1 
+    else if (substr(object$family,1,1) == "n") familynum <- 2
+    else if (substr(object$family,1,1)=="b") familynum <- 3
+    else stop("'family' not defined. See ?manyglm for currently available options.") 
+    
     if(object$theta.method == "ML") methodnum <- 0
     else if (object$theta.method == "Chi2") methodnum <- 1 
     else if (object$theta.method == "PHI") methodnum <- 2 
