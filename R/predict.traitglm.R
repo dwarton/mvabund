@@ -16,7 +16,7 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
   else
   {
     if(is.null(object$formula))
-      R.des.test = get.polys(newR)
+      R.des.test = get.polys(newR, object$R.des)
     else
       R.des.test = list(X=newR)
   }
