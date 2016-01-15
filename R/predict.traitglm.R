@@ -61,6 +61,10 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
         object$family = binomial()
       else if (object$family == "binomial(link=cloglog)")
         object$family = binomial("cloglog")
+      else if (object$family == "poisson")
+        object$family = poisson()
+      else if (object$family == "gaussian")
+        object$family = gaussian()
       else
         family = get(family, mode = "function", envir = parent.frame())
     }

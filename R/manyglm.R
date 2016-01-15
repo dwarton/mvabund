@@ -48,8 +48,8 @@ if ( is.character(family) ) {
     }   
     else stop (paste("'family'", family, "not recognized"))
 }
-else stop ("Please specify a family function with a character string. manyglm supports the following members of the exponential family: 'gaussian', 'poisson', 'binomial', 'cloglog', 'negative.binomial', distributions.") 
-
+else stop("'family' not recognised. See ?manyglm for currently available options.") 
+  
 #stop ("Current manyglm only supports the following link function for binary binomial regression: 'logit', 'cloglog'.") 
 
 ret.x <- x
