@@ -379,7 +379,7 @@ default.plot.manyglm  <- function(x, which = 1, res.type="pit.norm", caption = c
 	  leg <- substr(var.names, 1,(8/ncoll)+1)
        }               
       #SW - Reset mfrow to be approprite for one plot, set legend position    
-      if (length(which)==1) {
+    if (length(which)==1) {
 #          dev.off()
 	  if (legend == TRUE) {
 #             dev.new(height=6, width=8) # added for smaller window size    
@@ -422,8 +422,9 @@ default.plot.manyglm  <- function(x, which = 1, res.type="pit.norm", caption = c
           
           rtmp <- c(r)
           r0 <- rtmp[!yh.is.zero]
-#          ylim <- range(r0, na.rm = TRUE)
-          ylim <- range(max(abs(r0))*c(-1,1), na.rm = TRUE) #DW, 10/02/15: to make ylims symmetric about zero
+#          ylim <- range(max(range(abs(r0), finite = TRUE)) * c(-1, 1), na.rm = TRUE) #DW, 10/02/15: to make ylims symmetric about zero
+          ylim <- max( range(abs(r0), finite = TRUE, na.rm=TRUE) ) * c(-1, 1) #DW, 10/02/15: to make ylims symmetric about zero
+          # DW, 21/01/16: use of range suggested by Eduard Szocs to remove Inf values
           
           colortmp <- rep(color, each=n)
           color0 <- colortmp[!yh.is.zero]
@@ -462,10 +463,11 @@ default.plot.manyglm  <- function(x, which = 1, res.type="pit.norm", caption = c
       if (show[2]) { 
 #         rs.is.zero <- rs < (1e-9) #DW, 23/10/14: this seems to be an error - why would r near zero be a problem?
          rstmp <- c(rs)
-         ylim <- range(max(abs(rstmp))*c(-1,1), na.rm = TRUE) #DW, 23/10/14: to make ylims symmetric about zero
-#	 ylim[2] <- ylim[2] + diff(ylim) * 0.075 #DW, 23/10/14: I don't see any point for this line
+#         ylim <- range(max(range(abs(rstmp), finite = TRUE)) * c(-1, 1), na.rm = TRUE) #DW, 23/10/14: to make ylims symmetric about zero
+         ylim <- max( range(abs(rstmp), finite = TRUE, na.rm=TRUE) ) * c(-1, 1) #DW, 23/10/14: to make ylims symmetric about zero
+         #DW, 21/1/16: finite=TRUE added as suggested by Eduard Szocs 
    	 qq <- do.call( "qqnorm", c(list(rstmp, main = main, ylab = ylab23, ylim=ylim, col=color, asp=1, cex.lab=1.5, cex=1.5, cex.axis=1.5, cex.main=1.5, lwd=2), dots))
-	 if (qqline) qqline(rstmp, lty = 3, col = "gray50", lwd=2)          
+	 if (qqline) abline(c(0,1), lty = 3, col = "gray50", lwd=2)          
          # Use vector built of transposed x bzw y in order to plot
 	 # in the right colors.
 	 if (one.fig) do.call( "title", c(list(sub = sub.caption), dots))

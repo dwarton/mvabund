@@ -120,7 +120,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
         fam[[i.var]] = binomial()
         fam[[i.var]]$family = family[[i.var]]
       }
-      else if (family[[i.var]] == "binomial(link=cloglog)")
+      else if (family[[i.var]] == "binomial(link=cloglog)" || family[[i.var]] == "cloglog")
       {
         fam[[i.var]] = binomial("cloglog")
         fam[[i.var]]$family = family[[i.var]]

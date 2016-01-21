@@ -14,13 +14,23 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
   if(is.null(newR))
     R.des.test = object$R.des
   else
-    R.des.test = get.polys( newR, object$R.des )
-  
+  {
+    if(is.null(object$formula))
+      R.des.test = get.polys(newR, object$R.des)
+    else
+      R.des.test = list(X=newR)
+  }
+
   if(is.null(newQ))
     Q.des.test = object$Q.des
   else
-    Q.des.test = get.polys( newQ, object$Q.des )
-  
+  {
+    if(is.null(object$formula))
+      Q.des.test = get.polys(newQ, object$Q.des)
+    else
+      Q.des.test = list(X=newQ)
+  }
+
   if(is.null(newL))
     newL = object$L
   
@@ -51,6 +61,10 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
         object$family = binomial()
       else if (object$family == "binomial(link=cloglog)")
         object$family = binomial("cloglog")
+      else if (object$family == "poisson")
+        object$family = poisson()
+      else if (object$family == "gaussian")
+        object$family = gaussian()
       else
         family = get(family, mode = "function", envir = parent.frame())
     }
