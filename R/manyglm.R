@@ -7,13 +7,14 @@ manyglm <- function (formula, family="negative.binomial", K=1, data=NULL, subset
 
 # start by converting any family objects that can be handled over to character strings 
 if(class(family)=="family"){
-  if(family$family=="binomial" & family$link=="cloglog")
+  fam = family
+  if(fam$family=="binomial" & fam$link=="cloglog")
     family="cloglog"
-  if(family$family=="binomial" & family$link=="logit")
+  if(fam$family=="binomial" & fam$link=="logit")
     family="binomial"
-  if(family$family=="poisson" & family$link=="log")
+  if(fam$family=="poisson" & fam$link=="log")
     family="poisson"
-  if(family$family=="gaussian" & family$link=="identity")
+  if(fam$family=="gaussian" & fam$link=="identity")
     family="gaussian"
 }
   
