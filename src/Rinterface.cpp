@@ -84,6 +84,7 @@ List RtoGlmAnova(const List & sparam,
                  RcppGSL::Matrix & X,
                  RcppGSL::Matrix & O,
                  RcppGSL::Matrix & isXvarIn,
+                 RcppGSL::Matrix & exPitRes,
                  Rcpp::Nullable<RcppGSL::Matrix> & bID,
                  RcppGSL::Vector & lambda)
 {
@@ -118,6 +119,9 @@ List RtoGlmAnova(const List & sparam,
   
     tm.anova_lambda = gsl_vector_alloc(nLambda);
     gsl_vector_memcpy(tm.anova_lambda, lambda);
+
+    tm.exPitRes = gsl_matrix_alloc(nRows, nVars);
+    gsl_matrix_memcpy(tm.exPitRes, exPitRes);
 
     tm.nRows = nRows;
     tm.nVars = nVars;
@@ -176,6 +180,7 @@ List RtoGlmAnova(const List & sparam,
     myTest.releaseTest();
     glmPtr[mtype]->releaseGlm();
     gsl_vector_free(tm.anova_lambda);
+    gsl_matrix_free(tm.exPitRes);
 
     return rs;
 }
