@@ -325,8 +325,8 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
     ######## call resampTest Rcpp #########   
 #        val <- .Call("RtoGlmAnova", modelParam, testParams, Y, X, O,
  #                XvarIn, bootID, shrink.param, PACKAGE="mvabund")
-    exPitRes = Y
-    val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, exPitRes, bootID, shrink.param)
+
+    val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, bootID, shrink.param)
 
     # prepare output summary
     table <- data.frame(resdf, c(NA, val$dfDiff[ord]), 

@@ -142,8 +142,6 @@ typedef struct MethodStruc {
     gsl_vector *smry_lambda;
     gsl_vector *anova_lambda;
     double tol;
-
-    gsl_matrix *exPitRes;
 } mv_Method;
 
 // used for manylm only

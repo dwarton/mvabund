@@ -23,8 +23,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // RtoGlmAnova
-List RtoGlmAnova(const List& sparam, const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& O, RcppGSL::Matrix& isXvarIn, RcppGSL::Matrix& exPitRes, Rcpp::Nullable<RcppGSL::Matrix>& bID, RcppGSL::Vector& lambda);
-RcppExport SEXP mvabund_RtoGlmAnova(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP isXvarInSEXP, SEXP exPitResSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
+List RtoGlmAnova(const List& sparam, const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& O, RcppGSL::Matrix& isXvarIn, Rcpp::Nullable<RcppGSL::Matrix>& bID, RcppGSL::Vector& lambda);
+RcppExport SEXP mvabund_RtoGlmAnova(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -34,10 +34,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< RcppGSL::Matrix& >::type X(XSEXP);
     Rcpp::traits::input_parameter< RcppGSL::Matrix& >::type O(OSEXP);
     Rcpp::traits::input_parameter< RcppGSL::Matrix& >::type isXvarIn(isXvarInSEXP);
-    Rcpp::traits::input_parameter< RcppGSL::Matrix& >::type exPitRes(exPitResSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<RcppGSL::Matrix>& >::type bID(bIDSEXP);
     Rcpp::traits::input_parameter< RcppGSL::Vector& >::type lambda(lambdaSEXP);
-    __result = Rcpp::wrap(RtoGlmAnova(sparam, rparam, Y, X, O, isXvarIn, exPitRes, bID, lambda));
+    __result = Rcpp::wrap(RtoGlmAnova(sparam, rparam, Y, X, O, isXvarIn, bID, lambda));
     return __result;
 END_RCPP
 }
