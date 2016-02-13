@@ -84,7 +84,10 @@ List RtoGlmAnova(const List & sparam,
                  RcppGSL::Matrix & X,
                  RcppGSL::Matrix & O,
                  RcppGSL::Matrix & isXvarIn,
-                 RcppGSL::Matrix & exPitRes,
+                 RcppGSL::Matrix & P1,
+                 RcppGSL::Matrix & P2,
+                 RcppGSL::Matrix & P3,
+                 RcppGSL::Matrix & P4,
                  Rcpp::Nullable<RcppGSL::Matrix> & bID,
                  RcppGSL::Vector & lambda)
 {
@@ -110,6 +113,7 @@ List RtoGlmAnova(const List & sparam,
     tm.punit = as<unsigned int>(rparam["punit"]);
     tm.showtime = as<unsigned int>(rparam["showtime"]);
     tm.warning = as<unsigned int>(rparam["warning"]);   
+    tm.isExtPit = as<unsigned int>(rparam["isExtPit"]);
 
     unsigned int nRows = Y.nrow();
     unsigned int nVars = Y.ncol();
@@ -120,8 +124,18 @@ List RtoGlmAnova(const List & sparam,
     tm.anova_lambda = gsl_vector_alloc(nLambda);
     gsl_vector_memcpy(tm.anova_lambda, lambda);
 
-    tm.exPitRes = gsl_matrix_alloc(nRows, nVars);
-    gsl_matrix_memcpy(tm.exPitRes, exPitRes);
+    unsigned int i;
+    GrpMat *extPitRes=NULL;
+    if ( tm.isExtPit == TRUE ) {
+       extPitRes = (GrpMat *)malloc( nModels*sizeof(GrpMat) );
+       // P1 is nest in the original model, P2 is nested in P1, P3 is nested in P2 
+       for (i=0; i<nModels; i++)
+           extPitRes[i].matrix = gsl_matrix_alloc(nRows, nVars);
+       gsl_matrix_memcpy(extPitRes[0].matrix, P1);
+       gsl_matrix_memcpy(extPitRes[1].matrix, P2);
+       gsl_matrix_memcpy(extPitRes[2].matrix, P3);
+       gsl_matrix_memcpy(extPitRes[3].matrix, P4);
+    }
 
     tm.nRows = nRows;
     tm.nVars = nVars;
@@ -149,7 +163,7 @@ List RtoGlmAnova(const List & sparam,
     }  
 
     // resampling test
-    myTest.anova(glmPtr[mtype],isXvarIn);
+    myTest.anova(glmPtr[mtype],isXvarIn, extPitRes);
 //    myTest.displayAnova();
 
     // Timing
@@ -180,7 +194,13 @@ List RtoGlmAnova(const List & sparam,
     myTest.releaseTest();
     glmPtr[mtype]->releaseGlm();
     gsl_vector_free(tm.anova_lambda);
-    gsl_matrix_free(tm.exPitRes);
+
+    // free tm.extPitRes memory if allocated
+    if ( tm.isExtPit == TRUE ) {
+       for ( i=0; i<nModels; i++ )
+           gsl_matrix_free (extPitRes[i].matrix);
+       free(extPitRes);
+    }
 
     return rs;
 }

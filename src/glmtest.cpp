@@ -248,7 +248,7 @@ int GlmTest::summary(glm *fit)
 }
 
 
-int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) 
+int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn, GrpMat *extPitRes) 
 {
     // Assume the models have been already sorted (in R)
     Xin = isXvarIn;
@@ -316,6 +316,10 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn)
         // See "FW: Doubts R package "mvabund" (12/14/11)
         teststat = gsl_matrix_row(anovaStat, (i-1));
         PtrNull[mtype]->regression(fit->Yref, X0, fit->Oref, NULL); 
+        if ( tm->isExtPit == TRUE ) {
+           // Replace the original PitRes with the exteral one by force
+           gsl_matrix_memcpy(PtrNull[mtype]->PitRes, extPitRes[ID0].matrix); 
+        }
         if (tm->test == SCORE) {
            lambda = gsl_vector_get(tm->anova_lambda, ID0);
            GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
@@ -323,6 +327,10 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn)
         }
         else if (tm->test==WALD) {
            PtrAlt[mtype]->regression(fit->Yref, X1, fit->Oref, NULL);
+           if ( tm->isExtPit == TRUE ) {
+              // Replace the original PitRes with the exteral one by force
+              gsl_matrix_memcpy(PtrAlt[mtype]->PitRes, extPitRes[ID1].matrix); 
+           }
            L1 = gsl_matrix_alloc (nP1-nP0, nP1);
            tmp1 = gsl_matrix_alloc (nParam, nP1);
            subX(L, &ref1.vector, tmp1);
@@ -335,6 +343,10 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn)
            BetaO = gsl_matrix_alloc(nP1, nVars);
            addXrow2(PtrNull[mtype]->Beta, &ref1.vector, BetaO); 
            PtrAlt[mtype]->regression(fit->Yref, X1, fit->Oref, BetaO);
+           if ( tm->isExtPit == TRUE ) {
+              // Replace the original PitRes with the exteral one by force
+              gsl_matrix_memcpy(PtrAlt[mtype]->PitRes, extPitRes[ID1].matrix); 
+           }
            GeeLR(PtrAlt[mtype], PtrNull[mtype], &teststat.vector); 
         }
 

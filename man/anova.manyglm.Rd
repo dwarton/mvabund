@@ -1,15 +1,16 @@
 \name{anova.manyglm}
 \alias{anova.manyglm}
 \alias{print.anova.manyglm}
-\title{Analysis of Deviance for Multivariate Generalized Linear Model
-Fits for Abundance Data}
+\title{Analysis of Deviance for Multivariate Generalized Linear Model Fits for Abundance Data}
 \description{Compute an analysis of deviance table for one or more multivariate
 generalized linear model fits.}
 \usage{
  %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%%
 \method{anova}{manyglm}(object, \dots, resamp="pit.trap", test="LR", p.uni="none",
-    nBoot=999, cor.type=object$cor.type, block=NULL, show.time="total",
-    show.warning=FALSE, rep.seed=FALSE, bootID=NULL) 
+        nBoot=999, cor.type=object$cor.type, block=NULL, show.time="total",
+        show.warning=FALSE, rep.seed=FALSE, bootID=NULL, ExtPit = FALSE, 
+        P1 = object$PIT.residuals, P2 = object$PIT.residuals, 
+        P3 = object$PIT.residuals, P4 = object$PIT.residuals ) 
 \method{print}{anova.manyglm}(x, \dots) 
 }
 \arguments{
@@ -36,6 +37,12 @@ step-down resampling procedure.
 \item{bootID}{an integer matrix where each row specifies bootstrap id's in each resampling run. When \code{bootID} is supplied, \code{nBoot} is set to the number of rows in \code{bootID}. Default is \code{NULL}.}
 \item{x}{an object of class "anova.manyglm", usually, a result of a call to
 \code{\link[mvabund:anova.manyglm]{anova.manyglm}}.}
+\item{ExtPit}{TRUE or FALSE. Whether to input PIT.residuals for PIT-trap under the null.}
+\item{P1}{External PIT.residauls for the original model (object)}
+\item{P2}{External PIT.residauls for the null nested in the P1 model}
+\item{P3}{External PIT.residauls for the null nested in the p2 model}
+\item{P4}{External PIT.residauls for the null (intercept) nested in the p3 model}
+
 }
 
 \details{

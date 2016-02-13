@@ -136,6 +136,7 @@ typedef struct MethodStruc {
     unsigned int nParam;
     unsigned int showtime;
     unsigned int warning;
+    unsigned int isExtPit;
 
     // numeric
     double shrink_param;
@@ -143,7 +144,6 @@ typedef struct MethodStruc {
     gsl_vector *anova_lambda;
     double tol;
 
-    gsl_matrix *exPitRes;
 } mv_Method;
 
 // used for manylm only
@@ -471,7 +471,7 @@ class GlmTest
 	    int summary(glm *);
 	    void displaySmry(glm *);
 
-	    int anova(glm *, gsl_matrix *);
+	    int anova(glm *, gsl_matrix *, GrpMat *extPitRes);
             void displayAnova(void);
             
     private:

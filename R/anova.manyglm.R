@@ -4,7 +4,7 @@
 # Last modified: 24-Mar-2015
 ###############################################################################
 
-anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none", nBoot=999, cor.type=object$cor.type, block = NULL, show.time="total", show.warning=FALSE, rep.seed=FALSE, bootID=NULL)
+anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none", nBoot=999, cor.type=object$cor.type, block = NULL, show.time="total", show.warning=FALSE, rep.seed=FALSE, bootID=NULL, ExtPit=FALSE, P1=object$PIT.residuals, P2=object$PIT.residuals, P3=object$PIT.residuals, P4=object$PIT.residuals)
 {
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -187,7 +187,7 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
     # construct for param list     
     modelParam <- list(tol=object$tol, regression=familynum, link=linkfun, maxiter=object$maxiter, maxiter2=object$maxiter2, warning=warn, estimation=methodnum, stablizer=FALSE, n=object$K)
     # note that nboot excludes the original data set
-    testParams <- list(tol=object$tol, nboot=nBoot, cor_type=corrnum, test_type=testnum, resamp=resampnum, reprand=rep.seed, punit=pu, showtime=st, warning=warn)
+    testParams <- list(tol=object$tol, nboot=nBoot, cor_type=corrnum, test_type=testnum, resamp=resampnum, reprand=rep.seed, punit=pu, showtime=st, warning=warn, isExtPit=as.integer(ExtPit) )
     if(is.null(object$offset)) O <- matrix(0, nrow=nRows, ncol=nVars)
     else O <- as.matrix(object$offset)
     # ANOVA
@@ -322,11 +322,21 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
         ord <- (nModels-1):1
     }
 
-    ######## call resampTest Rcpp #########   
-#        val <- .Call("RtoGlmAnova", modelParam, testParams, Y, X, O,
- #                XvarIn, bootID, shrink.param, PACKAGE="mvabund")
-    exPitRes = Y
-    val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, exPitRes, bootID, shrink.param)
+   #############################################
+   # Input PitRes for Pit-trap
+   #############################################
+   if ( ExtPit == TRUE ) {
+      if ( nModels != 4 ) stop("The modified PitTrap test is designed for Tamanaia data set, and only supports 4 nested models.")
+#   if ( P2 == NULL ) stop("Supply P2 matrix") 
+#   if ( P3 == NULL ) stop("Supply P3 matrix")
+#   if ( P4 == NULL ) stop("Supply P4 matrix")
+      if ( (nrow(P2)!=nRows) || (ncol(P2)!=nVars) ) stop ("P2 size not right ") 
+      if ( (nrow(P3)!=nRows) || (ncol(P3)!=nVars) ) stop ("P3 size not right ")
+      if ( (nrow(P4)!=nRows) || (ncol(P4)!=nVars) ) stop ("P4 size not right ")
+   }
+   val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, P1, P2, P3, P4, bootID, shrink.param)
+    
+   #############################################
 
     # prepare output summary
     table <- data.frame(resdf, c(NA, val$dfDiff[ord]), 
