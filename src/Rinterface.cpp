@@ -91,6 +91,7 @@ List RtoGlmAnova(const List & sparam,
     reg_Method mm;
     mm.tol = as<double>(sparam["tol"]);
     mm.model = as<unsigned int>(sparam["regression"]);
+    mm.speclink = as<unsigned int>(sparam["link"]);
     mm.estiMethod = as<unsigned int>(sparam["estimation"]);
     mm.varStab = as<unsigned int>(sparam["stablizer"]);   
     mm.n = as<unsigned int>(sparam["n"]);   
@@ -247,6 +248,7 @@ List RtoGlmSmry(const List & sparam,
     reg_Method mm;
     mm.tol = as<double>(sparam["tol"]);
     mm.model = as<unsigned int>(sparam["regression"]);
+    mm.speclink = as<unsigned int>(sparam["link"]);
     mm.estiMethod = as<unsigned int>(sparam["estimation"]);
     mm.varStab = as<unsigned int>(sparam["stablizer"]);
     mm.n = as<unsigned int>(sparam["n"]);

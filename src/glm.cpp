@@ -18,6 +18,7 @@ glm::glm(const reg_Method *mm)
      maxth = 100;
      n=mmRef->n;
      speclink = mmRef->speclink;
+//printf("link function = %d", speclink); 
      maxiter = mmRef->maxiter;
      maxiter2 = mmRef->maxiter2;
      // Error terms

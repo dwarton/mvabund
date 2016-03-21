@@ -157,7 +157,7 @@ summary.manyglm <- function(object, resamp="pit.trap", test="wald", p.uni="none"
     else if (corrnum == 0) shrink.param <- c(rep(1,nParam+2))
     else if (corrnum == 1) shrink.param <- c(rep(0,nParam+2))
     
-    modelParam <- list(tol=tol, regression=familynum, estimation=methodnum, stablizer=0, n=object$K, maxiter=object$maxiter, maxiter2=object$maxiter2, warning=warn)
+    modelParam <- list(tol=tol, regression=familynum, link=linkfun, estimation=methodnum, stablizer=0, n=object$K, maxiter=object$maxiter, maxiter2=object$maxiter2, warning=warn)
     # note that nboot excludes the original dataset
     testParams <- list(tol=tol, nboot=nBoot-1, cor_type=corrnum, test_type=testnum, resamp=resampnum, reprand=rep.seed, punit=pu, showtime=st, warning=warn)
     if(is.null(object$offset)) O <- matrix(0, nrow=nRows, ncol=nVars)

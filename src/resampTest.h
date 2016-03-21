@@ -65,6 +65,7 @@
 #define NBIN 2
 #define BIN 3
 // link function
+#define LOGIT 0
 #define CLOGLOG 1
 // shrinkage
 #define NOSHRINK 0
