@@ -17,12 +17,13 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     can be coerced to that class): a symbolic description of the
     model to be fitted.  The details of model specification are given
     under Details.}
-  \item{family}{a description of the error distribution function to be used 
-    in the model. At the moment, this must be a character string naming one 
-    of the following members of the exponential family: 'gaussian', 'poisson',
-    'binomial', 'negative.binomial'. Further improvement will include options
-    of specifying the link function and calling to a family function defined 
-    in \code{\link{family}}.
+  \item{family}{a description of the distribution function to be used in the
+    in the model. The default is negative binomial regression (using a log
+    link, with unknown overdispersion parameter), the following family
+    functions are also accepted: binomial(), binomial(link="cloglog"),
+    poisson(), which can also be specified using character strings as
+    'binomial', 'cloglog' and 'poisson', respectively. In future we hope
+    to include other family functions as described in \code{\link{family}}.
    }
 \item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
    \item{data}{an optional data frame, list or environment (or object
@@ -87,9 +88,9 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
 
 \code{manyglm} is used to calculate the parameter estimates of generalised linear models fitted to each of many variables simultaneously as in Warton et. al. (2012) and Wang et.al.(2012). Models for \code{manyglm} are specified symbolically. For details on how to specify a formula see the details section of \code{\link{lm}} and \code{\link{formula}}.
 
-Generalised linear models are designed for non-normal data for which a distribution can be specified that offers a reasonable model for data, as specified using the argument \code{family}. The \code{manyglm} function currently only accepts a character argument that takes one of three possible values. Count data can be analysed using \code{family="poisson"} if the data is not "overdispersed" (that is, if the variance is not larger than the mean), although for multivariate abundance data it has been shown that the negative binomial distribution (\code{family="negative.binomial"}) is a good choice of model for counts (Warton (2005)). In both cases, a log-link is used. For binary (presence/absence) data, \code{family="binomial"} should be used, which uses a logit-link ("logistic regression"). If another link function or family is desired, this can be specified using the \code{\link{manyany}} function, which accepts regular \code{\link{family}} arguments.
+Generalised linear models are designed for non-normal data for which a distribution can be specified that offers a reasonable model for data, as specified using the argument \code{family}. The \code{manyglm} function currently handles count and binary data, and accepts either a character argument or a family argument for common choices of family. For binary (presence/absence) data, \code{family=binomial()} can be used for logistic regression (logit link, "logistic regression"), or the complementary log-log link can be used \code{family=binomial("cloglog")}, arguably a better  choice for presence-absence data. Poisson regression \code{family=poisson()} can be used for counts that are not "overdispersed" (that is, if the variance is not larger than the mean), although for multivariate abundance data it has been shown that the negative binomial distribution (\code{family="negative.binomial"}) is usually a better choice (Warton 2005). In both cases, a log-link is used. If another link function or family is desired, this can be specified using the \code{\link{manyany}} function, which accepts regular \code{\link{family}} arguments.
 
-The negative binomial function requires knowledge of the overdispersion parameter (\code{theta}) in order to fit a generalised linear model. However, it is usual not to have knowledge of the value of \code{theta}. So we estimate a separate \code{theta} for each variable from the data. The method of estimating \code{theta} is controlled by \code{theta.method} for negative binomial distributions. 
+In negative binomial regression, the overdispersion parameter (\code{theta}) is estimated separately for each variable from the data, as controlled by \code{theta.method} for negative binomial distributions. We iterate between updates of \code{theta} and generalised linear model updates for regression parameters, as many as \code{maxiter2} times.
 
 %If \code{family=quasipoisson} is used (that is, the mean-variance relationship
 %is V=phi*m), \code{phi} can be estimated from data as for
