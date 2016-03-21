@@ -70,8 +70,7 @@ Multivariate test statistics are constructed using one of three methods: a log-l
 The default Wald test statistic makes use of a generalised estimating equations (GEE) approach, estimating the covariance matrix of parameter estimates using a sandwich-type estimator that assumes the mean-variance relationship in the data is correctly specified and that there is an unknown but constant correlation across all observations. Such assumptions allow the test statistic to account for correlation between variables but to do so in a more efficient way than traditional GEE sandwich estimators (Warton 2011). The common correlation matrix is estimated from standardized Pearson residuals, and the method specified by \code{cor.type} is used to adjust for high dimensionality. 
 
 The Wald statistic has problems for count data and presence-absence 
-data when there are zero parameters, so is not recommended for multi-sample 
-tests, where such situations are common. 
+data when there are estimated means at zero (which usually means very large parameter estimates, check for this using \code{coef}). In such instances Wald statistics should not be used, Score or LR should do the job. 
 
 % By default, \code{anova.manyglm} tests hypotheses concerning mean (absolute) abundance, but it is also possible to test hypotheses concerning community composition using the argument \code{compositional=TRUE}, when analysing count data, as in Warton and Guttorp (2007). This constructs Wald statistics to test hypotheses concerning relative abundance not absolute abundance, and the parameters that are returned in the fitted model are for the relative change in abundance of one variable as compared to another (as compared to the last abundance variable in the mvabund array).
 
