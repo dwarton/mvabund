@@ -116,7 +116,7 @@ if ( familynum==3 || familynum==4 ) {
 
 # Obtain regression parameters
 if (familyname=="gaussian") { 
-    stop("Please use manylm to fit Gaussian")
+    stop("Please use manylm to fit Guassian")
 #   z <- manylm(formula, data=data, subset=subset, na.action=na.action, model=model, x=x, y =y, qr=qr, cor.type=cor.type, shrink.param=shrink.param, tol=tol, ...)
 #    z$family <- "gaussian"
 #    z$formula <- formula
