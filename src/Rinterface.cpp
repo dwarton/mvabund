@@ -323,8 +323,8 @@ List RtoGlmSmry(const List & sparam,
     RcppGSL::VectorView signi = gsl_vector_subvector(&stat.vector, 1, nParam);
     RcppGSL::VectorView Psign = gsl_vector_subvector(&Pstat.vector, 1, nParam);
 
-    RcppGSL::MatrixView usig = gsl_matrix_submatrix(myTest.smryStat, 1,1,nVars,nVars);
-    RcppGSL::MatrixView uPsig= gsl_matrix_submatrix(myTest.Psmry, 1,1,nVars,nVars);
+    RcppGSL::MatrixView usig = gsl_matrix_submatrix(myTest.smryStat, 1,1,nParam,nVars);
+    RcppGSL::MatrixView uPsig= gsl_matrix_submatrix(myTest.Psmry, 1,1,nParam,nVars);
 
     List rs = List::create(
 	Named("multstat" ) = gsl_vector_get(&mult.vector, 0),
