@@ -171,6 +171,7 @@ int GlmTest::summary(glm *fit)
     clock_t clk_start=clock();
 
     for ( unsigned int i=0; i<tm->nboot; i++) {        
+        nSamp++;
         if ( tm->resamp==CASEBOOT ) 
              resampSmryCase(fit,bY,GrpXs,bO,i);
         else resampNonCase(fit, bY, i);
@@ -214,7 +215,6 @@ int GlmTest::summary(glm *fit)
            if ( *buj >= *suj ) *puj=*puj+1;
            calcAdjustP(tm->punit, nVars, buj+1, suj+1, puj+1, sortid[k]);
         } // end for j loop
-        nSamp++;
         // Prompts
         if ((tm->showtime==TRUE)&(i%100==0)) {
            diff=(float)(clock()-clk_start)/(float)CLOCKS_PER_SEC;
@@ -231,6 +231,7 @@ int GlmTest::summary(glm *fit)
            reinforceP( puj, nVars, sortid[k] );
     }  }
     // p = (#exceeding observed stat + 1)/(#nboot+1)
+//    printf("tm->nboot=%d, nSamp=%d\n", tm->nboot, nSamp);
     gsl_matrix_add_constant (Psmry, 1.0);
     gsl_matrix_scale (Psmry, (double)1.0/(nSamp+1));
 
@@ -370,6 +371,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn)
            printf("Resampling begins for test %d.\n", i);
         for (j=0; j<tm->nboot; j++) {	
 //            printf("simu %d :", j);
+	    nSamp++;
 	    gsl_vector_set_zero (bStat);
 	    if ( tm->resamp == CASEBOOT ) {
                 resampAnovaCase(PtrAlt[mtype],bY,X1,bO,j);
@@ -405,7 +407,6 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn)
            if ( *(buj) > (*(suj)-1e-8) ) *puj=*puj+1;
            // ------ get univariate counts ---------//            
            calcAdjustP(tm->punit,nVars,buj+1,suj+1,puj+1,sortid);
-	   nSamp++;
            // Prompts
            if ((tm->showtime==TRUE)&(j%100==0)) {
               dif = (float)(clock() - clk_start)/(float)CLOCKS_PER_SEC;

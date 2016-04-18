@@ -302,7 +302,7 @@ int AnovaTest::resampTest(void)
    unsigned int sid, sid0;
    double *pj;  
    for (i=0; i<nModels-1; i++) { 
-        Pmultstat[i]=(double) Pmultstat[i]/nSamp;
+        Pmultstat[i]=(double) (Pmultstat[i]+1)/(nSamp+1); // adjusted with +1
         pj = gsl_matrix_ptr (Pstatj, i, 0);
         if ( mmRef->punit == FREESTEP ){ 
            for (j=1; j<nVars; j++){
@@ -319,7 +319,7 @@ int AnovaTest::resampTest(void)
 	   }  
         }
         for (j=0; j<nVars; j++)
-            *(pj+j) = (double)*(pj+j)/nSamp; 
+            *(pj+j) = (double)(*(pj+j)+1)/(nSamp+1);  // adjusted with +1 
     }
 
    // free memory

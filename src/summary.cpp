@@ -341,8 +341,8 @@ int Summary::resampTest(void)
     } 
    else if ( mmRef->resamp == PERMUTE ) { 
        gsl_matrix_add_constant (Punitstat, 1.0); 
-       nSamp = 1;
-       for (i=0; i<maxiter-1; i++) { //999
+       nSamp = 0;
+       for (i=0; i<maxiter; i++) { //999
           if (bootID == NULL ) 
              gsl_ran_shuffle(rnd, permid, nRows, sizeof(unsigned int));
           // get bootr by permuting resi:Y-fit
@@ -376,7 +376,7 @@ int Summary::resampTest(void)
    for (i=0; i<nParam+1; i++) {
 //      printf("Pmultstat[%d]=%.3f\n", i, Pmultstat[i]);
 //      printf("nSamp=%d\n", nSamp);
-      Pmultstat[i] = (double) Pmultstat[i]/nSamp;
+      Pmultstat[i] = (double) (Pmultstat[i]+1)/(nSamp+1);  // adjusted with +1
       pj = gsl_matrix_ptr (Punitstat, i, 0);
       if ( mmRef->punit == FREESTEP ) {
          for (j=1; j<nVars; j++) {
@@ -393,7 +393,7 @@ int Summary::resampTest(void)
 	  }
       }
       for (j=0; j<nVars; j++)
-         *(pj+j) = (double)*(pj+j)/nSamp;
+         *(pj+j) = (double)(*(pj+j)+1)/(nSamp+1); //adjusted with +1
    }
 
    // free memory
