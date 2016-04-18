@@ -89,6 +89,19 @@ Summary::Summary(mv_Method *mm, gsl_matrix *Y, gsl_matrix *X):mmRef(mm), Yref(Y)
     // initialize resampling indices 
     bootID = NULL;
 
+    // Initialize GSL rnd environment variables
+    const gsl_rng_type *T;
+    gsl_rng_env_setup();
+    T = gsl_rng_default;    
+    // an mt19937 generator with a seed of 0
+    rnd = gsl_rng_alloc(T);
+    if (mmRef->reprand!=TRUE){
+       struct timeval tv;  // seed generation based on time
+       gettimeofday(&tv, 0);
+       unsigned long mySeed=tv.tv_sec + tv.tv_usec;
+       gsl_rng_set(rnd, mySeed);  // reset seed
+    }
+
     gsl_vector_free(ref);
 //    printf("Summary test initialized.\n");
 }
@@ -124,6 +137,8 @@ void Summary::releaseSummary()
     for (i=0; i<nParam+1; i++)
         gsl_permutation_free(sortid[i]);
     free(sortid);
+
+    gsl_rng_free(rnd); 
 
 //    printf("Summary test released.\n");
 
@@ -242,8 +257,6 @@ int Summary::resampTest(void)
     gsl_matrix *bX, *bY;
     bY = gsl_matrix_alloc(nRows, nVars);
     bX = gsl_matrix_alloc(nRows, nParam);
-
-    gsl_rng *rnd=gsl_rng_alloc(gsl_rng_mt19937);
 
     // initialize permid
     unsigned int *permid=NULL;
@@ -386,9 +399,7 @@ int Summary::resampTest(void)
    // free memory
    gsl_matrix_free(bX);
    gsl_matrix_free(bY);
-   gsl_rng_free(rnd);
-   if (permid!=NULL)
-      free(permid);
+   if (permid!=NULL) free(permid);
 
    return 0;
 
