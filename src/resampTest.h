@@ -190,6 +190,7 @@ public: mv_Method *mmRef;
 	unsigned int *dfDiff;
 	gsl_matrix *bootID;	 
 
+        gsl_rng *rnd;
        // Methods
        AnovaTest(mv_Method *, gsl_matrix *, gsl_matrix *, gsl_matrix *isXvarIn);
        virtual ~AnovaTest();
@@ -222,6 +223,8 @@ public: mv_Method *mmRef;
 	gsl_matrix *unitstat;
 	gsl_matrix *Punitstat;
 	gsl_matrix *bootID;	 
+      
+        gsl_rng *rnd;
 
        // Methods
        Summary(mv_Method *, gsl_matrix *, gsl_matrix *);

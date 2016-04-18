@@ -74,6 +74,23 @@ AnovaTest::AnovaTest(mv_Method *mm, gsl_matrix *Y, gsl_matrix *X, gsl_matrix *is
     // initialize resampling indices 
 //    getBootID(); done in R
     bootID = NULL;
+
+
+    // Initialize GSL rnd environment variables
+    const gsl_rng_type *T;
+    gsl_rng_env_setup();
+    T = gsl_rng_default;
+    // an mt19937 generator with a seed of 0
+    rnd = gsl_rng_alloc(T);
+    if (mmRef->reprand!=TRUE){
+       struct timeval tv;  // seed generation based on time
+       gettimeofday(&tv, 0);
+       unsigned long mySeed=tv.tv_sec + tv.tv_usec;
+       gsl_rng_set(rnd, mySeed);  // reset seed
+    }
+
+//    printf("Anova test initialized.\n");
+
 }
 
 AnovaTest::~AnovaTest(){
@@ -108,6 +125,8 @@ void AnovaTest::releaseTest()
     for (i=0; i<nModels-1; i++)
        gsl_permutation_free(sortid[i]);
     free(sortid);
+
+    gsl_rng_free(rnd);
 
 //    printf("Anova test released.\n");
 
@@ -153,8 +172,6 @@ int AnovaTest::resampTest(void)
     bY = gsl_matrix_alloc(nRows, nVars);
     bX = gsl_matrix_alloc(nRows, nParam);
 
-    gsl_rng *rnd=gsl_rng_alloc(gsl_rng_mt19937);
-
     // initialize permid
     unsigned int *permid=NULL;
     if ( bootID == NULL ) {
@@ -187,6 +204,10 @@ int AnovaTest::resampTest(void)
         nSamp = 0;
         for (i=0; i<maxiter; i++) {
           for (p=1; p<nModels; p++) { 
+            if (mmRef->reprand!=TRUE) {
+                GetRNGstate();
+                printf("reprand==FALSE\n");
+            }
             for (j=0; j<nRows; j++){
                // resampling index
  	       if (bootID == NULL) 
@@ -207,6 +228,7 @@ int AnovaTest::resampTest(void)
                Yj=gsl_matrix_row(Hats[p].Y, j);
                gsl_vector_add (&bootr.vector, &Yj.vector);
 	    } 
+            if (mmRef->reprand!=TRUE) PutRNGstate();
             anovaresi(bY, p);
          }
         nSamp++;
@@ -303,9 +325,7 @@ int AnovaTest::resampTest(void)
    // free memory
    gsl_matrix_free(bX);
    gsl_matrix_free(bY);
-   gsl_rng_free(rnd);
-   if (permid!=NULL)
-      free(permid);
+   if (permid!=NULL) free(permid);
 
    return 0;
 

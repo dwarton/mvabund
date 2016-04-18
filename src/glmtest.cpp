@@ -28,8 +28,19 @@ GlmTest::GlmTest(const mv_Method *tm):tm(tm)
     Rlambda = gsl_matrix_alloc(tm->nVars, tm->nVars);
     Wj=gsl_matrix_alloc(tm->nRows, tm->nRows);
 
-    rnd=gsl_rng_alloc(gsl_rng_mt19937);    
-//    if (tm->reprand==TRUE) printf("GSL rng with repeated seeds\n");
+    // Initialize GSL rnd environment variables
+    const gsl_rng_type *T;
+    gsl_rng_env_setup();
+    T = gsl_rng_default;
+    // an mt19937 generator with a seed of 0
+    rnd = gsl_rng_alloc(T);
+    if (tm->reprand!=TRUE){
+       struct timeval tv;  // seed generation based on time
+       gettimeofday(&tv, 0);
+       unsigned long mySeed=tv.tv_sec + tv.tv_usec;
+       gsl_rng_set(rnd, mySeed);  // reset seed
+    }
+
     if ( tm->resamp==PERMUTE ) {
         permid = (unsigned int *)malloc(tm->nRows*sizeof(unsigned int));
 	for (unsigned int i=0; i<tm->nRows; i++) permid[i]=i;
@@ -666,7 +677,6 @@ int GlmTest::resampSmryCase(glm *model, gsl_matrix *bT, GrpMat *GrpXs, gsl_matri
     if (bootID == NULL) {
        tXX = gsl_matrix_alloc(nParam, nParam);
        while (isValid==TRUE) { // if all isSingular==TRUE
-           if (tm->reprand!=TRUE) GetRNGstate();
            for (j=0; j<nRows; j++) {
                // resample Y, X, offsets accordingly
                if (tm->reprand==TRUE)
@@ -679,7 +689,6 @@ int GlmTest::resampSmryCase(glm *model, gsl_matrix *bT, GrpMat *GrpXs, gsl_matri
                oj = gsl_matrix_row(model->Eta, id);
                gsl_matrix_set_row(bO, j, &oj.vector);
            }
-           if (tm->reprand!=TRUE) PutRNGstate();
            gsl_matrix_set_identity(tXX);
            gsl_blas_dsyrk(CblasLower,CblasTrans,1.0,GrpXs[0].matrix,0.0,tXX);
            status=gsl_linalg_cholesky_decomp(tXX); 
@@ -723,7 +732,6 @@ int GlmTest::resampAnovaCase(glm *model, gsl_matrix *bT, gsl_matrix *bX, gsl_mat
 
     if (bootID == NULL) {
        while (isValid==TRUE) {
-            if (tm->reprand!=TRUE) GetRNGstate();
             for (j=0; j<nRows; j++) {   
                 if (tm->reprand==TRUE)
                    id=(unsigned int)gsl_rng_uniform_int(rnd, nRows);
@@ -736,7 +744,6 @@ int GlmTest::resampAnovaCase(glm *model, gsl_matrix *bT, gsl_matrix *bX, gsl_mat
                 gsl_matrix_set_row(bX, j, &xj.vector);
                 gsl_matrix_set_row(bO, j, &oj.vector);
              }
-             if (tm->reprand!=TRUE) PutRNGstate();
              gsl_matrix_set_identity(tXX);
              gsl_blas_dsyrk(CblasLower,CblasTrans,1.0,bX,0.0,tXX);
              status=gsl_linalg_cholesky_decomp(tXX); 
@@ -772,7 +779,6 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
    // note that residuals have got means subtracted
    switch (tm->resamp) {
    case RESIBOOT: 
-       if (tm->reprand!=TRUE) GetRNGstate();
        for (j=0; j<nRows; j++) {
            if (bootID!=NULL)
                id = (unsigned int) gsl_matrix_get(bootID, i, j);
@@ -786,7 +792,6 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
                bt = MIN(bt, model->maxtol);
                gsl_matrix_set(bT, j, k, bt);
         }   }
-        if (tm->reprand!=TRUE) PutRNGstate();   	  	
         break;
    case SCOREBOOT: 
         for (j=0; j<nRows; j++) {
@@ -831,7 +836,6 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
         McSample(model, rnd, XBeta, Sigma, bT);
         break;
     case PITSBOOT:
-       if (tm->reprand!=TRUE) GetRNGstate();
        for (j=0; j<nRows; j++) {
            if (bootID!=NULL) 
                id = (unsigned int) gsl_matrix_get(bootID, i, j);
@@ -845,7 +849,6 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
                gsl_matrix_set(bT, j, k, yij);
            }
        }
-       if (tm->reprand!=TRUE) PutRNGstate();
        break;
     default: GSL_ERROR("The resampling method is not supported", GSL_ERANGE); break;
     }
