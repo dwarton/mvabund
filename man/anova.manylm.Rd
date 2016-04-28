@@ -27,7 +27,7 @@ for the \code{anova.manylm} method, these are optional further objects of class 
 for the \code{print.anova.manylm} method these are optional further arguments
 passed to or from other methods.
 }
-\item{nBoot}{the number of iterations in resampling.}
+\item{nBoot}{the number of iterations in resampling. Default is 999 for P-values as fractions out of 1000.}
 \item{resamp}{the method of resampling used. Can be one of "case" (not yet available), "residual" (default), "perm.resid", "score" or "none". See Details.}
 \item{test}{the test to be used. Possible values are: \code{"LR"} = likelihood ratio statistic, \code{"F"} = Lawley-Hotelling trace statistic or \code{NULL} for no test.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
@@ -157,9 +157,9 @@ fit2 <- update(fit1, . ~ . + spidx[, 4])
 anova(fit, fit0, fit1, fit2, cor.type="shrink")
 
 ## Use the sum of F statistics to estimate multivariate significance from 
-## 5000 resamples, and also reporting univariate statistics with 
+## 4999 resamples, and also reporting univariate statistics with 
 ## adjusted P-values:
-anova(fit, fit0, fit1, fit2, nBoot=5000, test="F", p.uni="adjust")
+anova(fit, fit0, fit1, fit2, nBoot=4999, test="F", p.uni="adjust")
 
 }
 \keyword{regression}
