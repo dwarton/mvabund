@@ -4,7 +4,7 @@
 # 05-Jan-2010
 ###############################################################################
 
-anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none", nBoot=1000, cor.type=object$cor.type, shrink.param=object$shrink.param, studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL) 
+anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none", nBoot=999, cor.type=object$cor.type, shrink.param=object$shrink.param, studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL) 
 {
     if(!any(class(object)=="manylm"))
        stop("The function 'anova.manylm' can only be used for a manylm object.")
