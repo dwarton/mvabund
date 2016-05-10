@@ -294,7 +294,7 @@ if(!any(is.null(subset))) {
 
 if (table) {
 	MeanVarTable<-cbind(mean.mvabund.overall, var.mvabund.overall)
-	colnames(MeanVarTable)<-c("Mean","Variance")
+  colnames(MeanVarTable)<-c("Mean","Variance")
 	return(MeanVarTable)
 }
 
@@ -424,8 +424,8 @@ if(miss.n.vars){
 n.vars <- min(n.vars,p)         # n.vars is automatically corrected if > p
 
 if(!is.null(subset)) {
-	# if there is only one factor and the col or pch has the length of the levels,
-	# adjust the levels to new levels after subsetting.
+	# if there is only one factor and the col or pch has the length of the levelNames,
+	# adjust the levelNames to new levelNames after subsetting.
 	# ifa <- sapply(1:ncol(dataExpl), function(i) is.factor(dataExpl[,i]) )
 	if (!nofactor) {
 		if(sum(ifa)==1) {
@@ -490,12 +490,12 @@ if(!nofactor) {
 
 	if (length(expl.data.char)!= pExpl) expl.data.char <- 1:length(pExpl)
 
-	expl.cat.index <- levels <- mean.mvabund <- var.mvabund <- cex	<- iref <- n <- nlevels	<- list()
+	expl.cat.index <- levelNames <- mean.mvabund <- var.mvabund <- cex	<- iref <- n <- nlevels	<- list()
 
 	for (i in 1:pExpl) {
 
 		if(is.factor(dataExpl[,i]) ) {
-			dataExpl[,i] <- factor(dataExpl[,i]) # necessary to get the updated Levels
+			dataExpl[,i] <- factor(dataExpl[,i]) # necessary to get the updated levelNames
 	
 			if (!na.rm& any(is.na(dataExpl[,i]))) {
 				stop("independent variables object contain NAs")
@@ -503,7 +503,7 @@ if(!nofactor) {
 
 			index <- index+1  # the number of grouping variables
 			nlevels[[index]] <- nlevels(dataExpl[,i])  
-			levels[[index]]	<- levels(dataExpl[,i])
+			levelNames[[index]]	<- levels(dataExpl[,i])
 
 			max.length <- max(max.length, nlevels[[index]])
 	
@@ -793,9 +793,12 @@ cat("START SECTION 2 \n")
 			}
 			
 			colnames(MeanVarTable[[ind]])<-MVT.cn
-			rownames(MeanVarTable[[ind]])<- levels[[ind]] 
+			rownames(MeanVarTable[[ind]])<- levelNames[[ind]] 
 			names(MeanVarTable)[ind]<-expl.data.char[expl.cat.index[ind] ]
 		}	
+		colnames(mean.mvabund[[1]]) = colnames(var.mvabund[[1]]) = mvabund.colnames
+		rownames(mean.mvabund[[1]]) = rownames(var.mvabund[[1]]) = levelNames[[1]]
+		MeanVarTable = list(mean=mean.mvabund[[1]],var=var.mvabund[[1]])
 	}
 
 	if (overlay) {
@@ -970,7 +973,7 @@ cat("Plotting if overlay is TRUE\n")
 						cexl <- min(0.9, 26/nlevels[[ind]])
 					}
 					
-					leg <- levels[[ind]]
+					leg <- levelNames[[ind]]
 					
 					tmp   <- suppressWarnings(as.numeric( leg ))
 					natmp <- is.na(tmp)
@@ -1255,7 +1258,7 @@ cat("Plotting if overlay is FALSE\n")
 	
 						plot(0,0,type="n",axes=FALSE,xlab="", ylab="")
 						cexl <- 0.9
-						leg <- levels[[ind]]
+						leg <- levelNames[[ind]]
 
 						tmp   <- suppressWarnings(as.numeric( leg ))
 						natmp <- is.na(tmp)
