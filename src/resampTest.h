@@ -491,7 +491,7 @@ class GlmTest
 	    // the following used in resampling
 	    unsigned int nModels;
             gsl_rng *rnd;
-            unsigned int *permid;   // only useful in permutation test
+            size_t *permid;   // only useful in permutation test
             double lambda, eps;    // intermediate shrinkage parameter
                 
             // the following are used in geeCalc

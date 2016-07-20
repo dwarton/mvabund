@@ -42,8 +42,8 @@ GlmTest::GlmTest(const mv_Method *tm):tm(tm)
     }
 
     if ( tm->resamp==PERMUTE ) {
-        permid = (unsigned int *)malloc(tm->nRows*sizeof(unsigned int));
-	for (unsigned int i=0; i<tm->nRows; i++) permid[i]=i;
+        permid = (size_t *)malloc(tm->nRows*sizeof(size_t));
+	for (size_t i=0; i<tm->nRows; i++) permid[i]=i;
     }	
     else permid=NULL;
 
@@ -776,6 +776,10 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
    double bt, score, yij, mij;
    gsl_vector_view yj;
    unsigned int nRows=tm->nRows, nVars=tm->nVars;
+   // to store Rf_unif
+//   gsl_vector *tmp = gsl_vector_alloc(nRows); 
+//   gsl_permutation *vperm = gsl_permutation_alloc(nRows); 
+   double *tmp = (double *)malloc(nRows*sizeof(double));
 
    // note that residuals have got means subtracted
    switch (tm->resamp) {
@@ -810,11 +814,18 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
         }   }	    
 	break;
    case PERMUTE: 
-        if (bootID==NULL) 
-            gsl_ran_shuffle(rnd,permid,nRows,sizeof(unsigned int));
+        if (bootID==NULL) { 
+           if (tm->reprand == TRUE)                
+               gsl_ran_shuffle(rnd,permid,nRows,sizeof(size_t));           
+           else { // Permutation with the randomness set in R
+               for (j=0; j<nRows; j++) tmp[j] = Rf_runif(0, 1);
+               gsl_sort_index(permid, tmp, 1, nRows);
+           }    
+        }
         for (j=0; j<nRows; j++) {
-            if (bootID==NULL) id = permid[j];
+            if ( bootID == NULL ) id = permid[j];
             else id = (unsigned int) gsl_matrix_get(bootID, i, j);
+
 	    // bY = mu + bootr * sqrt(var)
 	    for (k=0; k<nVars; k++) {
                 bt=gsl_matrix_get(model->Mu,j,k)+sqrt(gsl_matrix_get(model->Var,j,k))*gsl_matrix_get(model->Res, id, k);
@@ -824,11 +835,18 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
         }   }
         break;
    case FREEPERM:
-         if (bootID==NULL) 
-             gsl_ran_shuffle(rnd,permid,nRows,sizeof(unsigned int));
+         if (bootID==NULL){ 
+             if (tm->reprand == TRUE)                
+                gsl_ran_shuffle(rnd,permid,nRows,sizeof(size_t));           
+             else { // Permutation with the randomness set in R
+                for (j=0; j<nRows; j++) tmp[j] = Rf_runif(0, 1);
+                gsl_sort_index(permid, tmp, 1, nRows);
+             }    
+         }
          for (j=0; j<nRows; j++) {
-              if (bootID==NULL)  id = permid[j];
+              if ( bootID == NULL ) id = permid[j];
               else id = (unsigned int) gsl_matrix_get(bootID, i, j);
+
               yj=gsl_matrix_row(model->Yref, id);
               gsl_matrix_set_row (bT, j, &yj.vector);
  	 }
@@ -853,6 +871,9 @@ int GlmTest::resampNonCase(glm *model, gsl_matrix *bT, unsigned int i)
        break;
     default: GSL_ERROR("The resampling method is not supported", GSL_ERANGE); break;
     }
+    
+    free(tmp);
+
     return SUCCESS;
 } 
 
