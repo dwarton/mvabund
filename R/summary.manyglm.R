@@ -9,11 +9,11 @@ summary.manyglm <- function(object, resamp="pit.trap", test="wald", p.uni="none"
     tol = object$tol
     allargs <- match.call(expand.dots = FALSE)
     dots <- allargs$...
-    if ("rep.seed" %in% names(dots)) rep.seed <- dots$rep.seed
+    if ("rep.seed" %in% names(dots)) rep.seed <- eval(parse(text=dots$rep.seed))
     else rep.seed <- FALSE
-    if ("ld.perm" %in% names(dots)) ld.perm <- dots$ld.perm
+    if ("ld.perm" %in% names(dots)) ld.perm <- eval(parse(text=dots$ld.perm))
     else ld.perm <- FALSE
-    if ("bootID" %in% names(dots)) bootID <- dots$bootID
+    if ("bootID" %in% names(dots)) bootID <- eval(parse(text=dots$bootID))
     else bootID <- NULL
 
     if (show.time==FALSE) st=0
