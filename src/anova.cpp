@@ -180,6 +180,9 @@ int AnovaTest::resampTest(void)
           for (i=0; i<nRows; i++)
               permid[i] = i;
     } }
+//    else 
+//	displaymatrix(bootID, "bootID received");
+
     // resampling options 
     if (mmRef->resamp == CASEBOOT) {
        nSamp = 0;

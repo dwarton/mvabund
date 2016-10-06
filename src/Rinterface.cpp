@@ -54,6 +54,7 @@ List RtoAnovaCpp(const List & rparam,
         mm.nboot = m.nrow();	   
         anova.bootID = m;
     }
+//    else Rprintf("bID is null");
 
     // resampling test
     anova.resampTest();

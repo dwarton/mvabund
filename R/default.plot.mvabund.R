@@ -498,7 +498,9 @@ if (missing(x)) { stop("The mvabund object 'x' is missing.") }
 		names.i <- dots$names
       		dots$names <- NULL
       	   } else {
-        	names.i <- mvabund.colnames[n.vars:1]
+#        	names.i <- mvabund.colnames[n.vars:1]
+        	names.i <- mvabund.colnames[1:n.vars]
+
         		# n.mn <- nchar(names.i, type="chars")
         		# if(any(n.mn > 12))  names.i[n.mn > 12] <-
         		# paste(substr(names.i[n.mn > 12], 1, 7),"...\n...",

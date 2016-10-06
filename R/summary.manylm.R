@@ -8,11 +8,11 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
 {
     allargs <- match.call(expand.dots = FALSE)
     dots <- allargs$...
-    if ("rep.seed" %in% names(dots)) rep.seed <- dots$rep.seed
+    if ("rep.seed" %in% names(dots)) rep.seed <- eval(parse(text=dots$rep.seed))
     else rep.seed <- FALSE
-    if ("ld.perm" %in% names(dots)) ld.perm <- dots$ld.perm
+    if ("ld.perm" %in% names(dots)) ld.perm <- eval(parse(text=dots$ld.perm))
     else ld.perm <- FALSE
-    if ("bootID" %in% names(dots)) bootID <- dots$bootID
+    if ("bootID" %in% names(dots)) bootID <- eval(parse(text=dots$bootID))
     else bootID <- NULL
 
     if(!any(class(object)=="manylm"))
@@ -83,28 +83,37 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
 
 
     if (!is.null(bootID)) {
-       nBoot<-dim(bootID)[1]
        if (max(bootID)>nRows) {
-          bootID <- NULL
-          cat(paste("Invalid bootID -- sample id larger than no. of observations. Generate bootID matrix on the fly.","\n"))
+          bootID <- as.null()
+          cat(paste("Invalid bootID -- sample id larger than no. of observations. Switch to generating bootID matrix on the fly (default nBoot=999).","\n"))
        }
        else {
-          if (resamp == "score") {
-             cat(paste("Using <double> bootID from input for score resampling.","\n"))
+          if (is.matrix(bootID)) nBoot <- dim(bootID)[1]
+          else nBoot <- as.integer(length(bootID)/nRows)
+
+          if ((resamp == "score")) {
+              if (is.numeric(bootID)) {
+                 cat(paste("Using <double> bootID matrix from input for 'score' resampling.","\n"))
+                 bootID <- matrix(as.numeric(bootID), nrow=nBoot, ncol=nRows)
+              }
+              else {
+                 cat(paste("Invalid bootID -- 'score' resampling should use <double> matrix. Switch to generating bootID matrix on the fly.","\n"))
+                 bootID <- as.null()
+
+              }
           }
-          else { # all other methods resample the matrix index 
-             if (is.integer(bootID)) {
-                 cat(paste("Using <int> bootID matrix from input.","\n"))
-                 if (max(bootID)==nRows) # to fit the format in C i.e. (0, nObs-1)
-                     bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
+          else{
+             if (is.integer(bootID)){
+                cat(paste("Using <int> bootID matrix from input.","\n"))
+                bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
              }
              else {
-                 bootID <- NULL
-                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Generate bootID matrix on the fly.","\n"))
-            }
-         }
-      }
-   }
+                cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Switch to generating bootID matrix on the fly.","\n"))
+                bootID <- as.null()
+             }
+          }
+       }
+    }
 
 
     if (studentize) st <- 1
