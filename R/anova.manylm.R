@@ -93,48 +93,37 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
    }
 
     if (!is.null(bootID)) {
-       # input bootID to resamp methods other than scoreboot must be integers
-       nBoot<-dim(bootID)[2]
-       if (resamp == "score") {
-	   cat(paste("Input <double> bootID for score resampling.","\n"))
+       if (max(bootID)>nRows) {
+          bootID <- as.null() 
+          cat(paste("Invalid bootID -- sample id larger than no. of observations. Switch to generating bootID matrix on the fly (default nBoot=999).","\n"))
        }
        else {
-           if (is.integer(bootID)) {
-               bootID <- bootID - 1 # index in C starting with 0
-	       cat(paste("Input <int> bootID for resampling observations.","\n"))
-           }
-           else {
-	       bootID <- NULL
-               cat(paste("Invalid bootID. Generate bootID on the fly.","\n"))
-           }
+          if (is.matrix(bootID)) nBoot <- dim(bootID)[1] 
+          else nBoot <- as.integer(length(bootID)/nRows)
+
+          if ((resamp == "score")) {
+              if (is.numeric(bootID)) {
+                 cat(paste("Using <double> bootID matrix from input for 'score' resampling.","\n"))            
+                 bootID <- matrix(as.numeric(bootID), nrow=nBoot, ncol=nRows)
+              }
+              else {
+                 cat(paste("Invalid bootID -- 'score' resampling should use <double> matrix. Switch to generating bootID matrix on the fly.","\n"))
+                 bootID <- as.null()
+   
+              }
+          }
+          else{
+             if (is.integer(bootID)){
+                cat(paste("Using <int> bootID matrix from input.","\n"))
+                bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
+             }
+             else { 
+                cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Switch to generating bootID matrix on the fly.","\n"))
+                bootID <- as.null()
+             }
+          }
        }
     }
-
-    if (!is.null(bootID)) {
-       nBoot<-dim(bootID)[1]
-       if (max(bootID)>nRows) {
-          bootID <- NULL
-          cat(paste("Invalid bootID -- sample id larger than no. of observations. Generate bootID matrix on the fly.","\n"))
-       }
-       else {
-          if (resamp == "score") {
-             cat(paste("Using <double> bootID from input for score resampling.","\n"))
-          }
-          else { # all other methods resample the matrix index 
-             if (is.integer(bootID)) {
-                 cat(paste("Using <int> bootID matrix from input.","\n"))
-                 if (max(bootID)==nRows) # to fit the format in C i.e. (0, nObs-1)
-                     bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
-             }
-             else {
-                 bootID <- NULL
-                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Generate bootID matrix on the fly.","\n"))
-            }
-         }
-      }
-   }
-
-
 
 
     if (studentize) st <- 1
@@ -147,7 +136,7 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
     if (nModels==1) {
         varseq <- object$assign
         nterms <- max(0, varseq)+1
-        resdf  <- resdev <- NULL
+        resdf  <- resdev <- as.null() 
         tl <- attr(object$terms, "term.labels")
         # if intercept is included
         if (attr(object$terms,"intercept")==0)
@@ -246,6 +235,7 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
         ord <- (nModels-1):1
     }
 
+#browser()
     ######## call resampTest Rcpp #########
     # preprocess bootID for differnt resampling methods
     val <- RtoAnovaCpp(params, Y, X, XvarIn, bootID)
@@ -258,7 +248,7 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
         attr(RSS, "title") <- "\nResidual Sum of Squares\n"
         attr(Diff,"title") <- "\nDiff. Sum of Squares\n"
     }
-    else  RSS <- Diff <- NULL
+    else  RSS <- Diff <- as.null() 
  
     ######## collect ANOVA results ######## 
     anova <- list()
