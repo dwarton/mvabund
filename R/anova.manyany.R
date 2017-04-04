@@ -137,8 +137,11 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
     dimnames(statj.i)[[1]] = dimnames(object1$residuals)[[2]]
 
   p = ( 1 + sum(stat.i>stat-1.e-8) ) / (nBoot + 1)
-  pj = ( 1 + apply(statj.i>statj-1.e-8,1,sum) ) / ( nBoot + 1)
-
+  if(length(statj)>1)
+    pj = ( 1 + apply(statj.i>statj-1.e-8,1,sum) ) / ( nBoot + 1)
+  else
+    pj = ( 1 + sum(statj.i>statj-1.e-8) ) / ( nBoot + 1)
+  
   class(stat.i) = "numeric"
   if(p.uni=="unadjusted")
     result = list(stat=stat,p=p,uni.test=statj,uni.p=pj,stat.i=stat.i,statj.i=statj.i,p.uni=p.uni,nBoot=nBoot) 
