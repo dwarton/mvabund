@@ -32,6 +32,14 @@ anova.traitglm <- function(object, ..., nBoot=99, resamp="pit.trap", test="LR", 
       if(length(env.times.trait$fourth.corner)==0)
          stop("Sorry, your trait model has no fourth corner terms in it so you can't call anova without specifying an alternate model too")
       an = anova.manyglm(env.plus.trait, env.times.trait, nBoot=nBoot, resamp=resamp, test=test, block=block, show.time=show.time, bootID=bootID)
+
+      if(is.null(object$formula))
+      {
+      # relabel models so it doesn't come out looking horrendous
+        newModelNameList = paste("Model ", 1:2)
+        newXnames = c(paste(deparse(env.plus.trait$call),collapse=""),paste(deparse(env.times.trait$call),collapse=""))
+        attr(an$table,"heading")[2] = paste(newModelNameList, ": ", newXnames, sep = "", collapse = "\n")
+      }
     }
     else
     {
