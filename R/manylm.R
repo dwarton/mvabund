@@ -1,3 +1,4 @@
+mf[[1]] <- as.name("model.frame")
 ############################################################################
 # print.manylm prints the manylm object in a nice way                      #
 # so far this is identical with the print.lm method                        #
@@ -35,7 +36,11 @@ m  <- match(c("formula", "data", "subset", "weights", "na.action", "offset"), na
 mf <- mf[c(1, m)]
 mf$drop.unused.levels <- TRUE
 mf[[1]] <- as.name("model.frame")
-data <- mf <- eval(mf, parent.frame())    # Obtain the model.frame.
+mf <- eval(mf, parent.frame())    # Obtain the model.frame.
+
+if(missing(data)) # Only assign if not supplied by the user.
+  data <- mf
+
 #mf <- model.frame(formula)
 
 if (method == "model.frame") { 
