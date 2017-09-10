@@ -212,7 +212,7 @@ else {
     names(z$aic) <- labAbund
     names(z$iter) <- labAbund
 
-    z$data <- mf
+    z$data <- data
     z$stderr.coefficients <- sqrt(z$var.coefficients)
     dimnames(z$stderr.coefficients) <- list(colnames(X), labAbund)
     z$phi <- 1/z$theta
