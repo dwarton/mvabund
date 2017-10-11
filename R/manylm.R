@@ -35,8 +35,11 @@ m  <- match(c("formula", "data", "subset", "weights", "na.action", "offset"), na
 mf <- mf[c(1, m)]
 mf$drop.unused.levels <- TRUE
 mf[[1]] <- as.name("model.frame")
-data <- mf <- eval(mf, parent.frame())    # Obtain the model.frame.
+mf <- eval(mf, parent.frame())    # Obtain the model.frame.
 #mf <- model.frame(formula)
+
+if(missing(data)) # Only coerce to model frame if not specified by the user.
+  data <- mf
 
 if (method == "model.frame") { 
     return(mf)
