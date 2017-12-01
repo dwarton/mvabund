@@ -63,7 +63,11 @@ mf <- mf[c(1, m)]
 
 mf$drop.unused.levels <- FALSE
 mf[[1]] <- as.name("model.frame")
-data <- mf <- eval(mf, parent.frame())    # Obtain the model.frame. 
+mf <- eval(mf, parent.frame())    # Obtain the model.frame.
+
+if(missing(data)) # Only coerce to model frame if not specified by the user.
+  data <- mf
+
 mt <-  attr(mf, "terms")  # Obtain the model terms.
 offset <- as.vector(model.offset(mf))
 
@@ -208,7 +212,7 @@ else {
     names(z$aic) <- labAbund
     names(z$iter) <- labAbund
 
-    z$data <- mf
+    z$data <- data
     z$stderr.coefficients <- sqrt(z$var.coefficients)
     dimnames(z$stderr.coefficients) <- list(colnames(X), labAbund)
     z$phi <- 1/z$theta
