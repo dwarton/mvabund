@@ -68,7 +68,6 @@ predict.manyglm=function(object,newdata = NULL,type = c("link", "response",
             object.i = glm(form, family=fam, data=dat.i, start=as.vector(object$coef[,iVar]))
             #DW, 18/11/14:  starting value included in predict to avoid errors with sparse data
           }
-	       
           ft.i <- predict.glm(object.i, newdata=newdata, se.fit=se.fit, 
                                  type=type, terms = terms, na.action = na.action)
           if(se.fit==T)
