@@ -222,6 +222,7 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
           nterms <- max(0, varseq)+1
           tl <- c("(Intercept)", tl)
        }
+       tl <- tl[1 + unique(object$assign)] # attempt to deal with bug
        if ( nParam==1 )
            stop("An intercept model is comparing to itself. Stopped")
 

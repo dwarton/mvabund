@@ -150,6 +150,7 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
            nterms <- max(0, varseq)+1
            tl <- c("(Intercept)", tl)
         }
+        tl <- tl[1 + unique(object$assign)] # attempt to deal with bug
 	if (nParam==1) 
 	    stop("An intercept model is comoparing to itself. Stopped.")
         XvarIn <- matrix(ncol=nParam, nrow=nterms, 1)
