@@ -100,6 +100,3 @@ coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Y
   
   
 }
-
-setGeneric("coefplot")   
-setMethod("coefplot", "manyglm", coefplot.manyglm)
