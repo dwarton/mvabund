@@ -46,8 +46,8 @@ P-values are calculated by resampling rows of the data using a method
 determined by the argument \code{resamp}. \code{resamp}. Two of the three 
 available resampling methods (residual permutation and parametric bootstrap) 
 are described in more detail in Davison and Hinkley (1997, chapter 6), 
-whereas the default (the ``PIT-trap'') is a new method (in review) which 
-bootstraps probability integral transform residuals, and which we have found 
+whereas the default (the ``PIT-trap'', Warton et al 2017) 
+bootstraps probability integral transform residuals, which we have found 
 to give the most reliable Type I error rates. All methods involve resampling 
 under the resampling under the null hypothesis. These methods ensure 
 approximately valid inference even when the mean-variance relationship or the 
@@ -115,6 +115,8 @@ Warton D.I. (2011). Regularized sandwich estimators for analysis of high dimensi
 Warton D.I. (2008). Penalized normal likelihood and ridge regularization of correlation and covariance matrices. \emph{Journal of the American Statistical Association} 103, 340-349.
 
 Warton D. I., Wright S., and Wang, Y. (2012). Distance-based multivariate analyses confound location and dispersion effects. \emph{Methods in Ecology and Evolution}, 3(1), 89-101.
+
+Warton D. I., Thibaut L., Wang Y. A.  (2017). The PIT-trap - A "model-free" bootstrap procedure for inference about regression models with discrete, multivariate responses. \emph{PLoS One}, 12(7), e0181790.
 
 Westfall, P. H. and Young, S. S. (1993) \emph{Resampling-based multiple 
 testing.} John Wiley & Sons, New York.

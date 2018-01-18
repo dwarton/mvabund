@@ -54,9 +54,9 @@ statistic as determined by the argument \code{test}, and a P-value calculated
 by resampling rows of the data using a method determined by the argument 
 \code{resamp}. Of the four possible resampling methods, three (case, residual 
 permutation and parametric boostrap) are described in more detail in Davison 
-and Hinkley (1997, chapter 6), but the default (PIT-trap) is a new method (in 
-review) which bootstraps probability integral transform residuals, and which 
-we have found to give the most reliable Type I error rates. All methods 
+and Hinkley (1997, chapter 6), whereas the default (the ``PIT-trap'', Warton et al 2017) 
+bootstraps probability integral transform residuals, which we have found 
+to give the most reliable Type I error rates. All methods 
 involve resampling under the alternative hypothesis. These methods ensure 
 approximately valid inference even when the mean-variance relationship or the 
 correlation between variables has been misspecified. Standardized pearson 
@@ -176,6 +176,9 @@ of the estimated coefficients.
 }
 }
 \references{
+Davison, A. C. and Hinkley, D. V. (1997) \emph{Bootstrap Methods and their Application},
+Cambridge University Press, Cambridge.
+
 Warton D.I. (2011). Regularized sandwich estimators for analysis of high dimensional data using generalized estimating equations. \emph{Biometrics}, 67(1), 116-123.
 
 Warton D.I. (2008a). Penalized normal likelihood and ridge regularization of 
@@ -188,8 +191,7 @@ equations. \emph{Journal of Statistical Planning and Inference}, 138, 3269-3282.
 
 Warton D. I., Wright S., and Wang, Y. (2012). Distance-based multivariate analyses confound location and dispersion effects. \emph{Methods in Ecology and Evolution}, 3(1), 89-101.
 
-Davison, A. C. and Hinkley, D. V. (1997) \emph{Bootstrap Methods and their Application},
-Cambridge University Press, Cambridge.
+Warton D. I., Thibaut L., Wang Y. A.  (2017). The PIT-trap - A "model-free" bootstrap procedure for inference about regression models with discrete, multivariate responses. \emph{PLoS One}, 12(7), e0181790.
 
 Westfall, P. H. and Young, S. S. (1993) \emph{Resampling-based multiple testing.} 
 John Wiley & Sons, New York.
