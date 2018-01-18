@@ -52,7 +52,7 @@ two and only two models can be supplied as input here; adjusted univariate P-val
 are not yet implemented; and the range of test statistics and resampling algorithms is
 more limited. All test statistics constructed here are sum-of-likelihood ratio statistics
 as in Warton et al (2012), and the resampling method used here is the PIT-trap (short
-for 'probability integral transform residual bootstrap', Warton et al 2017).
+for 'probability integral transform residual bootstrap').
 
 To check model assumptions, use \code{\link{plot.manyany}}.
 
@@ -103,8 +103,6 @@ The comparison between two or more models by \code{anova.manyglm} will only be v
 \references{
 
 Warton D. I., Wright S., and Wang, Y. (2012). Distance-based multivariate analyses confound location and dispersion effects. \emph{Methods in Ecology and Evolution}, 3(1), 89-101.
-
-Warton D. I., Thibaut L., Wang Y. A.  (2017). The PIT-trap - A "model-free" bootstrap procedure for inference about regression models with discrete, multivariate responses. \emph{PLoS One}, 12(7), e0181790.
 
 }
 \author{

@@ -13,9 +13,9 @@ coefplot.manyglm(object, y.label = TRUE, which.Xcoef = NULL,
 
 \item{y.label}{Whether all the Y variables should be labelled}
 
-\item{which.Xcoef}{Which X covariates should be included in the plot. Defaults to all except intercept.}
+\item{which.Xcoef}{Which X covariates should be included in the plot.}
 
-\item{which.Ys}{Which Y variables should be included in the plot. Defaults to all.}
+\item{which.Ys}{Which Y variables should be included in the plot.}
 
 \item{incl.intercept}{Whether the intercept coefficient should be included.}
 
@@ -31,27 +31,5 @@ coefplot.manyglm(object, y.label = TRUE, which.Xcoef = NULL,
 none
 }
 \description{
-A way to plot the coefficients of the covariates of a manyglm object. Modifies code from Niku, Hui and Taskinen's coefplot.gllvm.
-
-If you have a large number of terms in your model, consider using which.Xcoef to choose just a few to plot. Default behaviour will try to plot everything, which would be a pretty big figure!
+A way to plot the coefficients of the covariates of a manyglm object. Modifies code from Niku, Hui and Taskinen's coefplot.gllvm
 }
-\seealso{
-\code{\link{manyglm}}, \code{\link[mvabund:summary.manyglm]{summary.manyglm}}.
-}
-\examples{
-## Load the hunting spider data set
-data(spider)
-spiddat <- mvabund(spider$abund)
-X <- spider$x
-
-#To fit a log-linear model assuming counts are negative binomial:
-glm.spid <- manyglm(spiddat~X, family="negative.binomial")
-
-# A coefplot of parameters:
-coefplot(glm.spid, which.Xcoef=2:3) #for coef plots of soil.dry and bare.sand. Note which.Xcoef=1 is the intercept
-
-}
-\keyword{models}
-\keyword{regression}
-\keyword{multivariate}
-\keyword{hplot}
