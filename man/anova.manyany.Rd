@@ -81,6 +81,10 @@ returns resampling-based univariate P-values for all effects as well as the mult
 P-values, if \code{composition=FALSE}. There are currently no univariate P-value options
 when \code{composition=TRUE} (it's not entirely clear how such P-values should be obtained)
 and if univariate P's are of interest why not rerun the model with \code{composition=FALSE}.
+
+A current limitation of the function is that \code{composition} needs to be set to
+the same value in each manyany object being compared - it is not currently possible
+to compare models with and without a compositional term in them.
 }
 
 \value{
