@@ -24,8 +24,6 @@ coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Y
                              cex.ylab = 0.5, mfrow = NULL, mar = c(4,8,2,1), ...){
    
 
-  #DW change: trying to make coefplot without calling coefplot.manyglm
-  UseMethod("coefplot")
   # Sanity checks
   if(is.null(object$coefficients))
     stop("There are no X covariates to plot.")
@@ -102,3 +100,6 @@ coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Y
   
   
 }
+
+setGeneric("coefplot")   
+setMethod("coefplot", "manyglm", coefplot.manyglm)
