@@ -201,13 +201,8 @@ default.plot.manylm  <- function(x,
       if( "col" %in% names(dots) )
         col <- dots$col
       else
-        {
-    	  if(n.vars<8)
-    	    col=1:n.vars
-    	  else
-    	    col = rainbow(n.vars+1)[2:(n.vars+1)]
-        }
-    	
+        col = rainbow(n.vars+1)[2:(n.vars+1)]
+
     	#################### BEGIN get window dimensions  ##########################
   
     	if(!is.null(mfcol)) {
