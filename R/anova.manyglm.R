@@ -105,8 +105,8 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
     else if (substr(test,1,1) == "L") testnum <- 4 #LR
     else stop("'test'not defined. Choose one of 'wald', 'score', 'LR' for an manyglm object.")  
 
-    if (resampnum==0 && testnum!=2) # case resampling and score/LR test
-       warning("case resampling with score and LR tests is under development. try case resampling with wald test.")
+    if (resampnum==0 && testnum==3) # case resampling not available for score.
+      stop("Case resampling is not available for the score test. Please use LR or Wald.")
 
     if (cor.type == "R") {
         corrnum <- 0
@@ -222,6 +222,7 @@ anova.manyglm <- function(object, ..., resamp="pit.trap", test="LR", p.uni="none
           nterms <- max(0, varseq)+1
           tl <- c("(Intercept)", tl)
        }
+       tl <- tl[1 + unique(object$assign)] # attempt to deal with bug
        if ( nParam==1 )
            stop("An intercept model is comparing to itself. Stopped")
 

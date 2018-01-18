@@ -16,3 +16,4 @@ LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
 Packaged: 2016-10-06 08:18:43 UTC; alice
+RoxygenNote: 6.0.1
