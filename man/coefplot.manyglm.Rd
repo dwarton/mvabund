@@ -45,7 +45,7 @@ X <- spider$x
 #To fit a log-linear model assuming counts are negative binomial:
 glm.spid <- manyglm(spiddat~X, family="negative.binomial")
 # A coefplot of parameters:
-coefplot(glm.spid, which.Xcoef=2:3) #for coef plots of soil.dry and bare.sand. Note which.Xcoef=1 is the intercept
+coefplot(glm.spid, which.Xcoef=2:3) #for plots of soil.dry and bare.sand (which.Xcoef=1 is the intercept)
 }
 \keyword{models}
 \keyword{regression}
