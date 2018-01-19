@@ -159,7 +159,12 @@ default.plot.manyglm  <- function(x, which = 1, res.type="pit.norm", caption = c
      dots$col=NULL
    } 
    else
-     col = rainbow(n.vars+1)[2:(n.vars+1)]
+   {
+     if(n.vars<8)
+       col=1:8
+     else
+       col = rainbow(n.vars+1)[2:(n.vars+1)]
+   }
    if (write.plot=="show")
      on.exit( par(opp), add=TRUE ) 
 
