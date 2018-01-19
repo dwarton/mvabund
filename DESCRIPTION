@@ -8,12 +8,12 @@ Description: A set of tools for displaying, modeling and analysing
         multivariate abundance data in community ecology. See
         'mvabund-package.Rd' for details of overall package organization.
         The package is implemented with the Gnu Scientific Library
-        (http://www.gnu.org/software/gsl/) and Rcpp
-        (http://dirk.eddelbuettel.com/code/rcpp.html) R / C++ classes.
+        (<http://www.gnu.org/software/gsl/>) and 'Rcpp'
+        (<http://dirk.eddelbuettel.com/code/rcpp.html>) 'R' / 'C++' classes.
 Depends: R (>= 3.0.0)
 Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-Packaged: 2016-10-06 08:18:43 UTC; alice
+Packaged: 2018-01-19; David
 RoxygenNote: 6.0.1
