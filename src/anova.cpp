@@ -6,7 +6,7 @@
 #include "resampTest.h"
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include <gsl/gsl_permutation.h> 
+#include <gsl/gsl_permutation.h>
 #include <gsl/gsl_sort_vector.h>
 #include <gsl/gsl_sort_double.h>
 
@@ -17,12 +17,12 @@ AnovaTest::AnovaTest(mv_Method *mm, gsl_matrix *Y, gsl_matrix *X, gsl_matrix *is
     unsigned int hid, aid;
     unsigned int i, j, count;
     nModels=inRef->size1, nParam=Xref->size2;
-    nRows=Yref->size1, nVars=Yref->size2; 
+    nRows=Yref->size1, nVars=Yref->size2;
 
 //  printf("initialize public variables: stats\n");
     multstat=(double *)malloc((nModels-1)*sizeof(double));
     Pmultstat = (double *)malloc((nModels-1)*sizeof(double));
-    for (j=0; j<nModels-1; j++) *(Pmultstat+j)=0.0; 
+    for (j=0; j<nModels-1; j++) *(Pmultstat+j)=0.0;
     dfDiff = (unsigned int *)malloc((nModels-1)*sizeof(unsigned int));
 
     statj = gsl_matrix_alloc(nModels-1, nVars);
@@ -30,10 +30,10 @@ AnovaTest::AnovaTest(mv_Method *mm, gsl_matrix *Y, gsl_matrix *X, gsl_matrix *is
     gsl_matrix_set_zero(Pstatj);
 
     bStatj = gsl_vector_alloc(nVars);
-    Hats = (mv_mat *)malloc(nModels*sizeof(mv_mat)); 
+    Hats = (mv_mat *)malloc(nModels*sizeof(mv_mat));
     sortid = (gsl_permutation **)malloc((nModels-1)*sizeof(gsl_permutation *));
-    
-    for (i=0; i<nModels; i++ ) {
+
+    for (i=0; i < nModels; i++ ) {
         // Hats[i]
         Hats[i].mat=gsl_matrix_alloc(nRows, nRows);
         Hats[i].SS=gsl_matrix_alloc(nVars, nVars);
@@ -41,37 +41,37 @@ AnovaTest::AnovaTest(mv_Method *mm, gsl_matrix *Y, gsl_matrix *X, gsl_matrix *is
         Hats[i].Res=gsl_matrix_alloc(nRows, nVars);
         Hats[i].Y = gsl_matrix_alloc(nRows, nVars);
         Hats[i].sd = gsl_vector_alloc(nVars);
-	count = 0;
-	for (j=0; j<nParam; j++){
-	    count+=(unsigned int)gsl_matrix_get(inRef, i, j);
-	}
-//	printf("count=%d \n", count);
-	Hats[i].X = gsl_matrix_alloc(nRows, count);
-	Hats[i].Coef=gsl_matrix_alloc(count, nVars);
+        count = 0;
+        for (j=0; j<nParam; j++){
+            count+=(unsigned int)gsl_matrix_get(inRef, i, j);
+        }
+        // printf("count=%d \n", count);
+        Hats[i].X = gsl_matrix_alloc(nRows, count);
+        Hats[i].Coef=gsl_matrix_alloc(count, nVars);
         gsl_vector_view refi=gsl_matrix_row(inRef, i);
-	subX(Xref, &refi.vector, Hats[i].X);
+        subX(Xref, &refi.vector, Hats[i].X);
         calcSS(Yref, &(Hats[i]), mmRef);
-//	displaymatrix(Hats[i].SS, "SS");
+        // displaymatrix(Hats[i].SS, "SS");
     }
 
     for (i=1; i<nModels; i++) {
         hid = i; aid = i-1;
         if ( mmRef->resamp != CASEBOOT ) {
-            // fit = Y- resi 
+            // fit = Y- resi
             gsl_matrix_memcpy (Hats[i].Y, Yref);
             gsl_matrix_sub (Hats[i].Y, Hats[i].Res);
-        } 
+        }
         gsl_vector_view statij = gsl_matrix_row(statj, aid);
-        testStatCalc(&(Hats[hid]), &(Hats[aid]), mmRef, TRUE, (multstat+aid), &statij.vector); 
-	dfDiff[aid] = Hats[aid].X->size2-Hats[hid].X->size2;
+        testStatCalc(&(Hats[hid]), &(Hats[aid]), mmRef, TRUE, (multstat+aid), &statij.vector);
+    dfDiff[aid] = Hats[aid].X->size2-Hats[hid].X->size2;
         // sortid
         sortid[aid] = gsl_permutation_alloc(nVars);
-        gsl_sort_vector_index (sortid[aid], &statij.vector); 
+        gsl_sort_vector_index (sortid[aid], &statij.vector);
         // rearrange sortid in descending order
         gsl_permutation_reverse (sortid[aid]);
-    }  
+    }
 
-    // initialize resampling indices 
+    // initialize resampling indices
 //    getBootID(); done in R
     bootID = NULL;
 
@@ -107,15 +107,15 @@ void AnovaTest::releaseTest()
 // The above commented out s.t. the results are passed out to R
 
     unsigned int i;
-    for ( i=0; i<nModels; i++ ){
+    for (i=0; i < nModels; i++) {
         gsl_matrix_free(Hats[i].mat);
         gsl_matrix_free(Hats[i].SS);
         gsl_matrix_free(Hats[i].R);
-	gsl_matrix_free(Hats[i].Res);
+        gsl_matrix_free(Hats[i].Res);
         gsl_matrix_free(Hats[i].Coef);
-	gsl_matrix_free(Hats[i].X);
-	gsl_matrix_free(Hats[i].Y);
-	gsl_vector_free(Hats[i].sd);
+        gsl_matrix_free(Hats[i].X);
+        gsl_matrix_free(Hats[i].Y);
+        gsl_vector_free(Hats[i].sd);
     }
     gsl_vector_free(bStatj);
 
@@ -145,19 +145,19 @@ void AnovaTest::display(void)
     if (mmRef->punit!=NONE){
        printf("Univariate Tests:\n");
        for (k=0; k<3; k++){
-           printf("Response:\t");    
+           printf("Response:\t");
            for (j=k*4; j<(k+1)*4; j++)
-               printf("variable%u\t", (unsigned int)j);    	
+               printf("variable%u\t", (unsigned int)j);
            printf("\n");
-           for ( i=0; i<nModels-1; i++ ){       
+           for ( i=0; i<nModels-1; i++ ){
                printf("Model %u:\t", (unsigned int)i+1);
                for (j=k*4; j<(k+1)*4; j++)
                    printf("%.3f(%.3f)\t", gsl_matrix_get(statj, i, j), gsl_matrix_get(Pstatj, i, j));
                printf("\n");
             }
-	   printf("\n");
+       printf("\n");
         }
-     }	
+     }
 }
 */
 
@@ -165,7 +165,7 @@ int AnovaTest::resampTest(void)
 {
 //    printf("Start resampling test ...\n");
     unsigned int i, j, p, id;
-    unsigned int maxiter=mmRef->nboot; 
+    unsigned int maxiter=mmRef->nboot;
     double hii, score;
 
     gsl_matrix *bX, *bY;
@@ -180,57 +180,57 @@ int AnovaTest::resampTest(void)
           for (i=0; i<nRows; i++)
               permid[i] = i;
     } }
-//    else 
+//    else
 //	displaymatrix(bootID, "bootID received");
 
-    // resampling options 
+    // resampling options
     if (mmRef->resamp == CASEBOOT) {
        nSamp = 0;
        for (i=0; i<maxiter; i++) {
            for ( j=0; j<nRows; j++ ){
-	       // resampling index
- 	       if (bootID == NULL) 
-	          id = gsl_rng_uniform_int(rnd, nRows);
-               else 
-	          id = (unsigned int) gsl_matrix_get(bootID, i, j);
+           // resampling index
+            if (bootID == NULL)
+              id = gsl_rng_uniform_int(rnd, nRows);
+               else
+              id = (unsigned int) gsl_matrix_get(bootID, i, j);
                // resample Y and X
                gsl_vector_view Yj=gsl_matrix_row(Yref, id);
                gsl_matrix_set_row (bY, j, &Yj.vector);
                gsl_vector_view Xj=gsl_matrix_row(Xref, id);
-               gsl_matrix_set_row (bX, j, &Xj.vector); 
-	    }
+               gsl_matrix_set_row (bX, j, &Xj.vector);
+        }
            anovacase(bY, bX);
            nSamp++;
         }
-    } 
+    }
     else if (mmRef->resamp == RESIBOOT) {
         nSamp = 0;
         for (i=0; i<maxiter; i++) {
-          for (p=1; p<nModels; p++) { 
+          for (p=1; p<nModels; p++) {
             if (mmRef->reprand!=TRUE) {
                 GetRNGstate();
                 printf("reprand==FALSE\n");
             }
             for (j=0; j<nRows; j++){
                // resampling index
- 	       if (bootID == NULL) 
-	          id = gsl_rng_uniform_int(rnd, nRows);
-               else 
-	          id = (unsigned int) gsl_matrix_get(bootID, i, j);
+            if (bootID == NULL)
+              id = gsl_rng_uniform_int(rnd, nRows);
+               else
+              id = (unsigned int) gsl_matrix_get(bootID, i, j);
                // bootr by resampling resi=(Y-fit)
                gsl_vector_view Yj=gsl_matrix_row(Yref, id);
                gsl_vector_view Fj=gsl_matrix_row(Hats[p].Y, id);
                gsl_matrix_set_row (bY, j, &Yj.vector);
                gsl_vector_view bootr=gsl_matrix_row(bY, j);
-               gsl_vector_sub (&bootr.vector, &Fj.vector);  
+               gsl_vector_sub (&bootr.vector, &Fj.vector);
                if (mmRef->student==TRUE) {
                   hii = gsl_matrix_get(Hats[p].mat, id, id);
                   gsl_vector_scale (&bootr.vector, 1/sqrt(1-hii));
-               } 
+               }
                // bY = Y + bootr
                Yj=gsl_matrix_row(Hats[p].Y, j);
                gsl_vector_add (&bootr.vector, &Yj.vector);
-	    } 
+        }
             if (mmRef->reprand!=TRUE) PutRNGstate();
             anovaresi(bY, p);
          }
@@ -242,16 +242,16 @@ int AnovaTest::resampTest(void)
          for (p=1; p<nModels; p++) {
            for ( j=0; j<nRows; j++ ) {
                // random score
-	       if ( bootID == NULL )
-	          score = gsl_ran_ugaussian (rnd); 
-	       else
-	          score = (double)gsl_matrix_get(bootID, i, j);
-               // bootr = (Y - fit)*score 
+           if ( bootID == NULL )
+              score = gsl_ran_ugaussian (rnd);
+           else
+              score = (double)gsl_matrix_get(bootID, i, j);
+               // bootr = (Y - fit)*score
                gsl_vector_view Yj=gsl_matrix_row(Yref, j);
                gsl_vector_view Fj=gsl_matrix_row(Hats[p].Y, j);
                gsl_matrix_set_row (bY, j, &Yj.vector);
                gsl_vector_view bootr=gsl_matrix_row(bY, j);
-               gsl_vector_sub (&bootr.vector, &Fj.vector); 
+               gsl_vector_sub (&bootr.vector, &Fj.vector);
                if (mmRef->student==TRUE) {
                   hii = gsl_matrix_get(Hats[p].mat, j, j);
                   gsl_vector_scale (&bootr.vector, 1/sqrt(1-hii));
@@ -259,32 +259,32 @@ int AnovaTest::resampTest(void)
                 // bY = Y + bootr
                gsl_vector_scale (&bootr.vector, score);
                gsl_vector_add (&bootr.vector, &Fj.vector);
- 	   } 
+        }
           anovaresi(bY, p);
-        } 
+        }
         nSamp++;
    } }
-   else if ( mmRef->resamp == PERMUTE ) { 
-       gsl_matrix_add_constant (Pstatj, 1.0); 
+   else if ( mmRef->resamp == PERMUTE ) {
+       gsl_matrix_add_constant (Pstatj, 1.0);
        for (p=0; p<nModels-1; p++)
            Pmultstat[p]=1.0;       // include itself
         nSamp = 1;
         for (i=0; i<maxiter-1; i++) { //999
-            for (p=1; p<nModels; p++){ 
-                if (bootID == NULL ) 
+            for (p=1; p<nModels; p++){
+                if (bootID == NULL )
                     gsl_ran_shuffle(rnd, permid, nRows, sizeof(unsigned int));
              // get bootr by permuting resi:Y-fit
                 for (j=0; j<nRows; j++){
- 	            if (bootID == NULL) 
-	               id = permid[j];
-                    else 
-	               id = (unsigned int) gsl_matrix_get(bootID, i, j);
+                 if (bootID == NULL)
+                   id = permid[j];
+                    else
+                   id = (unsigned int) gsl_matrix_get(bootID, i, j);
                    // bootr by resampling resi=(Y-fit)
                     gsl_vector_view Yj=gsl_matrix_row(Yref, id);
                     gsl_vector_view Fj=gsl_matrix_row(Hats[p].Y, id);
                     gsl_matrix_set_row (bY, j, &Yj.vector);
                     gsl_vector_view bootr=gsl_matrix_row(bY, j);
-                    gsl_vector_sub (&bootr.vector, &Fj.vector); 
+                    gsl_vector_sub (&bootr.vector, &Fj.vector);
                     if (mmRef->student==TRUE) {
                         hii = gsl_matrix_get(Hats[p].mat, id, id);
                         gsl_vector_scale (&bootr.vector, 1/sqrt(1-hii));
@@ -296,33 +296,33 @@ int AnovaTest::resampTest(void)
                  anovaresi(bY, p);
            }
            nSamp++;
-       }      
+       }
    }
-   else 
+   else
        GSL_ERROR("Invalid resampling option", GSL_EINVAL);
 
-   // p-values 
+   // p-values
    unsigned int sid, sid0;
-   double *pj;  
-   for (i=0; i<nModels-1; i++) { 
+   double *pj;
+   for (i=0; i<nModels-1; i++) {
         Pmultstat[i]=(double) (Pmultstat[i]+1)/(nSamp+1); // adjusted with +1
         pj = gsl_matrix_ptr (Pstatj, i, 0);
-        if ( mmRef->punit == FREESTEP ){ 
+        if ( mmRef->punit == FREESTEP ){
            for (j=1; j<nVars; j++){
                sid = gsl_permutation_get(sortid[i], j);
-	       sid0 = gsl_permutation_get(sortid[i], j-1);
-	       *(pj+sid)=MAX(*(pj+sid), *(pj+sid0)); 
-	   }  
+           sid0 = gsl_permutation_get(sortid[i], j-1);
+           *(pj+sid)=MAX(*(pj+sid), *(pj+sid0));
+       }
         }
-        if ( mmRef->punit == STEPUP ){ 
+        if ( mmRef->punit == STEPUP ){
            for (j=2; j<nVars; j++){
                sid = gsl_permutation_get(sortid[i], nVars-j);
-	       sid0 = gsl_permutation_get(sortid[i], nVars-j+1);
-	       *(pj+sid) = MIN(*(pj+sid), *(pj+sid0)); 
-	   }  
+           sid0 = gsl_permutation_get(sortid[i], nVars-j+1);
+           *(pj+sid) = MIN(*(pj+sid), *(pj+sid0));
+       }
         }
         for (j=0; j<nVars; j++)
-            *(pj+j) = (double)(*(pj+j)+1)/(nSamp+1);  // adjusted with +1 
+            *(pj+j) = (double)(*(pj+j)+1)/(nSamp+1);  // adjusted with +1
     }
 
    // free memory
@@ -347,15 +347,15 @@ int AnovaTest::anovacase(gsl_matrix *bY, gsl_matrix *bX)
    double *sj, *pj, *bj;
    gsl_matrix *Z = gsl_matrix_alloc(nRows, nVars);
    gsl_matrix_memcpy(Z, bY);
-   // Hats.X 
+   // Hats.X
    for (i=0; i<nModels-1; i++){
-      hid = i+1; aid = i;  
+      hid = i+1; aid = i;
       gsl_vector_view ref1 = gsl_matrix_row(inRef, aid);
       subX(bX, &ref1.vector, Hats[aid].X);
       gsl_vector_view ref0 = gsl_matrix_row(inRef, hid);
       subX(bX, &ref0.vector, Hats[hid].X);
       //Y = X*coef
-      gsl_blas_dgemm(CblasNoTrans,CblasNoTrans,-1.0,Hats[aid].X,Hats[aid].Coef,0.0,Z); 
+      gsl_blas_dgemm(CblasNoTrans,CblasNoTrans,-1.0,Hats[aid].X,Hats[aid].Coef,0.0,Z);
       //Z = bY - Yhat;
       gsl_matrix_add (Z, bY);
       // calc teststats
@@ -366,7 +366,7 @@ int AnovaTest::anovacase(gsl_matrix *bY, gsl_matrix *bX)
       if (bMultStat >= multstat[i]) Pmultstat[i]++;
       sj = gsl_matrix_ptr (statj, i, 0);
       pj = gsl_matrix_ptr (Pstatj, i, 0);
-      bj = gsl_vector_ptr (bStatj, 0);          
+      bj = gsl_vector_ptr (bStatj, 0);
       calcAdjustP(mmRef->punit, nVars, bj, sj, pj, sortid[i]);
    }
 
@@ -390,7 +390,7 @@ int AnovaTest::anovaresi(gsl_matrix *bY, const unsigned int i)
     double *sj = gsl_matrix_ptr (statj, aid, 0);
     double *pj = gsl_matrix_ptr (Pstatj, aid, 0);
     double *bj = gsl_vector_ptr (bStatj, 0);
-    calcAdjustP(mmRef->punit, nVars, bj, sj, pj, sortid[aid]);    
-       
+    calcAdjustP(mmRef->punit, nVars, bj, sj, pj, sortid[aid]);
+
    return 0;
 }

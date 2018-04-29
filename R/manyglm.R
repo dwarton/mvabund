@@ -3,7 +3,24 @@
 # the (default) methods coef, residuals, fitted values can be used             
 ###############################################################################
 
-manyglm <- function (formula, family="negative.binomial", K=1, data=NULL, subset=NULL, na.action=options("na.action"), theta.method = "PHI", model = FALSE, x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL, tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10, show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE, show.warning=FALSE, offset, ... ) {
+manyglm <- function (formula,
+    family="negative.binomial",
+    K=1,
+    data=NULL,
+    subset=NULL,
+    na.action=options("na.action"),
+    theta.method = "PHI",
+    model = FALSE,
+    x = TRUE,
+    y = TRUE,
+    qr = TRUE,
+    cor.type= "I",
+    shrink.param=NULL,
+    tol=sqrt(.Machine$double.eps),
+    maxiter=25,
+    maxiter2=10,
+    show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE, show.warning=FALSE,
+    offset, ... ) {
 
 # start by converting any family objects that can be handled over to character strings 
 if(class(family)=="family"){
@@ -16,6 +33,7 @@ if(class(family)=="family"){
     family="poisson"
   if(fam$family=="gaussian" & fam$link=="identity")
     family="gaussian"
+  # FAMILY EDIT
 }
   
 if ( is.character(family) ) {
@@ -47,7 +65,8 @@ if ( is.character(family) ) {
        linkfun <- 1 
        K = 1 # response must be binary 
     }   
-    else stop (paste("'family'", family, "not recognized"))
+    # FAMILY EDIT
+    else stop (paste("'family'", family, "not recognised. See ?manyglm for currently available options."))
 }
 else stop("'family' not recognised. See ?manyglm for currently available options.") 
   
@@ -161,7 +180,6 @@ else {
     else warn <- 0
 
     ######### call Glm Fit Rcpp #########
-    
     modelParam <- list(tol=tol, regression=familynum, link=linkfun, estimation=methodnum, stablizer=FALSE, n=K, maxiter=maxiter, maxiter2=maxiter2, warning=warn)
     if(is.null(offset)) O <- matrix(0, nrow=N, ncol=p)   
     else if (NCOL(offset)==1) O <- matrix(rep(offset), nrow=N, ncol=p)
