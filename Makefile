@@ -5,10 +5,10 @@ install:
 	R CMD INSTALL .
 
 build: compile
-	R CMD build --no-build-vignettes .
+	R CMD build .
 
 check: build
-	R CMD check --no-build-vignettes --no-manual `ls -1tr ${PACKAGE}*gz | tail -n1`
+	R CMD check --no-manual `ls -1tr ${PACKAGE}*gz | tail -n1`
 	@rm -f `ls -1tr ${PACKAGE}*gz | tail -n1`
 	@rm -rf ${PACKAGE}.Rcheck
 
@@ -16,10 +16,13 @@ check: build
 compile: attributes
 	Rscript -e 'devtools::compile_dll()'
 
+vignettes:
+	Rscript -e "library('methods'); devtools::build_vignettes()"
+
 test:
 	Rscript -e 'library(methods); devtools::test()'
 
 attributes:
 	Rscript -e "Rcpp::compileAttributes()"
 
-.PHONY: test attributes install build check
+.PHONY: test attributes install build check vignettes

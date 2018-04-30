@@ -300,6 +300,7 @@ public:
 };
 
 // poisson regression
+// this serves as a super class for the other families.
 class PoissonGlm : public glm {
 public: // public functions
   PoissonGlm(const reg_Method *);
@@ -313,8 +314,6 @@ public: // public functions
   double getDisper(unsigned int id, double th) const;
   int update(gsl_vector *bj, unsigned int id);
   int predict(gsl_vector_view bj, unsigned int id, double a);
-  //           int predict(gsl_vector_view, gsl_vector *, unsigned int id,
-  //           double a);
 
   //    private:
   // Log-link and property functions
@@ -523,13 +522,13 @@ public:
 private:
   int getBootID(void);
 
-  //	    int geeCalc(glm *PtrAlt, glm *PtrNull, gsl_matrix *);
+  // int geeCalc(glm *PtrAlt, glm *PtrNull, gsl_matrix *);
   int GeeWald(glm *, gsl_matrix *, gsl_vector *);
   int GeeScore(gsl_matrix *, glm *, gsl_vector *);
   int GeeLR(glm *PtrAlt, glm *PtrNull, gsl_vector *teststat);
 
-  //            int resampSmryCase(glm *, gsl_matrix *, GrpMat *, GrpMat *,
-  //            unsigned int i ); // summary
+  // int resampSmryCase(glm *, gsl_matrix *, GrpMat *, GrpMat *,
+  // unsigned int i ); // summary
   int resampSmryCase(glm *, gsl_matrix *, GrpMat *, gsl_matrix *,
                      unsigned int i); // summary
   int resampAnovaCase(glm *, gsl_matrix *, gsl_matrix *, gsl_matrix *,

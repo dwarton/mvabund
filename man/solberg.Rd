@@ -1,7 +1,6 @@
 \name{solberg}
 \docType{data}
 \alias{solberg}
-% \encoding{latin1}
 \title{Solberg Data}
 \description{
 This dataset contains a list with abundance data of species and a factor variable.
@@ -29,7 +28,7 @@ A list containing the elements
 \code{Chromaspirina_sp.}, \code{Molgolaimus_sp.}, \cr
 \code{Spirinia_parasitifera}, \code{Aponema_torosa}, \cr
 \code{Microlaimus_sp.1}, \code{Microlaimus_sp.2}, \code{Camacolaimus_sp.}, \cr
-\code{Leptolaimus_elegans}, \code{Monhystera_sp.},\cr 
+\code{Leptolaimus_elegans}, \code{Monhystera_sp.},\cr
 \code{Amphimonhystera_sp.}, \code{Daptonema_sp.1}, \code{Daptonema_sp.2}, \cr
 \code{Daptonema_sp.3}, \code{Theristus_aff_acer}, \code{Xyalidae_un.},\cr
 \code{Sphaerolaimus_macrocirculus}, \code{Sphaerolaimus_paradoxus},\cr
@@ -46,7 +45,7 @@ A list containing the elements
 Gee J. M., Warwick R. M., Schaanning M., Berge J. A. and Ambrose W. G. Jr (1985) Effects of organic enrichment on meiofaunal abundance and community structure in sublittoral soft sediments. \emph{Journal of Experimental Marine Biology and Ecology}. 91(3), 247-262.
 
 }
-\details{The abundance of each species was measured as the count 
+\details{The abundance of each species was measured as the count
 of the number of organisms in the sample.}
 % \seealso{}
 \examples{
