@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 ## C++
 The main header file is called `resampTest.h`
 
-This contains many `#define`'s and all class definitions.
+This contains many `#define`'s and all of the class definitions.
 We should consider refactoring this to give it a more logical structure.
 
 ### `glm`

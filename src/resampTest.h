@@ -64,6 +64,7 @@
 #define POISSON 1
 #define NBIN 2
 #define BIN 3
+#define GAMMA 4
 // link function
 #define LOGIT 0
 #define CLOGLOG 1
@@ -343,6 +344,61 @@ public: // public functions
   unsigned int genRandist(double mui, double a) const { return Rf_rpois(mui); }
 };
 
+// Gamma regression y1 ~ GAMMA(shape = n, rate = shape / mui)
+// Using inverse Link
+// these have been taken from looking at Gamma() unless otherwise stated
+// See issue #53
+class GammaGlm : public PoissonGlm {
+public:
+  GammaGlm(const reg_Method *);
+  virtual ~GammaGlm();
+  // we will use the log link inherited from PoissonGlm base class
+  // the functions below are using the inverse link function
+  // double link(double mui) const { return 1 / MAX(mintol, mui); }
+  // double linkinv(double etai) const { return 1 / MAX(mintol, etai); }
+  // double LinkDash(double mui) const { return -1 / MAX(mui * mui, mintol); }
+
+  // weifunc is defined by the link not the family
+
+  // the variance as a function of the mean
+  // EX = shape / rate = mui, VarX = shape/(rate^2)
+  // Var (mui) =  mui^2/shape
+  // A here is the estimates shape parameter
+  double varfunc(double mui, double a) const { return (mui * mui) / a; }
+  // deviance residual HELP I am not sure if this is right.
+  double devfunc(double yi, double mui, double a) const {
+    a = n; // CHANGE
+    return -2 * a *
+           (log(yi == 0 ? 1 : yi / MAX(mintol, mui)) -
+            (yi - mui) / MAX(mintol, mui));
+  }
+  // n = k
+  double llfunc(double yi, double mui, double a) const {
+    a = n; // CHANGE
+    return 2 * ((a - 1) * log(yi) - (yi * a) / mui +
+                a * (log(a) - log(MAX(mintol, mui))) - gsl_sf_lngamma(a));
+  }
+
+  // standard functions, but I am not sure if the parameterization is right
+  // mui = shape / rate => rate = shape / mui,
+  double pdf(double yi, double mui, double a) const {
+    a = n; // CHANGE
+    return Rf_dgamma(yi, a, a / MAX(mintol, mui), FALSE);
+  }
+  double cdf(double yi, double mui, double a) const {
+    a = n; // CHANGE
+    return Rf_pgamma(yi, a, a / MAX(mintol, mui), TRUE, FALSE);
+  }
+  unsigned int cdfinv(double ui, double mui, double a) const {
+    a = n; // CHANGE
+    return (unsigned int)Rf_qgamma(ui, a, a / MAX(mintol, mui), TRUE, FALSE);
+  }
+  unsigned int genRandist(double mui, double a) const {
+    a = n; // CHANGE
+    return Rf_rgamma(a, a / MAX(mintol, mui));
+  }
+};
+
 // Binomial regression yi ~ BIN(n, pi), mui=n*pi
 class BinGlm : public PoissonGlm {
 public: // public functions
@@ -425,7 +481,7 @@ public:
   }
   int nbinfit(gsl_matrix *, gsl_matrix *, gsl_matrix *, gsl_matrix *);
   //    private:
-  // See help(rnbinom) for the parameterisation used in ecoloy
+  // See help(rnbinom) for the parameterisation used in ecology
   // *nbinom( , size, prob, mu, )
   // size = th (dispersion)
   // prob = size/(size+mu)

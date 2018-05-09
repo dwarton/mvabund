@@ -7,7 +7,7 @@
 #include <gsl/gsl_sf_psi.h>
 #include <string.h>
 
-// Note try to use gsl functions as much as poosible to increase speed and
+// Note try to use gsl functions as much as possible to increase speed and
 // stabilitiy
 
 glm::glm(const reg_Method *mm)
@@ -18,7 +18,6 @@ glm::glm(const reg_Method *mm)
   maxth = 100;
   n = mmRef->n;
   speclink = mmRef->speclink;
-  // printf("link function = %d", speclink);
   maxiter = mmRef->maxiter;
   maxiter2 = mmRef->maxiter2;
   // Error terms
@@ -35,15 +34,15 @@ glm::glm(const reg_Method *mm)
 PoissonGlm::PoissonGlm(const reg_Method *mm) : glm(mm) {}
 
 BinGlm::BinGlm(const reg_Method *mm) : PoissonGlm(mm) {}
+GammaGlm::GammaGlm(const reg_Method *mm) : PoissonGlm(mm) {}
 
 NBinGlm::NBinGlm(const reg_Method *mm) : PoissonGlm(mm) {}
 
 glm::~glm() {}
 
 PoissonGlm::~PoissonGlm() {}
-
+GammaGlm::~GammaGlm() {}
 BinGlm::~BinGlm() {}
-
 NBinGlm::~NBinGlm() {}
 
 void glm::releaseGlm(void) {
@@ -244,6 +243,11 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
       theta[j] = a[j];
     // estimate mu and beta
     iterconv[j] = betaEst(j, maxiter, &tol, theta[j]);
+
+    // TODO check if gamma then calculate shape
+    // TODO somewhere to store gamma's shape
+    // return and store this shape vector where negbin does this, this is the
+    // theta vector theta by default will be zero for poisson
     if ((mmRef->warning == TRUE) & (iterconv[j] == maxiter))
       printf("Warning: EstIRLS reached max iterations, may not converge in the "
              "%d-th variable (dev=%.4f, err=%.4f)!\n",
@@ -395,19 +399,20 @@ int PoissonGlm::betaEst(unsigned int id, unsigned int iter, double *tol,
     gsl_linalg_cholesky_solve(XwX, Xwz, &bj.vector);
 
     // Debug for nan
-    /*   if (gsl_vector_get(&bj.vector, 1)!=gsl_vector_get(&bj.vector, 1)) {
-           displayvector(&bj.vector, "bj");
-           displayvector(z, "z");
-           gsl_vector_view mj=gsl_matrix_column(Mu, id);
-           displayvector(&mj.vector, "mj");
-           printf("weight\n");
-           for (i=0; i<nRows; i++){
-               printf("%.4f ", sqrt(weifunc(mij, th)));
-           }
-           printf("\n");
-           displaymatrix(XwX, "XwX");
-           exit(-1);
-       }
+    /*
+    if (gsl_vector_get(&bj.vector, 1) != gsl_vector_get(&bj.vector, 1)) {
+      displayvector(z, "z");
+      displayvector(&bj.vector, "bj");
+      gsl_vector_view mj = gsl_matrix_column(Mu, id);
+      displayvector(&mj.vector, "mj");
+      printf("weight\n");
+      for (i = 0; i < nRows; i++) {
+        printf("%.4f ", sqrt(weifunc(mij, th)));
+      }
+      printf("\n");
+      displaymatrix(XwX, "XwX");
+      exit(-1);
+    }
     */
     // Given bj, update eta, mu
     dev_old = dev[id];
@@ -731,6 +736,7 @@ double NBinGlm::thetaML(double k0, unsigned int id, unsigned int limit) {
   return k;
 }
 
+// moments estimation (maybe)
 double NBinGlm::getfAfAdash(double k0, unsigned int id, unsigned int limit) {
   unsigned int i, it = 0;
   double sum = 1, num = 0, k;
