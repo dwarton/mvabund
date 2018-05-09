@@ -286,31 +286,22 @@ List RtoGlmSmry(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
 
   glm *glmPtr[4] = {&pfit, &nbfit, &lfit, &gfit};
   unsigned int mtype = mm.model - 1;
-
-  Rprintf("\n ManyGlmSummary\n");
   glmPtr[mtype]->regression(Y, X, O, NULL);
-  Rprintf("\n y in rsummary glm: %f\n", Y[0, 0]);
   if (mm.warning) {
-    Rprintf("\n displaying\n");
-    glmPtr[mtype]->display();
+    // glmPtr[mtype]->display();
   }
 
-  Rprintf("1\n");
   GlmTest myTest(&tm);
-  Rprintf("2\n");
   // Resampling indices
-  Rprintf("3\n");
   if (bID.isNotNull()) {
     RcppGSL::Matrix m(bID);
     tm.nboot = m.nrow();
     myTest.bootID = m;
   }
-  Rprintf("4\n");
   // resampling test
   myTest.summary(glmPtr[mtype]);
   //    myTest.displaySmry(glmPtr[mtype]);
 
-  Rprintf("5\n");
   // Timing
   clk_end = clock();
   unsigned long int dif =

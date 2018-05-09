@@ -244,10 +244,15 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
     // estimate mu and beta
     iterconv[j] = betaEst(j, maxiter, &tol, theta[j]);
 
-    // TODO check if gamma then calculate shape
-    // TODO somewhere to store gamma's shape
-    // return and store this shape vector where negbin does this, this is the
-    // theta vector theta by default will be zero for poisson
+    if (mmRef->model == GAMMA) {
+      double moments = thetaEst_moments(j);
+      double newtons = thetaEst_newtons(0, j, maxiter2);
+      theta[j] = newtons;
+      printf("\ngamma family, shape estimate MoM %f, Newtons Method Estimate "
+             "%f",
+             moments, newtons);
+      // HELP DO I THEN REFIT betaEST to some tolerance like in nbinfit
+    }
     if ((mmRef->warning == TRUE) & (iterconv[j] == maxiter))
       printf("Warning: EstIRLS reached max iterations, may not converge in the "
              "%d-th variable (dev=%.4f, err=%.4f)!\n",
@@ -501,6 +506,59 @@ int PoissonGlm::predict(gsl_vector_view bj, unsigned int id, double th) {
   return isValid;
 }
 
+// estimates the shape (k)  parameter for the gamma family
+// via the newtons method, starting with a method of moments estimate
+// https://tminka.github.io/papers/minka-gamma.pdf
+// Newtons method outlined here
+// https://www.tandfonline.com/doi/abs/10.1080/00401706.1969.10490731
+// Method of moments estimate from slide 22:
+// https://www.statistics.ma.tum.de/fileadmin/w00bdb/www/czado/lec8.pdf
+// k- is starting
+double PoissonGlm::thetaEst_moments(unsigned int id) {
+  unsigned int i;
+  double sum = 0, num = 0;
+  double y, m;
+
+  for (i = 0; i < nRows; i++) {
+    y = gsl_matrix_get(Yref, i, id);
+    m = gsl_matrix_get(Mu, i, id);
+    sum = sum + (y / m - 1) * (y / m - 1);
+    num = num + 1;
+  }
+  return (num - nParams) / sum;
+}
+double PoissonGlm::thetaEst_newtons(double k0, unsigned int id,
+                                    unsigned int limit) {
+  unsigned int i, it = 0;
+  double sum = 0, num = 0, k;
+  double y;
+  // obtain an initial estimate via MoM
+  k = k0 == 0 ? thetaEst_moments(id) : k0;
+  // calculate some constants
+  double logxbar = 0, barlogx = 0;
+  for (i = 0; i < nRows; i++) {
+    y = gsl_matrix_get(Yref, i, id);
+    logxbar += y;
+    barlogx += log(y);
+  }
+  logxbar = log(logxbar / nRows);
+  barlogx = barlogx / nRows;
+  double s = logxbar - barlogx;
+  // now use newton-raphson
+  // printf("s = %f, logxbar=%f, barlogx =%f", s, logxbar, barlogx);
+  while (it < limit) {
+    // printf("\n it: %d, k: %f", it, k);
+    it++;
+    double update = (log(k) - gsl_sf_psi(k) - s) / ((1 / k) - gsl_sf_psi_1(k));
+    k = k - update;
+    double tol = ABS(update);
+    // break if the update was bery small
+    if (tol < eps)
+      break;
+  }
+  return k;
+}
+
 int NBinGlm::nbinfit(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
                      gsl_matrix *B) {
   gsl_set_error_handler_off();
@@ -691,6 +749,7 @@ double NBinGlm::thetaML(double k0, unsigned int id, unsigned int limit) {
   unsigned int i, it = 0;
   double del = 1, sum = 1, num = 0, k;
   double y, m, dl, ddl, tol;
+  // inital guess via method of moments (?maybe)
   if (k0 == 0) {
     for (i = 0; i < nRows; i++) {
       y = gsl_matrix_get(Yref, i, id);

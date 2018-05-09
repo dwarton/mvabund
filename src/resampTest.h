@@ -315,6 +315,9 @@ public: // public functions
   double getDisper(unsigned int id, double th) const;
   int update(gsl_vector *bj, unsigned int id);
   int predict(gsl_vector_view bj, unsigned int id, double a);
+  // used by gamma
+  double thetaEst_moments(unsigned int id);
+  double thetaEst_newtons(double k0, unsigned int id, unsigned int limit);
 
   //    private:
   // Log-link and property functions
@@ -360,21 +363,19 @@ public:
 
   // weifunc is defined by the link not the family
 
-  // the variance as a function of the mean
+  // The variance as a function of the mean
   // EX = shape / rate = mui, VarX = shape/(rate^2)
   // Var (mui) =  mui^2/shape
   // A here is the estimates shape parameter
   double varfunc(double mui, double a) const { return (mui * mui) / a; }
   // deviance residual HELP I am not sure if this is right.
   double devfunc(double yi, double mui, double a) const {
-    a = n; // CHANGE
     return -2 * a *
            (log(yi == 0 ? 1 : yi / MAX(mintol, mui)) -
             (yi - mui) / MAX(mintol, mui));
   }
   // n = k
   double llfunc(double yi, double mui, double a) const {
-    a = n; // CHANGE
     return 2 * ((a - 1) * log(yi) - (yi * a) / mui +
                 a * (log(a) - log(MAX(mintol, mui))) - gsl_sf_lngamma(a));
   }
@@ -382,19 +383,15 @@ public:
   // standard functions, but I am not sure if the parameterization is right
   // mui = shape / rate => rate = shape / mui,
   double pdf(double yi, double mui, double a) const {
-    a = n; // CHANGE
     return Rf_dgamma(yi, a, a / MAX(mintol, mui), FALSE);
   }
   double cdf(double yi, double mui, double a) const {
-    a = n; // CHANGE
     return Rf_pgamma(yi, a, a / MAX(mintol, mui), TRUE, FALSE);
   }
   unsigned int cdfinv(double ui, double mui, double a) const {
-    a = n; // CHANGE
     return (unsigned int)Rf_qgamma(ui, a, a / MAX(mintol, mui), TRUE, FALSE);
   }
   unsigned int genRandist(double mui, double a) const {
-    a = n; // CHANGE
     return Rf_rgamma(a, a / MAX(mintol, mui));
   }
 };
