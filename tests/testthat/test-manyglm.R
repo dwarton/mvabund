@@ -24,28 +24,36 @@ test_that("spider coefs", {
   expect_equal_to_reference(summary(glm.spid), 'poisson_spider_summary.rds')
 })
 
+test_that('theta estimation method warnings', {
+  Y <- sapply(1:4, function(x)  rnbinom(30, 5, 0.4))
+  # method of moments is not allowed for negative binomial family
+  expect_error(mvabund(Y ~ 1, theta.method = 'MOMENTS'), 'theta.method.*')
+})
+
 gen_gamma <- function(n, shape, rates) {
   sapply(rates, function(rate) rgamma(n, shape, rate))
 }
 
 test_that('poisson family', {
-  skip('no poisson tests')
-  Y <- sapply(1:4, function(x)  rpois(1000, x))
+  skip('causes seg fault')
+  Y <- sapply(1:4, function(x)  rpois(30, x))
   mvabund(Y) -> Y
   manyglm(Y ~ 1 , family = 'poisson') -> m
-  exp(coef(m))
+  print('poisson manyglm summary')
+  print(summary(m, show.warning = T))
   junk <- rnorm(1000)
   manyglm(Y ~ junk , family = 'poisson') -> m2
   exp(coef(m2)[1,])
   exp(coef(m2))[2,]
 })
+
 test_that("gamma family", {
+  skip('gamma family')
   n <- 1000; shape <- 1; rates <- 1:4
   Y <- mvabund(gen_gamma(n, shape, 1:4))
   junk <- rnorm(n)
   # using the log link
   gamma_glm <- manyglm(Y ~ junk, family="gamma", show.warning = T)
-  skip('gamma family')
   if(interactive()) {
     print('')
     print('rates')
@@ -61,6 +69,7 @@ test_that("gamma family", {
 })
 
 test_that("gamma family shape parameter", {
+  skip('write actual tests')
   n <- 1000; shapes <- 1:4; rate <- 1
   Y <- mvabund(sapply(shapes, function(shape) rgamma(n, shape, rate)))
   print(shapes)
@@ -68,13 +77,16 @@ test_that("gamma family shape parameter", {
   expect_equal(2*2, 4)
 })
 test_that("gamma family summary", {
-  skip('Breaking fail lda')
-  set.seed(100)
+  set.seed(200)
   shape = 1
-  Y <- mvabund(gen_gamma(1000, 1, 1:4))
+  n <- 100
+  Y <- mvabund(gen_gamma(n, shape, c(1,1,1)))
   # using the log link
-  gamma_glm <- manyglm(Y ~ 1, family="gamma", show.warning = T, k = shape, maxiter = 200)
-  print(summary(gamma_glm, show.warning = T))
+  junk <- rnorm(n)
+  gamma_glm <- manyglm(Y ~ junk, family="gamma", show.warning = T, k = shape)
+  tests <- c('wald','score','LR')
+  for (t in tests)
+    print(summary(gamma_glm, show.warning = T, test=t))
   expect_equal(2 * 2, 4)
 })
 

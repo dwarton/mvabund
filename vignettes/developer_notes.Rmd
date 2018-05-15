@@ -39,3 +39,8 @@ We should consider refactoring this to give it a more logical structure.
 PoissonGlm has other families as is subclasses.
 
 
+# How to
+
+## add a new family
+
+Files to edit:

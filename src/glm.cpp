@@ -237,21 +237,19 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
   gsl_matrix *WX = gsl_matrix_alloc(nRows, nParams);
   gsl_matrix *TMP = gsl_matrix_alloc(nRows, nParams);
   gsl_matrix *XwX = gsl_matrix_alloc(nParams, nParams);
-
   for (j = 0; j < nVars; j++) {
     if (a != NULL)
       theta[j] = a[j];
     // estimate mu and beta
     iterconv[j] = betaEst(j, maxiter, &tol, theta[j]);
-
+    // estimate the shape for gamma
     if (mmRef->model == GAMMA) {
-      double moments = thetaEst_moments(j);
-      double newtons = thetaEst_newtons(0, j, maxiter2);
-      theta[j] = newtons;
-      printf("\ngamma family, shape estimate MoM %f, Newtons Method Estimate "
-             "%f",
-             moments, newtons);
-      // HELP DO I THEN REFIT betaEST to some tolerance like in nbinfit
+      theta[j] = mmRef->estiMethod == MOMENTS
+                     ? thetaEst_moments(j)
+                     : thetaEst_newtons(0, j, maxiter2);
+      // Help do we refit using our shape parameter estimates
+      // I dont think we do because the th argument to betaEst only infulences
+      // weight which is determined by the link function - jw
     }
     if ((mmRef->warning == TRUE) & (iterconv[j] == maxiter))
       printf("Warning: EstIRLS reached max iterations, may not converge in the "
@@ -270,6 +268,8 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
       yij = gsl_matrix_get(Y, i, j);
       gsl_matrix_set(Res, i, j, (yij - mij) / sqrt(vij));
       // get PIT residuals for discrete data
+      // HELP I am not sure if we should do this for the gamma family as it is
+      // not discrete
       wei = gsl_rng_uniform_pos(rnd); // wei ~ U(0, 1)
       uij = wei * cdf(yij, mij, theta[j]);
       if (yij > 0)
@@ -350,15 +350,17 @@ int PoissonGlm::betaEst(unsigned int id, unsigned int iter, double *tol,
   *tol = 1.0;
   gsl_vector_memcpy(coef_old, &bj.vector);
   while (step < iter) {
-    for (i = 0; i < nRows; i++) { // (y-m)/g'
+    for (i = 0; i < nRows; i++) {
+      // (y-m)/g'
       yij = gsl_matrix_get(Yref, i, id);
       eij = gsl_matrix_get(Eta, i, id);
       mij = gsl_matrix_get(Mu, i, id);
-      //   if (mij<mintol) mij=mintol;
-      //   if (mij>maxtol) mij=maxtol;
+      // if (mij<mintol) mij=mintol;
+      // if (mij>maxtol) mij=maxtol;
       zij = eij + (yij - mij) * LinkDash(mij);
-      if (Oref != NULL)
+      if (Oref != NULL) {
         zij = zij - gsl_matrix_get(Oref, i, id);
+      }
       // wt=sqrt(weifunc);
       wij = sqrt(weifunc(mij, th));
       // W^1/2*z[good]
@@ -440,8 +442,8 @@ int PoissonGlm::betaEst(unsigned int id, unsigned int iter, double *tol,
         break;
       step1++;
       if (step1 > 10) {
-        //   printf("\t Half step stopped at iter %d: gradient=%.8f\n", step1,
-        //   dev_grad);
+        // printf("\t Half step stopped at iter %d: gradient=%.8f\n", step1,
+        //       dev_grad);
         break;
       }
     }
@@ -470,7 +472,7 @@ int PoissonGlm::update(gsl_vector *bj, unsigned int id) {
 
   for (i = 0; i < nRows; i++) {
     xi = gsl_matrix_row(Xref, i);
-    gsl_blas_ddot(&xi.vector, bj, &eij);
+    gsl_blas_ddot(&xi.vector, bj, &eij); // set eij to xi \dot bi
     if (Oref != NULL)
       eij = eij + gsl_matrix_get(Oref, i, id);
     if (eij > link(maxtol)) { // to avoid nan;
@@ -501,6 +503,11 @@ int PoissonGlm::predict(gsl_vector_view bj, unsigned int id, double th) {
     yij = gsl_matrix_get(Yref, i, id);
     mij = gsl_matrix_get(Mu, i, id);
     dev[id] = dev[id] + devfunc(yij, mij, th);
+
+    // if (mmRef->model == GAMMA && mmRef->warning == TRUE &&
+    //    i % 25 == 0) // REMOVE
+    //  printf("dev = %f yij = %f, mij = %f\n", devfunc(yij, mij, th), yij, mij,
+    //         th);
   }
 
   return isValid;
@@ -530,10 +537,9 @@ double PoissonGlm::thetaEst_moments(unsigned int id) {
 double PoissonGlm::thetaEst_newtons(double k0, unsigned int id,
                                     unsigned int limit) {
   unsigned int i, it = 0;
-  double sum = 0, num = 0, k;
   double y;
   // obtain an initial estimate via MoM
-  k = k0 == 0 ? thetaEst_moments(id) : k0;
+  double k = k0 == 0 ? thetaEst_moments(id) : k0;
   // calculate some constants
   double logxbar = 0, barlogx = 0;
   for (i = 0; i < nRows; i++) {

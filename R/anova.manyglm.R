@@ -84,9 +84,11 @@ anova.manyglm <- function(object, ...,
     else if (object$family == "gamma") { familynum <- 4; linkfun = 0}
     else stop("'family' not recognised. See ?manyglm for currently available options.")
 
-    if (object$theta.method == "ML") methodnum <- 0
+    if (object$theta.method == "ML") methodnum <- 0 # NEWTONS
     else if (object$theta.method == "Chi2") methodnum <- 1
     else if (object$theta.method == "PHI") methodnum <- 2
+    else if (object$theta.method == "METHODS") methodnum <- 3
+
 
     if (substr(resamp,1,1)=="c") resampnum <- 0  #case
     # To exclude case resampling

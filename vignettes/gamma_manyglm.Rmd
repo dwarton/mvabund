@@ -1,0 +1,70 @@
+---
+title: "Gamma Manyglm"
+author: "John Wilshire"
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Gamma Manyglm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+<!--
+-->
+This is a test vignette to showcase manyglm and its support for fitting gamma responses.
+
+```{r, out.width = '100%'}
+library(mvabund)
+set.seed(100)
+n <- 100
+nParams <- 3
+nVar <- 5
+junk1 <- rnorm(n)
+junk2 <- rnorm(n)
+sapply(1:nVar, function(x) rgamma(n, 3, 0.5)) -> Yg
+Yg <- mvabund(Yg)
+mg <- manyglm(Yg ~ junk1 + junk2,family = 'gamma')
+print(mg)
+mg$theta
+knitr::kable(coef(mg))
+for(i in 1:3)
+  plot(mg, which=i)
+```
+
+The coef plot is showing some weird stuff though
+```{r}
+coefplot.manyglm(mg)
+anova(mg, show.timing = T)
+summary(mg)
+# residual generic function
+scatter.smooth(mg$fitted, residuals(mg),
+  lpars = list(col = "red"))
+
+```
+
+```{r}
+coeff <- matrix(NA, ncol = nParams, nrow = nVar)
+theta_est <- rep(NA, nVar)
+for (i in 1:nVar) {
+  m <- glm(Yg[, i] ~ junk1 + junk2, family = Gamma(link='log'))
+  coeff[i,] <-  coef(m)
+  theta_est[i] <- 1/summary(m)$dispersion
+}
+# differences
+knitr::kable(t(t(coeff) - coef(mg)))
+
+# these are a little more different
+data.frame(theta_est, mg$theta) -> thetas
+cbind(thetas, abs(3 - thetas)) -> thetas
+colnames(thetas) <- c('glm est', 'manyglm_est', 'glm err', 'manyglm err')
+knitr::kable(thetas)
+```
+
+
+
+## TODO:
+
+* predict (havent tested)
+* p value corrections
+
+
+Some of the anovas work but I am not sure about stuff, needs a review

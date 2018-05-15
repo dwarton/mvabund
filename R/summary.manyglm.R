@@ -32,7 +32,7 @@ summary.manyglm <- function(object,
     if (show.warning==TRUE) warn=1
     else warn=0
 
-    if (cor.type!="I" & test=="LR") {
+    if (cor.type != "I" & test == "LR") {
        warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
        test <- "Wald"
     }
@@ -74,6 +74,7 @@ summary.manyglm <- function(object,
     else if (object$theta.method == "Chi2") methodnum <- 1
     else if (object$theta.method == "PHI") methodnum <- 2
     else stop("'method' not defined. Choose one of 'PHI', 'ML', 'Chi2' for an manyglm object")
+
     if (substr(resamp,1,1)=="c") resampnum <- 0  #case
     # To exclude case resampling
     #if (resamp=="case") stop("Sorry, case resampling is not yet available.")
@@ -105,13 +106,13 @@ summary.manyglm <- function(object,
     if (substr(p.uni,1,1) == "n"){
        pu <- 0
        calc.pj <- FALSE
-    } else if(substr(p.uni,1,1) == "u"){
+    } else if (substr(p.uni,1,1) == "u"){
        pu <- 1
        calc.pj <- TRUE
-    } else if(substr(p.uni,1,1) == "a"){
+    } else if (substr(p.uni,1,1) == "a"){
        pu <- 2
        calc.pj <- TRUE
-    } else if(substr(p.uni,1,1) == "s"){
+    } else if (substr(p.uni,1,1) == "s"){
        pu <- 3
        calc.pj <- TRUE
     } else
@@ -157,12 +158,12 @@ summary.manyglm <- function(object,
        }
     }
 
-
-    if (corrnum == 2 | resampnum==5 ) {
+    # if corr = shrink or monte carlo resamp
+    if (corrnum == 2 | resampnum == 5) {
        # get the shrinkage estimates
-       shrink.param <- c(rep(NA,nParam+2))
+       shrink.param <- c(rep(NA, nParam+2))
        tX <- matrix(1, nRows, 1)
-       if ( object$cor.type=="shrink") shrink.param[1] <- object$shrink.param
+       if (object$cor.type == "shrink") shrink.param[1] <- object$shrink.param
        else shrink.param[1] <- ridgeParamEst(dat=Y, X=X, weights=w, only.ridge=TRUE, tol=tol)$ridgeParameter
        objH0 <- manyglm(Y~tX, family=object$family, cor.type="shrink")
        shrink.param[2] <- objH0$shrink.param
@@ -173,12 +174,13 @@ summary.manyglm <- function(object,
            shrink.param[i+2] <- objH0$shrink.param
        }
     }
-    else if (corrnum == 0) shrink.param <- c(rep(1,nParam+2))
-    else if (corrnum == 1) shrink.param <- c(rep(0,nParam+2))
+    else if (corrnum == 0) shrink.param <- c(rep(1, nParam + 2))
+    else if (corrnum == 1) shrink.param <- c(rep(0, nParam + 2))
     modelParam <- list(tol=tol,
         regression=familynum,
         link=linkfun,
-        estimation=methodnum,stablizer=0,
+        estimation=methodnum,
+        stablizer=0,
         n=object$K,
         maxiter=object$maxiter,
         maxiter2=object$maxiter2,

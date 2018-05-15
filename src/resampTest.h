@@ -82,6 +82,7 @@
 #define NEWTON 0
 #define CHI2 1
 #define PHI 2
+#define MOMENTS 3
 // infoMatrix
 #define OIM 0
 #define EIM 1
@@ -296,8 +297,8 @@ public:
   virtual double devfunc(double, double, double) const = 0;
   virtual double pdf(double, double, double) const = 0;
   virtual double cdf(double, double, double) const = 0;
-  virtual unsigned int cdfinv(double, double, double) const = 0;
-  virtual unsigned int genRandist(double, double) const = 0;
+  virtual double cdfinv(double, double, double) const = 0;
+  virtual double genRandist(double, double) const = 0;
 };
 
 // poisson regression
@@ -341,15 +342,14 @@ public: // public functions
   double cdf(double yi, double mui, double a) const {
     return Rf_ppois(yi, mui, TRUE, FALSE);
   }
-  unsigned int cdfinv(double u, double mui, double a) const {
-    return (unsigned int)Rf_qpois(u, mui, TRUE, FALSE);
+  double cdfinv(double u, double mui, double a) const {
+    return Rf_qpois(u, mui, TRUE, FALSE);
   }
-  unsigned int genRandist(double mui, double a) const { return Rf_rpois(mui); }
+  double genRandist(double mui, double a) const { return Rf_rpois(mui); }
 };
 
-// Gamma regression y1 ~ GAMMA(shape = n, rate = shape / mui)
-// Using inverse Link
-// these have been taken from looking at Gamma() unless otherwise stated
+// Gamma regression y1 ~ GAMMA(shape = n = alpha = k, rate = shape / mui)
+// Using log link
 // See issue #53
 class GammaGlm : public PoissonGlm {
 public:
@@ -360,7 +360,6 @@ public:
   // double link(double mui) const { return 1 / MAX(mintol, mui); }
   // double linkinv(double etai) const { return 1 / MAX(mintol, etai); }
   // double LinkDash(double mui) const { return -1 / MAX(mui * mui, mintol); }
-
   // weifunc is defined by the link not the family
 
   // The variance as a function of the mean
@@ -369,31 +368,36 @@ public:
   // A here is the estimates shape parameter
   double varfunc(double mui, double a) const { return (mui * mui) / a; }
   // deviance residual HELP I am not sure if this is right.
+  // see slide 28 of http://www.imm.dtu.dk/~hmad/GLM/slides/lect06.pdf
   double devfunc(double yi, double mui, double a) const {
-    return -2 * a *
-           (log(yi == 0 ? 1 : yi / MAX(mintol, mui)) -
-            (yi - mui) / MAX(mintol, mui));
+    return -2 * (log(yi == 0 ? 1 : yi / MAX(mintol, mui)) -
+                 (yi - mui) / MAX(mintol, mui));
   }
-  // n = k
+  // a = k = shape
   double llfunc(double yi, double mui, double a) const {
     return 2 * ((a - 1) * log(yi) - (yi * a) / mui +
                 a * (log(a) - log(MAX(mintol, mui))) - gsl_sf_lngamma(a));
   }
 
-  // standard functions, but I am not sure if the parameterization is right
   // mui = shape / rate => rate = shape / mui,
+  // according to
+  // http://dirk.eddelbuettel.com/code/rcpp/html/Rmath_8h_source.html Rf_ ...
+  // takes the scale parameter and we use rate
   double pdf(double yi, double mui, double a) const {
-    return Rf_dgamma(yi, a, a / MAX(mintol, mui), FALSE);
+    return Rf_dgamma(yi, a, mui / MAX(mintol, a), FALSE);
   }
   double cdf(double yi, double mui, double a) const {
-    return Rf_pgamma(yi, a, a / MAX(mintol, mui), TRUE, FALSE);
+    return Rf_pgamma(yi, a, mui / MAX(mintol, a), TRUE, FALSE);
   }
-  unsigned int cdfinv(double ui, double mui, double a) const {
-    return (unsigned int)Rf_qgamma(ui, a, a / MAX(mintol, mui), TRUE, FALSE);
+  double cdfinv(double ui, double mui, double a) const {
+    return Rf_qgamma(ui, a, mui / MAX(mintol, a), TRUE, FALSE);
   }
-  unsigned int genRandist(double mui, double a) const {
-    return Rf_rgamma(a, a / MAX(mintol, mui));
+  double genRandist(double mui, double a) const {
+    return Rf_rgamma(a, mui / MAX(mintol, a));
   }
+  // used by gamma
+  double thetaEst_moments(unsigned int id);
+  double thetaEst_newtons(double k0, unsigned int id, unsigned int limit);
 };
 
 // Binomial regression yi ~ BIN(n, pi), mui=n*pi
@@ -456,12 +460,12 @@ public: // public functions
   {
     return Rf_pbinom(yi, n, mui / n, TRUE, FALSE);
   }
-  unsigned int cdfinv(double ui, double mui, double a) const
+  double cdfinv(double ui, double mui, double a) const
   //                { if (n==1) return (ui<1)?0:1;
   {
-    return (unsigned int)Rf_qbinom(ui, n, mui / n, TRUE, FALSE);
+    return (double)Rf_qbinom(ui, n, mui / n, TRUE, FALSE);
   }
-  unsigned int genRandist(double mui, double a) const {
+  double genRandist(double mui, double a) const {
     return Rf_rbinom(n, mui / n);
   }
 };
@@ -524,15 +528,15 @@ public:
     else
       return Rf_pnbinom(yi, th, th / (mui + th), TRUE, FALSE);
   }
-  unsigned int cdfinv(double ui, double mui, double th) const {
+  double cdfinv(double ui, double mui, double th) const {
     if (th == 0)
       return 0;
     else if (th > maxth)
       return Rf_qpois(ui, mui, TRUE, FALSE);
     else
-      return (unsigned int)Rf_qnbinom(ui, th, th / (mui + th), TRUE, FALSE);
+      return (double)Rf_qnbinom(ui, th, th / (mui + th), TRUE, FALSE);
   }
-  unsigned int genRandist(double mui, double th) const {
+  double genRandist(double mui, double th) const {
     if (th == 0)
       return 0;
     else if (th > maxth)

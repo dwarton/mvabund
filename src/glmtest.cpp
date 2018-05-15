@@ -5,6 +5,7 @@
 #include "resampTest.h"
 //#include "time.h"
 
+// constructor
 GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
   eps = tm->tol;
   //    eps = 1e-6;
@@ -56,6 +57,7 @@ GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
 
 GlmTest::~GlmTest(void) {}
 
+// cleanup
 void GlmTest::releaseTest(void) {
   if (smryStat != NULL)
     gsl_matrix_free(smryStat);
@@ -90,11 +92,16 @@ int GlmTest::summary(glm *fit) {
   unsigned int k;
   unsigned int nRows = tm->nRows, nVars = tm->nVars, nParam = tm->nParam;
   unsigned int mtype = fit->mmRef->model - 1;
+  // REDESIGN THIS
+  // Declare null models
   PoissonGlm pNull(fit->mmRef), pAlt(fit->mmRef);
   BinGlm binNull(fit->mmRef), binAlt(fit->mmRef);
   NBinGlm nbNull(fit->mmRef), nbAlt(fit->mmRef);
-  glm *PtrNull[3] = {&pNull, &nbNull, &binNull};
-  glm *PtrAlt[3] = {&pAlt, &nbAlt, &binAlt};
+  GammaGlm gammaNull(fit->mmRef), gammaAlt(fit->mmRef);
+
+  glm *PtrNull[4] = {&pNull, &nbNull, &binNull, &gammaNull};
+  glm *PtrAlt[4] = {&pAlt, &nbAlt, &binAlt, &gammaAlt};
+
   gsl_vector_view teststat, unitstat;
   gsl_matrix_view L1;
   // To estimate initial Beta from PtrNull->Beta
@@ -104,17 +111,24 @@ int GlmTest::summary(glm *fit) {
   smryStat = gsl_matrix_alloc((nParam + 1), nVars + 1);
   Psmry = gsl_matrix_alloc((nParam + 1), nVars + 1);
   gsl_matrix_set_zero(Psmry);
-
   // initialize the design matrix for all hypo tests
   GrpMat *GrpXs = (GrpMat *)malloc((nParam + 2) * sizeof(GrpMat));
   GrpXs[0].matrix = gsl_matrix_alloc(nRows, nParam);
   gsl_matrix_memcpy(GrpXs[0].matrix, fit->Xref); // the alt X
   GrpXs[1].matrix = gsl_matrix_alloc(nRows, 1);  // overall test
   gsl_matrix_set_all(GrpXs[1].matrix, 1.0);
-  for (k = 2; k < nParam + 2; k++) { // significance tests
+
+  // significance tests
+  for (k = 2; k < nParam + 2; k++) {
+    // if nParam = 1, ie just intercepts, this breaks I think this might be part
+    // of issue #54
     GrpXs[k].matrix = gsl_matrix_alloc(nRows, nParam - 1);
     subX2(fit->Xref, k - 2, GrpXs[k].matrix);
   }
+  // printf("\nmm->model %d, tm->test %d, tm->punit = %d, tm->corr = %d\n",
+  //     fit->mmRef->model, tm->test, tm->punit, tm->corr);
+
+  // REDESIGN - make this a switch maybe
   // Calc test statistics
   if (tm->test == WALD) {
     // the overall test compares to mean
@@ -122,6 +136,7 @@ int GlmTest::summary(glm *fit) {
     L1 = gsl_matrix_submatrix(L, 1, 0, nParam - 1, nParam);
     lambda = gsl_vector_get(tm->smry_lambda, 0);
     GetR(fit->Res, tm->corr, lambda, Rlambda);
+    // Errors here if we have less than 2 predictors
     GeeWald(fit, &L1.matrix, &teststat.vector);
     // the significance test
     for (k = 2; k < nParam + 2; k++) {
@@ -144,7 +159,6 @@ int GlmTest::summary(glm *fit) {
       GeeLR(fit, PtrNull[mtype], &teststat.vector); // works better
     }
   }
-
   // sort id if the unitvaraite test is free step-down
   gsl_permutation **sortid;
   sortid = (gsl_permutation **)malloc((nParam + 1) * sizeof(gsl_permutation *));
@@ -171,7 +185,6 @@ int GlmTest::summary(glm *fit) {
   gsl_matrix_memcpy(bO, fit->Eta);
   double diff, timelast = 0;
   clock_t clk_start = clock();
-
   for (unsigned int i = 0; i < tm->nboot; i++) {
     nSamp++;
     if (tm->resamp == CASEBOOT)
@@ -286,13 +299,17 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
   PoissonGlm pNull(fit->mmRef), pAlt(fit->mmRef);
   BinGlm binNull(fit->mmRef), binAlt(fit->mmRef);
   NBinGlm nbNull(fit->mmRef), nbAlt(fit->mmRef);
+  GammaGlm gammaNull(fit->mmRef), gammaAlt(fit->mmRef);
+
   PoissonGlm pNullb(fit->mmRef), pAltb(fit->mmRef);
   BinGlm binNullb(fit->mmRef), binAltb(fit->mmRef);
   NBinGlm nbNullb(fit->mmRef), nbAltb(fit->mmRef);
-  glm *PtrNull[3] = {&pNull, &nbNull, &binNull};
-  glm *PtrAlt[3] = {&pAlt, &nbAlt, &binAlt};
-  glm *bNull[3] = {&pNullb, &nbNullb, &binNullb};
-  glm *bAlt[3] = {&pAltb, &nbAltb, &binAltb};
+  GammaGlm gammaNullb(fit->mmRef), gammaAltb(fit->mmRef);
+
+  glm *PtrNull[4] = {&pNull, &nbNull, &binNull, &gammaNull};
+  glm *PtrAlt[4] = {&pAlt, &nbAlt, &binAlt, &gammaAlt};
+  glm *bNull[4] = {&pNullb, &nbNullb, &binNullb, &gammaNullb};
+  glm *bAlt[4] = {&pAltb, &nbAltb, &binAltb, &gammaAltb};
 
   double *suj, *buj, *puj;
   gsl_vector_view teststat, unitstat, ref1, ref0;
@@ -573,7 +590,6 @@ int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat) {
   unsigned int nDF = LL->size1;
   unsigned int nVars = tm->nVars, nRows = tm->nRows;
   int status;
-
   gsl_vector *LBeta = gsl_vector_alloc(nVars * nDF);
   gsl_vector_set_zero(LBeta);
   gsl_matrix *w1jX1 = gsl_matrix_alloc(nRows, nP);
@@ -584,7 +600,6 @@ int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat) {
   gsl_vector *tmp = gsl_vector_alloc(nVars * nDF);
   gsl_vector_view tmp2, wj, LBj, bj; //, dj;
   gsl_matrix_view Rl;
-
   gsl_matrix_set_zero(IinvRl);
   GrpMat *Z = (GrpMat *)malloc(nVars * sizeof(GrpMat));
   for (j = 0; j < nVars; j++) {

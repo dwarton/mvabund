@@ -1,6 +1,3 @@
-// -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil;
-// -*-
-
 // Interface between R and anova.cpp (Rcpp API >= 0.7.11)
 //
 // Author: Yi Wang (yi dot wang at unsw dot edu dot au)
@@ -201,10 +198,6 @@ List RtoGlm(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   unsigned int mtype = mm.model - 1;
   glmPtr[mtype]->regression(Y, X, O, NULL);
   // glmPtr[mtype]->display();
-  Rprintf("\n Many GLM \n");
-  Rprintf("\n y in glm: %f\n", Y[0, 0]);
-  glmPtr[mtype]->display();
-  Rprintf("\n");
 
   // Wrap the glm object with Rcpp, then Rcpp -> R
   List rs = List::create(
@@ -236,9 +229,13 @@ List RtoGlm(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 
 // declare the function to be 'exported' to R
 // [[Rcpp::export]]
-List RtoGlmSmry(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
-                RcppGSL::Matrix &X, RcppGSL::Matrix &O,
-                Rcpp::Nullable<RcppGSL::Matrix> &bID, RcppGSL::Vector &lambda) {
+List RtoGlmSmry(const List &sparam,                   // model params list
+                const List &rparam,                   // test params list
+                RcppGSL::Matrix &Y,                   // response matrix
+                RcppGSL::Matrix &X,                   // Data matrix
+                RcppGSL::Matrix &O,                   // offset
+                Rcpp::Nullable<RcppGSL::Matrix> &bID, // boot id
+                RcppGSL::Vector &lambda) {            // shrinkage parameters
   // Pass regression parameters
   reg_Method mm;
   mm.tol = as<double>(sparam["tol"]);
@@ -286,11 +283,11 @@ List RtoGlmSmry(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
 
   glm *glmPtr[4] = {&pfit, &nbfit, &lfit, &gfit};
   unsigned int mtype = mm.model - 1;
+  // do the regression
   glmPtr[mtype]->regression(Y, X, O, NULL);
   if (mm.warning) {
     // glmPtr[mtype]->display();
   }
-
   GlmTest myTest(&tm);
   // Resampling indices
   if (bID.isNotNull()) {

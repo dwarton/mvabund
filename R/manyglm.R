@@ -70,8 +70,7 @@ if ( is.character(family) ) {
     else if (substr(family,1,3) == "gam") {
        familynum <- 4
        familyname<- "gamma"
-       linkfun <- 0 # not meaningful, we only use the inverse at the moment
-        # assume shape = 1 for now
+       linkfun <- 0 # not meaningful, we only use the lo link at the moment
     }
     # FAMILY EDIT
     else stop (paste("'family'", family, "not recognised. See ?manyglm for currently available options."))
@@ -176,11 +175,19 @@ else {
     qrx  <- qr(X)
     rank <- qrx$rank
 
-# the following values need to be converted to integer types
+    # the following values need to be converted to integer types
     if (theta.method == "ML") methodnum <- 0
     else if (theta.method == "Chi2") methodnum <- 1
     else if (theta.method == "PHI") methodnum <- 2
+    else if (theta.method == "MOMENTS") methodnum <- 3
     else stop("Check the param estimation method name.")
+
+    if(family == 'gamma') {
+        if (!(theta.method %in% c("ML", "MOMENTS"))) {
+            theta.method <- "ML"
+            methodnum <- 0
+        }
+    } else if(theta.method == "MOMENTS") stop("theta.method = 'MOMENTS' is only allowed for the gamma family.")
 
     if (show.warning==TRUE) warn <- 1
     else warn <- 0
