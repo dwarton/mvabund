@@ -62,7 +62,7 @@ anova.manyglm <- function(object, ...,
     dimnam.a <- dimnames(object$y)[[2]]
     if (is.null(dimnam.a)) dimnam.a <- paste("abund", 1:nVars)
 
-    Y <- matrix(as.integer(object$y), nrow=nRows, ncol=nVars)
+    Y <- matrix(object$y, nrow=nRows, ncol=nVars)
     if (is.null(Y)) {
     #      mu.eta <- object$family$mu.eta
         eta <- object$linear.predictor

@@ -551,14 +551,12 @@ double PoissonGlm::thetaEst_newtons(double k0, unsigned int id,
   barlogx = barlogx / nRows;
   double s = logxbar - barlogx;
   // now use newton-raphson
-  // printf("s = %f, logxbar=%f, barlogx =%f", s, logxbar, barlogx);
   while (it < limit) {
-    // printf("\n it: %d, k: %f", it, k);
     it++;
     double update = (log(k) - gsl_sf_psi(k) - s) / ((1 / k) - gsl_sf_psi_1(k));
     k = k - update;
     double tol = ABS(update);
-    // break if the update was bery small
+    // break if the update was very small
     if (tol < eps)
       break;
   }

@@ -46,40 +46,36 @@ predict.manyglm <- function(
     K = 1
 
   # use predict.glm to compute each column one at a time
-  for(iVar in 1:nVar)
-  {
-         fam = switch(object$family,
-               "binomial(link=logit)"=binomial(),
-               "binomial(link=cloglog)"=binomial("cloglog"),
-               "poisson"=poisson(),
-               "gaussian"=gaussian(),
-               "negative.binomial"=negative.binomial(theta=object$theta[iVar])
-          )
-          if(is.null(object$data))
-              dat.i = model.frame(object)
-          else
-              dat.i = data.frame(object$y[,iVar], object$data)
-          if(K>1)
-          {
-            dat.i$K=K
-            form <- as.formula(paste("object$y[ ,", iVar, "]/K ~ ", fm[3]))
-            object.i = glm(form, family=fam, data=dat.i, weights=K, start=as.vector(object$coef[,iVar]))
-          }
-          else
-          {
-            form <- as.formula(paste("object$y[ ,", iVar, "] ~ ", fm[3]))
-            object.i = glm(form, family=fam, data=dat.i, start=as.vector(object$coef[,iVar]))
-            #DW, 18/11/14:  starting value included in predict to avoid errors with sparse data
-          }
-          ft.i <- predict.glm(object.i, newdata=newdata, se.fit=se.fit,
-                                 type=type, terms = terms, na.action = na.action)
-          if(se.fit==T)
-          {
-              fts[,iVar] = ft.i$fit
-               ses[,iVar] = ft.i$se
-          }
-          else
-            fts[,iVar] = ft.i
+  for (iVar in 1:nVar) {
+    fam = switch(object$family,
+          "binomial(link=logit)"=binomial(),
+          "binomial(link=cloglog)"=binomial("cloglog"),
+          "poisson"=poisson(),
+          "gaussian"=gaussian(),
+          "gamma"=Gamma(link='log'),
+          "negative.binomial"=negative.binomial(theta=object$theta[iVar])
+    )
+    if(is.null(object$data))
+        dat.i = model.frame(object)
+    else
+        dat.i = data.frame(object$y[,iVar], object$data)
+    if(K>1) {
+      dat.i$K=K
+      form <- as.formula(paste("object$y[ ,", iVar, "]/K ~ ", fm[3]))
+      object.i = glm(form, family=fam, data=dat.i, weights=K, start=as.vector(object$coef[,iVar]))
+    } else {
+      form <- as.formula(paste("object$y[ ,", iVar, "] ~ ", fm[3]))
+      object.i = glm(form, family=fam, data=dat.i, start=as.vector(object$coef[,iVar]))
+      #DW, 18/11/14:  starting value included in predict to avoid errors with sparse data
+    }
+    ft.i <- predict.glm(object.i, newdata=newdata, se.fit=se.fit,
+                            type=type, terms = terms, na.action = na.action)
+    if(se.fit==T) {
+      fts[,iVar] = ft.i$fit
+      ses[,iVar] = ft.i$se
+    }
+    else
+      fts[,iVar] = ft.i
   }
   if(se.fit)
     out = list(fit=fts,se.fit=ses)

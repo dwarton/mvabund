@@ -296,6 +296,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
   gsl_matrix_set_zero(Panova);
   gsl_vector_set_zero(bStat);
 
+  // There has to be a better way to do this
   PoissonGlm pNull(fit->mmRef), pAlt(fit->mmRef);
   BinGlm binNull(fit->mmRef), binAlt(fit->mmRef);
   NBinGlm nbNull(fit->mmRef), nbAlt(fit->mmRef);
@@ -365,13 +366,12 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       lambda = gsl_vector_get(tm->anova_lambda, ID1);
       GetR(PtrAlt[mtype]->Res, tm->corr, lambda, Rlambda);
       GeeWald(PtrAlt[mtype], L1, &teststat.vector);
-    } else {
+    } else { // test is LR
       BetaO = gsl_matrix_alloc(nP1, nVars);
       addXrow2(PtrNull[mtype]->Beta, &ref1.vector, BetaO);
       PtrAlt[mtype]->regression(fit->Yref, X1, fit->Oref, BetaO);
       GeeLR(PtrAlt[mtype], PtrNull[mtype], &teststat.vector);
     }
-
     if (tm->resamp == MONTECARLO) {
       lambda = gsl_vector_get(tm->anova_lambda, ID0);
       GetR(fit->Res, tm->corr, lambda, Sigma);

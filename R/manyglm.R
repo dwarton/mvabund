@@ -33,9 +33,8 @@ if(class(family)=="family"){
     family="poisson"
   if(fam$family=="gaussian" & fam$link=="identity")
     family="gaussian"
-  if(fam$family=="gamma" & fam$link=="inverse")
+  if(fam$family=="Gamma" & fam$link=="log")
     family="gamma"
-  # FAMILY EDIT
 }
 
 if ( is.character(family) ) {
@@ -179,11 +178,11 @@ else {
     if (theta.method == "ML") methodnum <- 0
     else if (theta.method == "Chi2") methodnum <- 1
     else if (theta.method == "PHI") methodnum <- 2
-    else if (theta.method == "MOMENTS") methodnum <- 3
+    else if (theta.method == "MM") methodnum <- 3
     else stop("Check the param estimation method name.")
 
     if(family == 'gamma') {
-        if (!(theta.method %in% c("ML", "MOMENTS"))) {
+        if (!(theta.method %in% c("ML", "MM"))) {
             theta.method <- "ML"
             methodnum <- 0
         }
