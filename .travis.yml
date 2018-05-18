@@ -1,9 +1,9 @@
 # Sample .travis.yml for R projects.
 #
-# See https://github.com/craigcitro/r-travis 
+# See https://github.com/craigcitro/r-travis
 #     https://github.com/eddelbuettel/r-travis/
 
-sudo: required                                     
+sudo: required
 
 language: c
 
@@ -16,9 +16,9 @@ install:
   # we can install these packages as prebuild apt-get binaries which is faster
   - ./travis-tool.sh install_aptget libgsl0-dev r-cran-rcpp r-cran-mass
   # these are installed from CRAN in source form
-  - ./travis-tool.sh install_r RcppGSL tweedie statmod
+  - ./travis-tool.sh install_r RcppGSL tweedie statmod testthat
 
-script: 
+script:
   - ./travis-tool.sh run_tests
 
 notifications:
