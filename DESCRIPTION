@@ -26,3 +26,5 @@ License: LGPL (>= 2.1)
 NeedsCompilation: yes
 Packaged: 2018-01-19; David
 RoxygenNote: 6.0.1
+Suggests:
+    testthat
