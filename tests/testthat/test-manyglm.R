@@ -1,4 +1,5 @@
 context("test-manyglm.R")
+source('utils.R')
 
 test_that("bad link function errors", {
   set.seed(100)
@@ -26,80 +27,18 @@ test_that("spider coefs", {
 
 test_that('theta estimation method warnings', {
   Y <- sapply(1:4, function(x)  rnbinom(30, 5, 0.4))
+  Y <- mvabund(Y)
   # method of moments is not allowed for negative binomial family
-  expect_error(mvabund(Y ~ 1, theta.method = 'MOMENTS'), 'theta.method.*')
+  expect_error(manyglm(Y ~ 1, theta.method = 'MM'), 'theta.method.*')
 })
 
-gen_gamma <- function(n, shape, rates) {
-  sapply(rates, function(rate) rgamma(n, shape, rate))
-}
-
-test_that('poisson family', {
-  skip('causes seg fault')
-  Y <- sapply(1:4, function(x)  rpois(30, x))
-  mvabund(Y) -> Y
-  manyglm(Y ~ 1 , family = 'poisson') -> m
-  print('poisson manyglm summary')
-  print(summary(m, show.warning = T))
-  junk <- rnorm(1000)
-  manyglm(Y ~ junk , family = 'poisson') -> m2
-  exp(coef(m2)[1,])
-  exp(coef(m2))[2,]
-})
-
-test_that("gamma family", {
-  skip('gamma family')
-  n <- 1000; shape <- 1; rates <- 1:4
-  Y <- mvabund(gen_gamma(n, shape, 1:4))
-  junk <- rnorm(n)
-  # using the log link
-  gamma_glm <- manyglm(Y ~ junk, family="gamma", show.warning = T)
-  if(interactive()) {
-    print('')
-    print('rates')
-    print(rates)
-    print('raw fit')
-    print(coef(gamma_glm))
-    print('estimate of rate parameters')
-    print(shape / exp(coef(gamma_glm)))
-    print(gamma_glm)
-    print('')
-  }
-  expect_equal(2*2, 4)
-})
 
 test_that("gamma family shape parameter", {
-  skip('write actual tests')
+  set.seed(100)
   n <- 1000; shapes <- 1:4; rate <- 1
   Y <- mvabund(sapply(shapes, function(shape) rgamma(n, shape, rate)))
-  print(shapes)
   gamma_glm <- manyglm(Y ~ 1, family="gamma", show.warning = T)
-  expect_equal(2*2, 4)
-})
-test_that("gamma family summary", {
-  set.seed(200)
-  shape = 1
-  n <- 100
-  Y <- mvabund(gen_gamma(n, shape, c(1,1,1)))
-  # using the log link
-  junk <- rnorm(n)
-  gamma_glm <- manyglm(Y ~ junk, family="gamma", show.warning = T, k = shape)
-  tests <- c('wald','score','LR')
-  for (t in tests)
-    print(summary(gamma_glm, show.warning = T, test=t))
-  expect_equal(2 * 2, 4)
+  expect_true(all(signif(gamma_glm$theta, 5) == c(1.0034,2.0542,2.9994,4.0487)))
 })
 
-test_that("gamma family anova", {
-  skip('fails')
-  set.seed(100)
-  shape = 1
-  n <- 1000
-  Y <- mvabund(gen_gamma(n, 1, 1:4))
-  # using the log link
-  no_effect <- rnorm(n)
-  gamma_glm <- manyglm(Y ~ no_effect, family="gamma", show.warning = T, k = shape)
-  print(anova(gamma_glm, show.warning = T))
-  expect_equal(2 * 2, 4)
-})
 

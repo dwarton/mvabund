@@ -186,7 +186,7 @@ else {
             theta.method <- "ML"
             methodnum <- 0
         }
-    } else if(theta.method == "MOMENTS") stop("theta.method = 'MOMENTS' is only allowed for the gamma family.")
+    } else if(theta.method == "MM") stop("theta.method = 'MM' is only allowed for the gamma family.")
 
     if (show.warning==TRUE) warn <- 1
     else warn <- 0
