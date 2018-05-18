@@ -19,9 +19,15 @@
 #' @param ... Other plotting parameters
 #' @return none
 #' @export
-coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Ys = NULL,
-                             incl.intercept = FALSE,
-                             cex.ylab = 0.5, mfrow = NULL, mar = c(4,8,2,1), ...){
+coefplot.manyglm <- function(
+    object,
+    y.label = TRUE,
+    which.Xcoef = NULL,
+    which.Ys = NULL,
+    incl.intercept = FALSE,
+    cex.ylab = 0.5,
+    mfrow = NULL,
+    mar = NULL, ...){
 
 
   # Sanity checks
@@ -56,13 +62,17 @@ coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Y
   # Set plot settings
   if(missing(mfrow))
     mfrow <- c(1, numXvars)
-  original_par <- par(mfrow = mfrow, mar = mar)
+  if (is.null(mar))
+    original_par <- par(mfrow = mfrow)
+  else
+    original_par <- par(mfrow = mfrow, mar = mar)
 
   # For each X covariate, order the Ys from lowest to highest coefficients
-  for(i in 1:numXvars){
+  for (i in 1:numXvars) {
     plotCoeff <- sort(coeffs[i,])
+    plotCoefIndex <- order(coeffs[i,])
     plotSD <- as.data.frame(object$stderr.coefficients)[which.Xcoef,which.Ys]
-    plotSD <- plotSD[i,][order(coeffs[i,])]
+    plotSD <- plotSD[i,][plotCoefIndex]
 
     # Calculate (asympt normal) confidence intervals using standard error
     lowerCI <- unlist(plotCoeff - 1.96 * plotSD)
@@ -74,16 +84,29 @@ coefplot.manyglm <- function(object, y.label = TRUE, which.Xcoef = NULL, which.Y
     col.seq[lowerCI < 0 & upperCI > 0] <- "grey"
 
     # Plot
-    plot(x = unlist(plotCoeff), y = 1:numYs, yaxt = "n", col=col.seq,
-         xlab=Xnames[i], ylab="", xlim= c(min(lowerCI), max(upperCI)),
-         pch = "x", cex.lab=1.3, ...)
+    plot(x = unlist(plotCoeff),
+         y = 1:numYs,
+         yaxt = "n",
+         col=col.seq,
+         xlab=Xnames[i],
+         ylab="",
+         xlim= c(min(lowerCI), max(upperCI)),
+         pch = "x",
+         cex.lab=1.3, ...)
     # More plot stuff
-    segments(x0 = lowerCI, y0 = 1:numYs, x1 = upperCI, y1 = 1:numYs, col=col.seq)
+    segments(
+      x0 = lowerCI,
+      y0 = 1:numYs,
+      x1 = upperCI,
+      y1 = 1:numYs,
+      col=col.seq)
     abline(v=0, lty=1)
-
     if(y.label)
-      axis(2, at=1:numYs, labels=Ynames, las=1, cex.axis=cex.ylab)
-    # reset the plot settings
+      axis(2,
+        at=1:numYs,
+        labels=Ynames[plotCoefIndex],
+        las=1,
+        cex.axis=cex.ylab)
   }
 
   # gllvm
