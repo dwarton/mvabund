@@ -14,7 +14,8 @@ anova.manyglm <- function(object, ...,
                     show.time="total",
                     show.warning=FALSE,
                     rep.seed=FALSE,
-                    bootID=NULL) {
+                    bootID=NULL,
+                    keep.boot = FALSE) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -387,6 +388,9 @@ anova.manyglm <- function(object, ...,
     anova$table <- table
     anova$uni.p <- uni.p
     anova$uni.test <- uni.test
+
+    anova$uni.test <- uni.test
+    if (keep.boot) anova$bootStat <- val$bootStat
 
     ########### formal displays #########
     # Title and model formulas

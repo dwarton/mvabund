@@ -68,6 +68,8 @@ void GlmTest::releaseTest(void) {
     gsl_matrix_free(anovaStat);
   if (Panova != NULL)
     gsl_matrix_free(Panova);
+  if (bootStore != NULL)
+    gsl_matrix_free(bootStore);
 
   gsl_matrix_free(L);
   gsl_matrix_free(Rlambda);
@@ -292,6 +294,8 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
   anovaStat = gsl_matrix_alloc((nModels - 1), nVars + 1);
   Panova = gsl_matrix_alloc((nModels - 1), nVars + 1);
   gsl_vector *bStat = gsl_vector_alloc(nVars + 1);
+  bootStore = gsl_matrix_alloc(tm->nboot, nVars + 1);
+
   gsl_matrix_set_zero(anovaStat);
   gsl_matrix_set_zero(Panova);
   gsl_vector_set_zero(bStat);
@@ -419,6 +423,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
         bAlt[mtype]->regression(bY, X1, bO, BetaO);
         GeeLR(bAlt[mtype], bNull[mtype], bStat);
       }
+      gsl_matrix_set_row(bootStore, j, bStat);
       // ----- get multivariate counts ------- //
       buj = gsl_vector_ptr(bStat, 0);
       suj = gsl_matrix_ptr(anovaStat, i - 1, 0);
