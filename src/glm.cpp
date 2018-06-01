@@ -247,9 +247,6 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
       theta[j] = mmRef->estiMethod == MOMENTS
                      ? thetaEst_moments(j)
                      : thetaEst_newtons(0, j, maxiter2);
-      // Help do we refit using our shape parameter estimates
-      // I dont think we do because the th argument to betaEst only infulences
-      // weight which is determined by the link function - jw
     }
     if ((mmRef->warning == TRUE) & (iterconv[j] == maxiter))
       printf("Warning: EstIRLS reached max iterations, may not converge in the "
@@ -267,13 +264,17 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
       // get (Pearson) residuals
       yij = gsl_matrix_get(Y, i, j);
       gsl_matrix_set(Res, i, j, (yij - mij) / sqrt(vij));
-      // get PIT residuals for discrete data
-      // HELP I am not sure if we should do this for the gamma family as it is
-      // not discrete
-      wei = gsl_rng_uniform_pos(rnd); // wei ~ U(0, 1)
-      uij = wei * cdf(yij, mij, theta[j]);
-      if (yij > 0)
-        uij = uij + (1 - wei) * cdf((yij - 1), mij, theta[j]);
+      // PIT residuals
+      // get PIT residuals for cts families, ie just the cdf of the observations
+      if (mmRef->model == GAMMA) {
+        uij = cdf(yij, mij, theta[j]);
+      } else {
+        // get PIT residuals for discrete data
+        wei = gsl_rng_uniform_pos(rnd); // wei ~ U(0, 1)
+        uij = wei * cdf(yij, mij, theta[j]);
+        if (yij > 0)
+          uij = uij + (1 - wei) * cdf((yij - 1), mij, theta[j]);
+      }
       gsl_matrix_set(PitRes, i, j, uij);
       // get elementry log-likelihood
       ll[j] = ll[j] + llfunc(yij, mij, theta[j]);
