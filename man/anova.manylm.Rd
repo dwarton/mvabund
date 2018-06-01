@@ -10,7 +10,8 @@ multivariate abundance data in ecology.
 
 \usage{
 \method{anova}{manylm}(object, \dots, resamp="perm.resid", test="F", p.uni="none",
-        nBoot=999, cor.type=object$cor.type, shrink.param=object$shrink.param, 
+        nBoot=999, cor.type=object$cor.type,
+        block=NULL, shrink.param=object$shrink.param, 
 	studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL )
 \method{print}{anova.manylm}(
     x, digits = max(getOption("digits") - 3, 3),
@@ -31,6 +32,7 @@ passed to or from other methods.
 \item{resamp}{the method of resampling used. Can be one of "perm.resid" (default), "residual", "score", "case". See Details.}
 \item{test}{the test to be used. Possible values are: \code{"LR"} = likelihood ratio statistic, \code{"F"} = Lawley-Hotelling trace statistic or \code{NULL} for no test.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{block}{A factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{shrink.param}{shrinkage parameter to be used if \code{cor.type="shrink"}. If not supplied, but needed, it will be estimated by estimated from the data by Cross Validation using the normal likelihood as in Warton (2008).}
 \item{p.uni}{whether to calculate univariate test statistics and their P-values, and if so, what type. \cr
 "none" = no univariate P-values (default) \cr

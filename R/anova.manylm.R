@@ -4,9 +4,20 @@
 # 05-Jan-2010
 ###############################################################################
 
-anova.manylm <- function(object, ...,
-    resamp="perm.resid", test="F", p.uni="none", nBoot=999, cor.type=object$cor.type, shrink.param=object$shrink.param, studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL) 
-{
+anova.manylm <- function(object,
+                        ...,
+                        resamp="perm.resid",
+                        test="F",
+                        p.uni="none",
+                        nBoot=999,
+                        cor.type=object$cor.type,
+                        block=NULL,
+                        shrink.param=object$shrink.param,
+                        studentize=TRUE,
+                        calc.rss = FALSE,
+                        tol=1.0e-10,
+                        rep.seed=FALSE,
+                        bootID=NULL) {
     if(!any(class(object)=="manylm"))
        stop("The function 'anova.manylm' can only be used for a manylm object.")
 
@@ -122,6 +133,31 @@ anova.manylm <- function(object, ...,
           }
        }
     }
+    # from dw's block code in manyglm anova
+    if (is.null(block) == FALSE) {
+        tb = table(block)
+        nLevels = length(tb)
+        if (any(tb != nRows/nLevels)) {
+            print(tb)
+            stop("Sorry, block needs to be a balanced factor - same number of rows for each level")
+        } else {
+            blockIDs = vector("list",nLevels)
+            for(i.level in 1:nLevels)
+                blockIDs[[i.level]] = which(block==names(tb)[i.level])
+            unlistIDs = unlist(blockIDs) # needed to match each resampled observation with its correct location
+        }
+        #then each iteration...
+        if(is.null(bootID)) #generate a bootID matrix if required
+            samp = matrix(sample(nLevels, nLevels * nBoot, replace=TRUE), ncol=nLevels)
+        else
+            samp=bootID
+
+        bootID = matrix(NA,nBoot,nRows)
+        for(iBoot in 1:nBoot)
+            bootID[iBoot, unlistIDs] = unlist(blockIDs[samp[iBoot,]]) #unlistIDs is needed to make sure each unlisted blockID ends up in the right place
+        bootID = bootID - 1 #to fit the format in C, 0 to nRows.
+        cat(paste("Using block resampling...","\n"))
+    }
 
 
     if (studentize) st <- 1
@@ -175,8 +211,7 @@ anova.manylm <- function(object, ...,
 
         ord <- (nterms-1):1
         topnote <- paste("Model:", deparse(object$call) )
-    }
-    else {
+    } else {
         targs <- match.call(expand.dots = FALSE)
      #   print(targs[[1]])
         if ( targs[[1]] == "example" )
@@ -292,7 +327,7 @@ anova.manylm <- function(object, ...,
     # make several univariate tables 
     attr(anova$uni.test, "title") <- attr(anova$uni.p, "title") <- "\nUnivariate Tests\nTest statistics:\n"
     dimnames(anova$uni.p) <- dimnames(anova$uni.test) <- list(tl, dimnam.a)
-
+    anova$block = block
     class(anova) <- "anova.manylm"
     return(anova)
 }
