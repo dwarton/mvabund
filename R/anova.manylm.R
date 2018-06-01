@@ -4,7 +4,8 @@
 # 05-Jan-2010
 ###############################################################################
 
-anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none", nBoot=999, cor.type=object$cor.type, shrink.param=object$shrink.param, studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL) 
+anova.manylm <- function(object, ...,
+    resamp="perm.resid", test="F", p.uni="none", nBoot=999, cor.type=object$cor.type, shrink.param=object$shrink.param, studentize=TRUE, calc.rss = FALSE, tol=1.0e-10, rep.seed=FALSE, bootID=NULL) 
 {
     if(!any(class(object)=="manylm"))
        stop("The function 'anova.manylm' can only be used for a manylm object.")
@@ -60,10 +61,7 @@ anova.manylm <- function(object, ..., resamp="perm.resid", test="F", p.uni="none
     } else
        stop("'p.uni' not defined. Choose one of 'single', 'adjusted', 'unadjusted', 'none'.")
 
-    if (resamp=="case") resam <- 0
-    # To exclude case resampling
-    # if (resamp=="case") 
-    #   stop("Sorry, case resampling is not yet available.")
+    if (resamp == "case") resam <- 0
     else if (resamp == "residual") resam <- 1
     else if (resamp == "score") resam <- 2
     else if (resamp == "perm.resid") resam <- 3
