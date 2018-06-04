@@ -424,31 +424,32 @@ default.plot.manyglm  <- function(x,
 
       # The residual vs. fitted value plot
       yhtmp <- c(yh)
-      yh.is.zero <- yhtmp < (-6)
-#       yh.is.zero <- yhtmp < max(-6,(-max(yhtmp)))#this line is wrong - it kicks out any value more negative than max(yh)
-       yh0 <- yhtmp[!yh.is.zero]
+      # yh.is.zero <- yhtmp < (-6)
+      # yh.is.zero <- yhtmp < max(-6,(-max(yhtmp)))#this line is wrong - it kicks out any value more negative than max(yh)
+      # yh0 <- yhtmp[!yh.is.zero]
+      yh0 <- pmax(-6,yh)
       xlim <- range(yh0)
       if (id.n > 0) # for compatibility with R2.2.1
           ylim <- ylim + c(-0.08, 0.08) * diff(ylim)
 
       # drop small values in the response
       if (show[1]) {
-          # Use vector built of transposed x bzw y to plot in the right color
-#	  yi.is.zero <- (yh[,1]<(-9)) # log(1e-4)
-#	  plot(x=t(yh[!yi.is.zero,1]), y=t(r[!yi.is.zero,1]),type="p",col=palette()[1], ylab = "Pearson residuals", xlab=l.fit, main = main, ylim=ylim, xlim=xlim, cex.lab=clab, cex.axis=caxis, cex=cex, lwd=lwd, font.main=2)
-#          for (i in 2:n.vars) {
-#              yi.is.zero <- (yh[,i] < (-9)) # log(1e-4)
-#              points(x=t(yh[!yi.is.zero,i]), y=t(r[!yi.is.zero,i]),type="p",col=palette()[i], cex=cex, lwd=lwd)
-#          }
+        # Use vector built of transposed x bzw y to plot in the right color
+        #  yi.is.zero <- (yh[,1]<(-9)) # log(1e-4)
+        #  plot(x=t(yh[!yi.is.zero,1]), y=t(r[!yi.is.zero,1]),type="p",col=palette()[1], ylab = "Pearson residuals", xlab=l.fit, main = main, ylim=ylim, xlim=xlim, cex.lab=clab, cex.axis=caxis, cex=cex, lwd=lwd, font.main=2)
+        #          for (i in 2:n.vars) {
+        #              yi.is.zero <- (yh[,i] < (-9)) # log(1e-4)
+        #              points(x=t(yh[!yi.is.zero,i]), y=t(r[!yi.is.zero,i]),type="p",col=palette()[i], cex=cex, lwd=lwd)
+        #          }
 
           rtmp <- c(r)
-          r0 <- rtmp[!yh.is.zero]
-#          ylim <- range(max(range(abs(r0), finite = TRUE)) * c(-1, 1), na.rm = TRUE) #DW, 10/02/15: to make ylims symmetric about zero
+          r0 <- rtmp #[!yh.is.zero]
+        #  ylim <- range(max(range(abs(r0), finite = TRUE)) * c(-1, 1), na.rm = TRUE) #DW, 10/02/15: to make ylims symmetric about zero
           ylim <- max( range(abs(r0), finite = TRUE, na.rm=TRUE) ) * c(-1, 1) #DW, 10/02/15: to make ylims symmetric about zero
           # DW, 21/01/16: use of range suggested by Eduard Szocs to remove Inf values
 
           colortmp <- rep(color, each=n)
-          color0 <- colortmp[!yh.is.zero]
+          color0 <- colortmp # [!yh.is.zero]
 
           if (substr(res.type,1,3)=="pit") {
               if (res.type=="pit.norm") ylab="Dunn-Smyth Residuals"
@@ -506,7 +507,7 @@ default.plot.manyglm  <- function(x,
       # The scale vs. location plot
       if (show[3]) {
           sqrtabsr <- c(sqrt(abs(rs)))
-          sqrtabsr0 <- sqrtabsr[!yh.is.zero]
+          sqrtabsr0 <- sqrtabsr # [!yh.is.zero]
       ylim <- c(0, max(sqrtabsr0, na.rm = TRUE))
       yl <- as.expression(substitute(sqrt(abs(YL)),list(YL = as.name(ylab23))))
 
