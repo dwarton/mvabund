@@ -31,6 +31,11 @@ print.anova.manylm <- function( x, digits = max(getOption("digits") - 3, 3), sig
           round(anova$shrink.param, digits = dig.tst))
     else corname <- ""
 
+    if(is.null(anova$block))
+      block.text=""
+    else
+     block.text= " block"
+
     ############## Anova Table for the simultaneous tests x ####################
 
     if (!is.null(heading <- attr(x, "heading"))) 
@@ -63,9 +68,9 @@ print.anova.manylm <- function( x, digits = max(getOption("digits") - 3, 3), sig
     if(!is.null(test) & substr(anova$resamp,1,1)!="n"){
         if(anova$p.uni=="none") {
             if(inherits(anova, "anova.manyglm") )
-                cat("Arguments: with", n.bootsdone, "resampling iterations using",       anova$resamp, "resampling,", anova$teststat, "and",corname, "\n")
+                cat("Arguments: with", n.bootsdone, "resampling iterations using",       paste(anova$resamp,block.text,sep=""), "resampling,", anova$teststat, "and",corname, "\n")
             else
-                cat("Arguments: with", n.bootsdone, "resampling iterations using",        anova$resamp, "resampling and",corname, "\n") 
+                cat("Arguments: with", n.bootsdone, "resampling iterations using",        paste(anova$resamp,block.text,sep=""), "resampling and",corname, "\n") 
             if(anova$resamp=="case" & sum(anova$n.iter.sing)>0) {
                 cat("\nNumber of iterations with adjusted tests (including skipped tests)      because of singularities in X due to the case resampling\n")
                 print.default(anova$n.iter.sing, quote = FALSE, right = TRUE, na.print = "", ...)
@@ -158,9 +163,9 @@ print.anova.manylm <- function( x, digits = max(getOption("digits") - 3, 3), sig
 
         if( substr(anova$resamp,1,1)!="n"){
            if(inherits(anova, "anova.manyglm") )
-              cat("\nArguments: with", n.bootsdone, "resampling iterations using",              anova$resamp, "resampling,", anova$teststat, "and",corname, "\n")
+              cat("\nArguments: with", n.bootsdone, "resampling iterations using", paste(anova$resamp,block.text,sep=""), "resampling,", anova$teststat, "and",corname, "\n")
            else 
-              cat("\nArguments: with", n.bootsdone, "resampling iterations using", anova$resamp, "resampling and",corname, "\n")
+              cat("\nArguments: with", n.bootsdone, "resampling iterations using", paste(anova$resamp,block.text,sep=""), "resampling and",corname, "\n")
            if(anova$resamp=="case" & sum(anova$n.iter.sing)>0) {
               cat("\nNumber of iterations with adjusted tests (including skipped tests)              because of singularities in X due to the case resampling\n")
               print.default(anova$n.iter.sing, quote = FALSE, right = TRUE, na.print = "", ...)
