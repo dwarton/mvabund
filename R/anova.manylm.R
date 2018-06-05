@@ -135,7 +135,7 @@ anova.manylm <- function(object,
     }
     # from dw's block code in manyglm anova
     if (is.null(block) == FALSE) {
-      bootID <- block_to_bootID(block, bootID, nRows, nBoot)
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
 
 

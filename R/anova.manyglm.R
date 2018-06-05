@@ -90,7 +90,7 @@ anova.manyglm <- function(object, ...,
     else if (object$theta.method == "METHODS") methodnum <- 3
 
 
-    if (substr(resamp,1,1)=="c") resampnum <- 0  #case
+    if (resamp=="case") resampnum <- 0  #case
     # To exclude case resampling
     #if (resamp=="case") stop("Sorry, case resampling is not yet available.")
     else if (substr(resamp,1,4)=="resi") resampnum <- 1  # residual
@@ -181,7 +181,7 @@ anova.manyglm <- function(object, ...,
 
     # DW additions
     if (is.null(block) == FALSE) {
-      bootID <- block_to_bootID(block, bootID, nRows, nBoot)
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
 
     # construct for param list

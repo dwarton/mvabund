@@ -127,7 +127,7 @@ summary.manylm <- function(object,
        }
     }
     if (is.null(block) == FALSE) {
-      bootID <- block_to_bootID(block, bootID, nRows, nBoot)
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
     if (studentize) st <- 1
     else st <- 0

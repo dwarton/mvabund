@@ -1,11 +1,11 @@
 # used in the summary and anova functions of manyglm and manylm to get a matrix of 
 # boot id's based off of a block, see ?anova.manyglm for more details
-block_to_bootID <- function (block, bootID, nRows, nBoot) {
+block_to_bootID <- function (block, bootID, nRows, nBoot, resamp) {
   tb = table(block)
   nLevels = length(tb)
-  if (any(tb != nRows/nLevels)) {
+  if (any(tb != nRows/nLevels) && resamp != "case") {
     print(tb)
-    stop("Sorry, block needs to be a balanced factor - same number of rows for each level")
+    stop("Sorry, unless you are using case resampling, block needs to be a balanced factor - same number of rows for each level. Try using resamp='case'.")
   } else {
     blockIDs = vector("list",nLevels)
     for(i.level in 1:nLevels)

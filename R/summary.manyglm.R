@@ -160,7 +160,7 @@ summary.manyglm <- function(object,
     
     # allows for block sampling
     if (is.null(block) == FALSE) {
-      bootID <- block_to_bootID(block, bootID, nRows, nBoot)
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
 
     # if corr = shrink or monte carlo resamp
