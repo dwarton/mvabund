@@ -1,3 +1,5 @@
+# used in the summary and anova functions of manyglm and manylm to get a matrix of 
+# boot id's based off of a block, see ?anova.manyglm for more details
 block_to_bootID <- function (block, bootID, nRows, nBoot) {
   tb = table(block)
   nLevels = length(tb)
