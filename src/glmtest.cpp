@@ -21,6 +21,7 @@ GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
   XBeta = NULL;
   Sigma = NULL;
   bootID = NULL;
+  bootStore = NULL;
 
   // Prepared for geeCalc
   L = gsl_matrix_alloc(tm->nParam, tm->nParam);
