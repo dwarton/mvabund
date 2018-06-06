@@ -5,7 +5,7 @@
 \description{\code{summary} method for class "manyglm". }
 \usage{
 \method{summary}{manyglm}(object, resamp="pit.trap", test="wald", 
-        p.uni="none", nBoot=1000, cor.type=object$cor.type, 
+        p.uni="none", nBoot=1000, cor.type=object$cor.type, block=NULL,
 	show.cor = FALSE, show.est=FALSE, show.residuals=FALSE, 
 	symbolic.cor = FALSE, show.time=FALSE, show.warning=FALSE,\dots) 
 \method{print}{summary.manyglm}(x, \dots) } \arguments{ \item{object}{an 
@@ -26,6 +26,7 @@ adjusted for multiple testing, using a step-down resampling procedure. }
 \item{nBoot}{the number of Bootstrap iterations, default is 
 \code{nBoot=999}.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{block}{A factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{show.cor, show.est, show.residuals}{logical, if \code{TRUE}, 
 the correlation matrix of the estimated parameters, or the estimated model 
 parameters, or the residual summary is shown.} \item{symbolic.cor}{logical. 

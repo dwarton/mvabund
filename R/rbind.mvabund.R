@@ -1,6 +1,6 @@
 ###############################################################################
 ## rbind.mvabund: combine two or more mvabund object columnwise to another 	  #
-## mvabund object											                                        #
+## mvabund object                                                             #
 ###############################################################################
 rbind.mvabund <- function(..., deparse.level = 1) {
 objects <- list(...)

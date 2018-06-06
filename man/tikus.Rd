@@ -1,7 +1,6 @@
 \name{tikus}
 \docType{data}
 \alias{tikus}
-% \encoding{latin1}
 \title{Tikus Island Dataset}
 \description{
 This dataset contains a list with abundance data of species at different locations
@@ -61,7 +60,7 @@ Millepora intrincata, Heliopora coerulea
    }
 }
 
-\references{ 
+\references{
 R.M. Warwick, K.R. Clarke and Suharsono (1990) A statistical analysis of coral
 community responses to the 19823 El Nino in the Thousand Islands, Indonesia,
 \emph{Coral Reefs} \bold{8}, 171179.

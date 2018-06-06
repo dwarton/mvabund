@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 // RtoAnovaCpp
 List RtoAnovaCpp(const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& isXvarIn, Rcpp::Nullable<RcppGSL::Matrix>& bID);
-RcppExport SEXP mvabund_RtoAnovaCpp(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP) {
+RcppExport SEXP _mvabund_RtoAnovaCpp(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // RtoGlmAnova
 List RtoGlmAnova(const List& sparam, const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& O, RcppGSL::Matrix& isXvarIn, Rcpp::Nullable<RcppGSL::Matrix>& bID, RcppGSL::Vector& lambda);
-RcppExport SEXP mvabund_RtoGlmAnova(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _mvabund_RtoGlmAnova(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // RtoGlm
 List RtoGlm(const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& O);
-RcppExport SEXP mvabund_RtoGlm(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP) {
+RcppExport SEXP _mvabund_RtoGlm(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,7 +56,7 @@ END_RCPP
 }
 // RtoGlmSmry
 List RtoGlmSmry(const List& sparam, const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& O, Rcpp::Nullable<RcppGSL::Matrix>& bID, RcppGSL::Vector& lambda);
-RcppExport SEXP mvabund_RtoGlmSmry(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _mvabund_RtoGlmSmry(SEXP sparamSEXP, SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP OSEXP, SEXP bIDSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -73,7 +73,7 @@ END_RCPP
 }
 // RtoSmryCpp
 List RtoSmryCpp(const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, Rcpp::Nullable<RcppGSL::Matrix>& bID);
-RcppExport SEXP mvabund_RtoSmryCpp(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP bIDSEXP) {
+RcppExport SEXP _mvabund_RtoSmryCpp(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP bIDSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -87,11 +87,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"mvabund_RtoAnovaCpp", (DL_FUNC) &mvabund_RtoAnovaCpp, 5},
-    {"mvabund_RtoGlmAnova", (DL_FUNC) &mvabund_RtoGlmAnova, 8},
-    {"mvabund_RtoGlm", (DL_FUNC) &mvabund_RtoGlm, 4},
-    {"mvabund_RtoGlmSmry", (DL_FUNC) &mvabund_RtoGlmSmry, 7},
-    {"mvabund_RtoSmryCpp", (DL_FUNC) &mvabund_RtoSmryCpp, 4},
+    {"_mvabund_RtoAnovaCpp", (DL_FUNC) &_mvabund_RtoAnovaCpp, 5},
+    {"_mvabund_RtoGlmAnova", (DL_FUNC) &_mvabund_RtoGlmAnova, 8},
+    {"_mvabund_RtoGlm", (DL_FUNC) &_mvabund_RtoGlm, 4},
+    {"_mvabund_RtoGlmSmry", (DL_FUNC) &_mvabund_RtoGlmSmry, 7},
+    {"_mvabund_RtoSmryCpp", (DL_FUNC) &_mvabund_RtoSmryCpp, 4},
     {NULL, NULL, 0}
 };
 

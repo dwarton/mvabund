@@ -4,28 +4,30 @@
 ## maybe we want to add some more specific things later on    			          ##
 ################################################################################
 
-print.manyglm <- function( x, digits = max(3, getOption("digits") - 3), dig.tst=max(2, min(5, digits-1)), ... )  {
+print.manyglm <- function(x,
+  digits = max(3, getOption("digits") - 3),
+  dig.tst=max(2, min(5, digits-1)), ... )  {
 
   cat("\nCall: ", deparse(x$call), "\n")
-	
+
 #	family <- x$family$family
 #		if(	substr(family[1],1, 12)=="quasipoisson") {
 #		print(quasipoisson(link=x$family$link))
 #	} else if (substr(	family[1], 1, 17)=="Negative Binomial"){
 #		print(negative.binomial(link=x$family$link))
-#	} else 	
-  print(x$family)  
+#	} else
+  print(x$family)
 
   if (x$show.coef==TRUE) {
      if (length(coef(x))) {
         cat("Coefficients")
-#       if (is.character(co <- x$contrasts)) 
+#       if (is.character(co <- x$contrasts))
 #          cat("  [contrasts: ", apply(cbind(names(co), co), 1, paste, collapse = "="), "]")
         cat(":\n")
         print.default(format(round(x$coefficients, digits=dig.tst), digits = digits), print.gap = 2, quote = FALSE)
       }
-      else cat("No coefficients\n\n")   
-  }      
+      else cat("No coefficients\n\n")
+  }
   if (x$show.fitted==TRUE) {
         cat("Fitted Values\n")
         print.default(format(round(x$fitted.values, digits=dig.tst), digits = digits), print.gap = 2, quote = FALSE)
@@ -39,11 +41,11 @@ print.manyglm <- function( x, digits = max(3, getOption("digits") - 3), dig.tst=
         print.default(format(round(x$PIT.residuals, digits=dig.tst), digits = digits), print.gap = 2, quote = FALSE)
   }
 
-  if (x$family=="quasipoisson" | x$family=="negative.binomial"){
+  if (x$family=="quasipoisson" | x$family=="negative.binomial" | x$family=="gamma"){
       p <- length(x$phi)
       cat("\nNuisance Parameter(s) phi estimated by the", x$theta.method, "method.\n")
       print.default(format(round(x$phi,digits=dig.tst)),print.gap=2,quote=FALSE)
-  }		
+  }
 
   cat("\nDegrees of Freedom:", NROW(x$y)-1, "Total (i.e. Null);", x$df.residual, "Residual\n")
 

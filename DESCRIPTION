@@ -19,9 +19,12 @@ Description: A set of tools for displaying, modeling and analysing
         (<http://www.gnu.org/software/gsl/>) and 'Rcpp'
         (<http://dirk.eddelbuettel.com/code/rcpp.html>) 'R' / 'C++' classes.
 Depends: R (>= 3.0.0)
+Encoding: UTF-8
 Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
 Packaged: 2018-01-19; David
 RoxygenNote: 6.0.1
+Suggests:
+    testthat

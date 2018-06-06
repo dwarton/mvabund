@@ -1,7 +1,6 @@
 \name{Tasmania}
 \docType{data}
 \alias{Tasmania}
-% \encoding{latin1}
 \title{Tasmania Dataset}
 \description{
 This dataset contains a list with community abundance data of species and two factor variables, namely treatment and block. See (Warwick et.al. (1990)) for more details.
@@ -22,8 +21,8 @@ A list containing the elements
 
 \details{
 The count data (number of each Meiobenthos species in each sample) were collected in a spatia
-lly blocked design. The labels are made to the four replicate cores within each block, 
-with \code{B} labeling for the block ID and \code{D} labeling for the disturbed sample ID and \code{U} labeling for the undisturbed sample ID. The data frame \code{abund} contains 12 Copepod species, 39 Nematode species and 4 undetermined ones. 
+lly blocked design. The labels are made to the four replicate cores within each block,
+with \code{B} labeling for the block ID and \code{D} labeling for the disturbed sample ID and \code{U} labeling for the undisturbed sample ID. The data frame \code{abund} contains 12 Copepod species, 39 Nematode species and 4 undetermined ones.
 
 The 12 Copepod species are: \cr
 Ameira,      Adopsyllus,  Ectinosoma,  Ectinosomat, Haloschizo,\cr
@@ -52,7 +51,7 @@ The data frame \code{copepod} stores the subset of 12 Copepod species, and the d
 \code{block} indicates the block ID for the 16 observations of each species in the Tasmania dataset.
 }
 
-\references{ 
+\references{
 Warwick, R. M., Clarke, K. R. and Gee, J. M. (1990). The effect of disturbance by soldier crabs Mictyris platycheles H. Milne Edwards on meiobenthic communiy structure. \emph{J. Exp. Mar. Biol. Ecol.}, \bold{135}, 19-33.
 }
 \examples{
