@@ -125,3 +125,7 @@ coefplot.manyglm <- function(
   # reset par after the plot
   par(original_par)
 }
+
+coefplot <- function (x, ...) {
+   UseMethod("coefplot", x)
+}

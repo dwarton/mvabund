@@ -114,8 +114,8 @@ anova.manyglm <- function(object, ...,
     }
 
     if (substr(test,1,1) == "w") testnum <- 2 # wald
-    else if (substr(test,1,1) == "s") testnum <- 3 #score
-    else if (substr(test,1,1) == "L") testnum <- 4 #LR
+    else if (substr(test,1,1) == "s") testnum <- 3 # score
+    else if (substr(test,1,1) == "L") testnum <- 4 # LR
     else stop("'test'not defined. Choose one of 'wald', 'score', 'LR' for an manyglm object.")
 
     if (resampnum==0 && testnum==3) # case resampling not available for score.
@@ -137,19 +137,18 @@ anova.manyglm <- function(object, ...,
        pu <- 1
        calc.pj <- TRUE
        adjust.pj <- FALSE
-    } else if(substr(p.uni,1,1)=="a"){
+    } else if(substr(p.uni,1,1) == "a") {
        pu <- 2
        calc.pj <- adjust.pj <- TRUE
-    } else
+    } else {
        stop("'p.uni' not defined. Choose one of 'adjusted', 'unadjusted', 'none'.")
-
+    }
 
     if (!is.null(bootID)) {
-       if (max(bootID)>nRows) {
+       if (max(bootID) > nRows) {
           bootID <- as.null()
           cat(paste("Invalid bootID -- sample id larger than no. of observations. Switch to generating bootID matrix on the fly (default nBoot=999).","\n"))
-       }
-       else {
+       } else {
           if (is.matrix(bootID)) nBoot <- dim(bootID)[1]
           else nBoot <- as.integer(length(bootID)/nRows)
 
@@ -157,29 +156,22 @@ anova.manyglm <- function(object, ...,
               if (is.numeric(bootID)) {
                  cat(paste("Using <double> bootID matrix from input for 'score' resampling.","\n"))
                  bootID <- matrix(as.numeric(bootID), nrow=nBoot, ncol=nRows)
-              }
-              else {
+              } else {
                  cat(paste("Invalid bootID -- 'score' resampling should use <double> matrix. Switch to generating bootID matrix on the fly.","\n"))
                  bootID <- as.null()
-
               }
-          }
-          else{
-             if (is.integer(bootID)){
+          } else {
+             if (is.integer(bootID)) {
                 cat(paste("Using <int> bootID matrix from input.","\n"))
                 bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
-             }
-             else {
+             } else {
                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Switch to generating bootID matrix on the fly.","\n"))
                 bootID <- as.null()
              }
           }
        }
     }
-
-
-
-    # DW additions
+    # for block bootstrap sampling
     if (is.null(block) == FALSE) {
       bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
@@ -325,9 +317,6 @@ anova.manyglm <- function(object, ...,
     }
 
     ######## call resampTest Rcpp #########
-    # val <- .Call("RtoGlmAnova", modelParam, testParams, Y, X, O,
-    #               XvarIn, bootID, shrink.param, PACKAGE="mvabund")
-
     val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, bootID, shrink.param)
 
     # prepare output summary

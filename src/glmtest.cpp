@@ -707,13 +707,14 @@ int GlmTest::resampSmryCase(glm *model, gsl_matrix *bT, GrpMat *GrpXs,
     // if all isSingular==TRUE
     for (j = 0; j < nRows; j++) {
       // resample Y, X, offsets accordingly
-      if (bootID != NULL)
+      if (bootID != NULL) {
         id = (unsigned int)gsl_matrix_get(bootID, i, j);
-      else {
-        if (tm->reprand == TRUE)
+      } else {
+        if (tm->reprand == TRUE) {
           id = (unsigned int)gsl_rng_uniform_int(rnd, nRows);
-        else
+        } else {
           id = (unsigned int)nRows * Rf_runif(0, 1);
+        }
       }
       xj = gsl_matrix_row(model->Xref, id);
       gsl_matrix_set_row(GrpXs[0].matrix, j, &xj.vector);
@@ -729,8 +730,9 @@ int GlmTest::resampSmryCase(glm *model, gsl_matrix *bT, GrpMat *GrpXs,
       break;
   }
 
-  for (k = 2; k < nParam + 2; k++)
+  for (k = 2; k < nParam + 2; k++) {
     subX2(GrpXs[0].matrix, k - 2, GrpXs[k].matrix);
+  }
 
   gsl_matrix_free(tXX);
 

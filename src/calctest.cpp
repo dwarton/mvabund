@@ -337,8 +337,9 @@ int calcAdjustP(const unsigned int punit, const unsigned int nVars, double *bj,
         *(bj + sid) = MAX(*(bj + sid), *(bj + sid0));
       }
       //	   printf("%d ", (unsigned int)sid);
-      if (*(bj + sid) >= *(sj + sid))
+      if (*(bj + sid) >= *(sj + sid)) {
         *(pj + sid) = *(pj + sid) + 1;
+      }
       //	   if ( k> 0)
       //              printf("%.2f ", *(bj+sid0));
       //	   printf("%.2f ", *(bj+sid));
