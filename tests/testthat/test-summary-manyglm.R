@@ -1,4 +1,4 @@
-context("test-manyglm.R")
+context("test-summary-manyglm.R")
 test_that("gamma summary", {
   # generate a response matrix Xij ~ exp(1) distribution
   # ${nVar} cols

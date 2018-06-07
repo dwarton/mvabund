@@ -10,17 +10,17 @@ summary.manyglm <- function(object,
                             p.uni="none",
                             nBoot=1000,
                             cor.type=object$cor.type,
+                            block = NULL,
                             show.cor = FALSE,
                             show.est=FALSE,
                             show.residuals=FALSE,
                             symbolic.cor = FALSE,
+                            rep.seed = FALSE,
                             show.time=FALSE,
                             show.warning=FALSE, ...) {
     tol = object$tol
     allargs <- match.call(expand.dots = FALSE)
     dots <- allargs$...
-    if ("rep.seed" %in% names(dots)) rep.seed <- eval(parse(text=dots$rep.seed))
-    else rep.seed <- FALSE
     if ("ld.perm" %in% names(dots)) ld.perm <- eval(parse(text=dots$ld.perm))
     else ld.perm <- FALSE
     if ("bootID" %in% names(dots)) bootID <- eval(parse(text=dots$bootID))
@@ -156,6 +156,11 @@ summary.manyglm <- function(object,
              }
           }
        }
+    }
+    
+    # allows for block sampling
+    if (is.null(block) == FALSE) {
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
 
     # if corr = shrink or monte carlo resamp
@@ -314,6 +319,8 @@ summary.manyglm <- function(object,
     smry$uni.p <- unit_signic.p
     smry$statistic <- overaltest
     smry$statistic.j <- unit_overaltest
+
+    smry$block <- block
 
     class(smry) <- "summary.manyglm"
     return(smry)

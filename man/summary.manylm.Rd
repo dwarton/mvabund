@@ -9,7 +9,7 @@ abundance data in ecology.}
 
 \usage{
 \method{summary}{manylm}(object, nBoot=1000, resamp="residual", 
-   test="F", cor.type=object$cor.type, shrink.param=NULL, 
+   test="F", cor.type=object$cor.type, block=NULL, shrink.param=NULL, 
    p.uni="none", studentize=TRUE, R2="h", show.cor = FALSE, 
    show.est=FALSE, show.residuals=FALSE, symbolic.cor=FALSE, 
    tol=1.0e-6, \dots )
@@ -29,6 +29,7 @@ abundance data in ecology.}
 \item{test}{ the test to be used. Possible values are: "LR" = likelihood ratio statistic (default) and "F" = Lawley-Hotelling trace statistic.\cr
 Note that if all variables are assumed independent (\code{cor.shrink="I"}) then "LR" is equivalent to LR-IND and "F" is the sum-of-F statistics from Warton & Hudson (2004).}
 \item{cor.type}{ structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{block}{A factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{shrink.param}{shrinkage parameter to be used if \code{cor.type="shrink"}. If not supplied, but needed, it will be estimated from the data by Cross
 Validation using the normal likelihood as in Warton (2008).}
 \item{p.uni}{whether to calculate univariate test statistics and their P-values, and if so, what type. \cr

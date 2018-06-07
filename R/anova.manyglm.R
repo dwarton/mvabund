@@ -31,7 +31,7 @@ anova.manyglm <- function(object, ...,
 
     if (any(class(object) == "manylm")) {
         if ( test == "LR" )
-        return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
+        return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, block=block, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
         else {
         warning("For an manylm object, only the likelihood ratio test and F test are supported. So the test option is changed to `'F''. ")
         return(anova.manylm(object, resamp=resamp, test="F", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, bootID=bootID, ... ))
@@ -91,7 +91,7 @@ anova.manyglm <- function(object, ...,
     else if (object$theta.method == "METHODS") methodnum <- 3
 
 
-    if (substr(resamp,1,1)=="c") resampnum <- 0  #case
+    if (resamp=="case") resampnum <- 0  #case
     # To exclude case resampling
     #if (resamp=="case") stop("Sorry, case resampling is not yet available.")
     else if (substr(resamp,1,4)=="resi") resampnum <- 1  # residual
@@ -115,8 +115,8 @@ anova.manyglm <- function(object, ...,
     }
 
     if (substr(test,1,1) == "w") testnum <- 2 # wald
-    else if (substr(test,1,1) == "s") testnum <- 3 #score
-    else if (substr(test,1,1) == "L") testnum <- 4 #LR
+    else if (substr(test,1,1) == "s") testnum <- 3 # score
+    else if (substr(test,1,1) == "L") testnum <- 4 # LR
     else stop("'test'not defined. Choose one of 'wald', 'score', 'LR' for an manyglm object.")
 
     if (resampnum==0 && testnum==3) # case resampling not available for score.
@@ -138,19 +138,18 @@ anova.manyglm <- function(object, ...,
        pu <- 1
        calc.pj <- TRUE
        adjust.pj <- FALSE
-    } else if(substr(p.uni,1,1)=="a"){
+    } else if(substr(p.uni,1,1) == "a") {
        pu <- 2
        calc.pj <- adjust.pj <- TRUE
-    } else
+    } else {
        stop("'p.uni' not defined. Choose one of 'adjusted', 'unadjusted', 'none'.")
-
+    }
 
     if (!is.null(bootID)) {
-       if (max(bootID)>nRows) {
+       if (max(bootID) > nRows) {
           bootID <- as.null()
           cat(paste("Invalid bootID -- sample id larger than no. of observations. Switch to generating bootID matrix on the fly (default nBoot=999).","\n"))
-       }
-       else {
+       } else {
           if (is.matrix(bootID)) nBoot <- dim(bootID)[1]
           else nBoot <- as.integer(length(bootID)/nRows)
 
@@ -158,56 +157,24 @@ anova.manyglm <- function(object, ...,
               if (is.numeric(bootID)) {
                  cat(paste("Using <double> bootID matrix from input for 'score' resampling.","\n"))
                  bootID <- matrix(as.numeric(bootID), nrow=nBoot, ncol=nRows)
-              }
-              else {
+              } else {
                  cat(paste("Invalid bootID -- 'score' resampling should use <double> matrix. Switch to generating bootID matrix on the fly.","\n"))
                  bootID <- as.null()
-
               }
-          }
-          else{
-             if (is.integer(bootID)){
+          } else {
+             if (is.integer(bootID)) {
                 cat(paste("Using <int> bootID matrix from input.","\n"))
                 bootID <- matrix(as.integer(bootID-1), nrow=nBoot, ncol=nRows)
-             }
-             else {
+             } else {
                 cat(paste("Invalid bootID -- sample id for methods other than 'score' resampling should be integer numbers up to the no. of observations. Switch to generating bootID matrix on the fly.","\n"))
                 bootID <- as.null()
              }
           }
        }
     }
-
-
-
-#DW additions
-    if(is.null(block)==FALSE)
-    {
-      tb=table(block)
-      nLevels = length(tb)
-      if(any(tb!=nRows/nLevels))
-      {
-        print(tb)
-        stop("Sorry, block needs to be a balanced factor - same number of rows for each level")
-      }
-      else
-      {
-        blockIDs = vector("list",nLevels)
-        for(i.level in 1:nLevels)
-          blockIDs[[i.level]] = which(block==names(tb)[i.level])
-        unlistIDs = unlist(blockIDs) #needed to match each resampled observation with its correct location
-      }
-      #then each iteration...
-      if(is.null(bootID)) #generate a bootID matrix if required
-        samp = matrix(sample(nLevels,nLevels*nBoot,replace=TRUE),ncol=nLevels)
-      else
-        samp=bootID
-      bootID = matrix(NA,nBoot,nRows)
-      for(iBoot in 1:nBoot)
-        bootID[iBoot,unlistIDs] = unlist(blockIDs[samp[iBoot,]]) #unlistIDs is needed to make sure each unlisted blockID ends up in the right place
-      bootID = bootID-1 #to fit the format in C, 0 to nRows.
-      cat(paste("Using block resampling...","\n"))
-#      print(bootID)
+    # for block bootstrap sampling
+    if (is.null(block) == FALSE) {
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
     }
 
     # construct for param list
@@ -217,70 +184,62 @@ anova.manyglm <- function(object, ...,
     if(is.null(object$offset)) O <- matrix(0, nrow=nRows, ncol=nVars)
     else O <- as.matrix(object$offset)
     # ANOVA
-    if (nModels==1)
-    {
-       # test the significance of each model terms
-       X <- object$x
-       varseq <- object$assign
-       resdev <- resdf <- NULL
-       tl <- attr(object$terms, "term.labels")
-       # if intercept is included
-       if (attr(object$terms,"intercept")==0)
-       {
-          minterm = 1
-          nterms = max(1, varseq)
-       }
-       else
-       {
-          minterm = 0
-          nterms <- max(0, varseq)+1
-          tl <- c("(Intercept)", tl)
-       }
-       tl <- tl[1 + unique(object$assign)] # attempt to deal with bug
-       if ( nParam==1 )
-           stop("An intercept model is comparing to itself. Stopped")
+    if (nModels==1) {
+        # test the significance of each model terms
+        X <- object$x
+        varseq <- object$assign
+        resdev <- resdf <- NULL
+        tl <- attr(object$terms, "term.labels")
+        # if intercept is included
+        if (attr(object$terms,"intercept")==0) {
+            minterm = 1
+            nterms = max(1, varseq)
+        } else {
+            minterm = 0
+            nterms <- max(0, varseq)+1
+            tl <- c("(Intercept)", tl)
+        }
+        tl <- tl[1 + unique(object$assign)] # attempt to deal with bug
+        if ( nParam==1 )
+            stop("An intercept model is comparing to itself. Stopped")
 
-       XvarIn <- matrix(ncol=nParam, nrow=nterms, 1)
-       for ( i in 0:(nterms-2))
-       { # exclude object itself
-           XvarIn[nterms-i, varseq>i+minterm] <- 0 # in reversed order
-           ncoef <- nParam-length(varseq[varseq>i+minterm])
-           resdf <- c(resdf, nRows-ncoef)
-       }
+        XvarIn <- matrix(ncol=nParam, nrow=nterms, 1)
+        for ( i in 0:(nterms-2)) { # exclude object itself
+            XvarIn[nterms-i, varseq>i+minterm] <- 0 # in reversed order
+            ncoef <- nParam-length(varseq[varseq>i+minterm])
+            resdf <- c(resdf, nRows-ncoef)
+        }
 
-       resdf <- c(resdf, object$df.residual)
-       # get the shrinkage estimates
-       tX <- matrix(1, nrow=nRows, ncol=1)
-       if (corrnum==2 | resampnum==5){ # shrinkage or montecarlo bootstrap
-#          shrink.param <- c(rep(NA, nterms))
-          # use a single shrinkage parameter for all models
-          if (object$cor.type == "shrink") {
-#                 shrink.param[1] <- object$shrink.param
-              shrink.param <- rep(object$shrink.param,nterms)
-          }
-      else  {
-#              shrink.param[1] <- ridgeParamEst(dat=object$residuals, X=tX,
-#                        only.ridge=TRUE)$ridgeParam
-
-              lambda <- ridgeParamEst(dat=object$residuals, X=tX,
-                         only.ridge=TRUE)$ridgeParam
-              shrink.param <- rep(lambda, nterms)
-          }
-#          for ( i in 0:(nterms-2)){ # exclude object itself
-#              fit <- .Call("RtoGlm", modelParam, Y, X[,varseq<=i+minterm,drop=FALSE],
-#                 PACKAGE="mvabund")
-#              shrink.param[nterms-i] <- ridgeParamEst(dat=fit$residuals,
-#                      X=tX, only.ridge=TRUE)$ridgeParam # in reversed order
-#           }
-       }
-       else if (corrnum == 0) shrink.param <- c(rep(1, nterms))
-       else if (corrnum == 1) shrink.param <- c(rep(0, nterms))
-#       resdev <- c(resdev, object$deviance)
-       nModels <- nterms
-       ord <- (nterms-1):1
-       topnote <- paste("Model:", deparse(object$call))
-    }
-    else {
+        resdf <- c(resdf, object$df.residual)
+        # get the shrinkage estimates
+        tX <- matrix(1, nrow=nRows, ncol=1)
+        if (corrnum==2 | resampnum==5){ # shrinkage or montecarlo bootstrap
+            # shrink.param <- c(rep(NA, nterms))
+            # use a single shrinkage parameter for all models
+            if (object$cor.type == "shrink") {
+                # shrink.param[1] <- object$shrink.param
+                shrink.param <- rep(object$shrink.param,nterms)
+            } else  {
+                # shrink.param[1] <- ridgeParamEst(dat=object$residuals, X=tX,
+                # only.ridge=TRUE)$ridgeParam
+                lambda <- ridgeParamEst(dat=object$residuals, X=tX,
+                            only.ridge=TRUE)$ridgeParam
+                shrink.param <- rep(lambda, nterms)
+            }
+            # for ( i in 0:(nterms-2)){ # exclude object itself
+            #     fit <- .Call("RtoGlm", modelParam, Y, X[,varseq<=i+minterm,drop=FALSE],
+            #        PACKAGE="mvabund")
+            #     shrink.param[nterms-i] <- ridgeParamEst(dat=fit$residuals,
+            #           X=tX, only.ridge=TRUE)$ridgeParam # in reversed order
+            #  }
+        } 
+        else if (corrnum == 0) shrink.param <- c(rep(1, nterms))
+        else if (corrnum == 1) shrink.param <- c(rep(0, nterms))
+        # resdev <- c(resdev, object$deviance)
+        nModels <- nterms
+        ord <- (nterms-1):1
+        topnote <- paste("Model:", deparse(object$call))
+    } else {
         targs <- match.call(expand.dots = FALSE)
         if (targs[[1]] == "example" || any(class(object) == "traitglm"))
             modelnamelist <- paste("Model", format(1:nModels))
@@ -297,17 +256,18 @@ anova.manyglm <- function(object, ...,
 
         # get the shrinkage estimates
         if (corrnum == 2 | resampnum == 5) { # shrinkage or parametric bootstrap
-        shrink.param <- c(rep(NA,nModels))
-            tX <- matrix(1, nrow=nRows, ncol=1)
-        for ( i in 1:nModels ) {
-            if (objects[[i]]$cor.type == "shrink")
-                    shrink.param[i] <- objects[[i]]$shrink.param
-            else shrink.param[i] <- ridgeParamEst(dat=objects[[i]]$residuals, X=tX, only.ridge=TRUE)$ridgeParam
+            shrink.param <- c(rep(NA,nModels))
+                tX <- matrix(1, nrow=nRows, ncol=1)
+            for ( i in 1:nModels ) {
+                if (objects[[i]]$cor.type == "shrink")
+                        shrink.param[i] <- objects[[i]]$shrink.param
+                else shrink.param[i] <- ridgeParamEst(dat=objects[[i]]$residuals, X=tX, only.ridge=TRUE)$ridgeParam
+            }
+        } else if (corrnum == 0) {
+            shrink.param <- c(rep(1,nModels))
+        } else if (corrnum == 1) {
+            shrink.param <- c(rep(0,nModels))
         }
-    }
-        else if (corrnum == 0) shrink.param <- c(rep(1,nModels))
-        else if (corrnum == 1) shrink.param <- c(rep(0,nModels))
-
         # Test if the input models are nested, construct the full matrix
         Xnull <- as.matrix(objects[[1]]$x, "numeric")
         nx <- dim(Xnull)[2]
@@ -317,30 +277,28 @@ anova.manyglm <- function(object, ...,
             tmp <- qr(Xarg)
             Xplus <- qr(XAlt)
             if ( tmp$rank == Xplus$rank ) {
-               Beta <- qr.coef(Xplus, Xnull)  # equivalent to (XAlt\XNull) in matlab
-               # The following gets the left null space of beta, ie.LT=null(t(beta));
-               # note that LT is an orthogonal complement of Beta, and [Beta, LT] together forms the orthogonal basis that span the column space of XAlt
-               # For some reason, it must be null(beta) instead of null(t(beta)) in R to get the same answer in matlab.
-#browser()
-               # In case of redundant terms in the model
-               RowToOmit <- which(rowSums(is.na(Beta))>0)
-               Beta <- na.omit(Beta)
-               tmp <- qr(Beta)
-               set <- if(tmp$rank == 0) 1:ncol(Beta) else  - (1:tmp$rank)
-               LT <- qr.Q(tmp, complete = TRUE)[, set, drop = FALSE]
-               # Update the next null matrix with the expanded one
-               if ( length(RowToOmit)>0 )
-                  Xnull <- cbind(Xnull, XAlt[,-RowToOmit]%*%LT)
-               else
-                  Xnull <- cbind(Xnull, XAlt%*%LT)
+                Beta <- qr.coef(Xplus, Xnull) 
+                # equivalent to (XAlt\XNull) in matlab
+                # The following gets the left null space of beta, ie.LT=null(t(beta));
+                # note that LT is an orthogonal complement of Beta, and [Beta, LT] together forms the orthogonal basis that span the column space of XAlt
+                # For some reason, it must be null(beta) instead of null(t(beta)) in R to get the same answer in matlab.
+                # In case of redundant terms in the model
+                RowToOmit <- which(rowSums(is.na(Beta))>0)
+                Beta <- na.omit(Beta)
+                tmp <- qr(Beta)
+                set <- if(tmp$rank == 0) 1:ncol(Beta) else  - (1:tmp$rank)
+                LT <- qr.Q(tmp, complete = TRUE)[, set, drop = FALSE]
+                # Update the next null matrix with the expanded one
+                if ( length(RowToOmit)>0 )
+                    Xnull <- cbind(Xnull, XAlt[,-RowToOmit]%*%LT)
+                else
+                    Xnull <- cbind(Xnull, XAlt%*%LT)
 
-               # Update the Xnull dimension
-               nx <- rbind(nx, dim(Xnull)[2])
+                # Update the Xnull dimension
+                nx <- rbind(nx, dim(Xnull)[2])
             }
         }
         X <- Xnull  # full matrix
-
-#browser()
         # Construct XvarIn
         nParam <- dim(X)[2]
         XvarIn <- matrix(nrow=nModels, ncol=nParam, as.integer(0))
@@ -353,16 +311,13 @@ anova.manyglm <- function(object, ...,
         topnote <- paste(modelnamelist, ": ", Xnames, sep = "", collapse = "\n")
         tl <- modelnamelist
         if (tl[1]==tl[2]) {
-	    warning(paste("Two identical models. Second model's name changed to ", tl[2], "_2", sep=""))
-	    tl[2] <- paste(tl[2], "_2", sep="")
-	}
+            warning(paste("Two identical models. Second model's name changed to ", tl[2], "_2", sep=""))
+            tl[2] <- paste(tl[2], "_2", sep="")
+        }
         ord <- (nModels-1):1
     }
 
     ######## call resampTest Rcpp #########
-    # val <- .Call("RtoGlmAnova", modelParam, testParams, Y, X, O,
-    #               XvarIn, bootID, shrink.param, PACKAGE="mvabund")
-
     val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, bootID, shrink.param)
 
     # prepare output summary
