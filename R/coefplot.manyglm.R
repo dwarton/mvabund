@@ -126,6 +126,6 @@ coefplot.manyglm <- function(
   par(original_par)
 }
 
-coefplot <- function (x, ...) {
-   UseMethod("coefplot", x)
+coefplot <- function (object, ...) {
+   UseMethod("coefplot")
 }

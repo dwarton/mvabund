@@ -17,7 +17,6 @@ anova.manyglm <- function(object, ...,
                     rep.seed=FALSE,
                     bootID=NULL,
                     keep.boot = FALSE) {
-                    bootID=NULL) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -33,11 +32,11 @@ anova.manyglm <- function(object, ...,
 
     if (any(class(object) == "manylm")) {
         if ( test == "LR" )
-        return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, block=block, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
+            return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, block=block, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
         else {
-        warning("For an manylm object, only the likelihood ratio test and F test are supported. So the test option is changed to `'F''. ")
-        return(anova.manylm(object, resamp=resamp, test="F", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, bootID=bootID, ... ))
-    }
+            warning("For an manylm object, only the likelihood ratio test and F test are supported. So the test option is changed to `'F''. ")
+            return(anova.manylm(object, resamp=resamp, test="F", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, bootID=bootID, ... ))
+        }
     }
     else if (!any(class(object)=="manyglm"))
         stop("The function 'anova.manyglm' can only be used for a manyglm or manylm object.")
@@ -419,7 +418,7 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
             row_index <- which(what %in% l_what[c(i, j)])
             subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
             m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
-            am <- anova(m,
+            am <- anova.manyglm(m,
                 show.time = 'none',
                 keep.boot = TRUE,
                 nBoot = anova_obj$nBoot, ...)

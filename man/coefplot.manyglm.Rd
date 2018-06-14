@@ -2,11 +2,12 @@
 % Please edit documentation in R/coefplot.manyglm.R
 \name{coefplot.manyglm}
 \alias{coefplot.manyglm}
+\alias{coefplot}
 \title{Plots the coefficients of the covariates of a manyglm object with confidence intervals.}
 \usage{
-coefplot.manyglm(object, y.label = TRUE, which.Xcoef = NULL,
+\method{coefplot}{manyglm}(object, y.label = TRUE, which.Xcoef = NULL,
   which.Ys = NULL, incl.intercept = FALSE, cex.ylab = 0.5, mfrow = NULL,
-  mar = c(4, 8, 2, 1), ...)
+  mar = NULL, ...)
 }
 \arguments{
 \item{object}{A manyglm object}
