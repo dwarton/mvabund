@@ -418,7 +418,6 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
             # subset the dataset to only contain the levels we are interested in
             row_index <- which(what %in% l_what[c(i, j)])
             subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
-            # get the anova, might be able to not redo the manyglm call by using bootID argument to anova
             m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
             am <- anova(m,
                 show.time = 'none',
