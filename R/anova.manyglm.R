@@ -17,6 +17,7 @@ anova.manyglm <- function(object, ...,
                     rep.seed=FALSE,
                     bootID=NULL,
                     keep.boot = FALSE) {
+                    bootID=NULL) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -90,7 +91,6 @@ anova.manyglm <- function(object, ...,
     else if (object$theta.method == "Chi2") methodnum <- 1
     else if (object$theta.method == "PHI") methodnum <- 2
     else if (object$theta.method == "METHODS") methodnum <- 3
-
 
     if (resamp=="case") resampnum <- 0  #case
     # To exclude case resampling

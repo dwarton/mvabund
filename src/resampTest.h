@@ -561,6 +561,7 @@ public:
   gsl_matrix *smryStat, *Psmry;
   gsl_matrix *anovaStat, *Panova;
   gsl_matrix *bootID;
+
   // store the bootstrap stats
   gsl_matrix *bootStore;
   unsigned int nSamp;

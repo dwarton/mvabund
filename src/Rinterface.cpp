@@ -300,6 +300,7 @@ List RtoGlmSmry(const List &sparam,                   // model params list
   // resampling test
   myTest.summary(glmPtr[mtype]);
   //    myTest.displaySmry(glmPtr[mtype]);
+  
   // Timing
   clk_end = clock();
   unsigned long int dif =
