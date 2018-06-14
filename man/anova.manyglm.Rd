@@ -8,8 +8,10 @@ generalized linear model fits.}
 \usage{
  %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%%
 \method{anova}{manyglm}(object, \dots, resamp="pit.trap", test="LR", p.uni="none",
-    nBoot=999, cor.type=object$cor.type, block=NULL, show.time="total",
-    show.warning=FALSE, rep.seed=FALSE, bootID=NULL) 
+    nBoot=999, cor.type=object$cor.type,
+    pairwise.comp = NULL,
+    block=NULL, show.time="total",
+    show.warning=FALSE, rep.seed=FALSE, bootID=NULL, keep.boot=FALSE) 
 \method{print}{anova.manyglm}(x, \dots) 
 }
 \arguments{
@@ -29,11 +31,13 @@ step-down resampling procedure.
 }
 \item{nBoot}{the number of Bootstrap iterations, default is \code{nBoot=999}.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{pairwise.comp}{A character or factor vector specifying the levels for which a pairwise comparison will be carried out, adjusting for multiple comparisons via a free stepdown resampling procedure. }
 \item{block}{a factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{show.time}{Whether to display timing information for the resampling procedure: "none" shows none, "all" shows all timing information and "total" shows only the overall time taken for the tests. }
 \item{show.warning}{logical. Whether to display warning messages in the operation procedure.}
 \item{rep.seed}{logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.}
 \item{bootID}{an integer matrix where each row specifies bootstrap id's in each resampling run. When \code{bootID} is supplied, \code{nBoot} is set to the number of rows in \code{bootID}. Default is \code{NULL}.}
+\item{keep.boot}{logical. Whether to return the bootstrapped test statistics.}
 \item{x}{an object of class "anova.manyglm", usually, a result of a call to
 \code{\link[mvabund:anova.manyglm]{anova.manyglm}}.}
 }
@@ -98,6 +102,9 @@ Rather than stopping after testing for multivariate effects, it is often of inte
 If \code{p.uni="adjusted"} or \code{"unadjusted"} the output list also contains\cr
 \item{uni.test}{a table showing the test statistics of the univariate tests.}
 \item{uni.p}{a table showing the p-values of the univariate tests.}
+
+If \code{keep.boot=TRUE} the output list also contains \cr
+\item{bootStat}{A matrix of boot strapped test statistics, the first column is the multivariate test statistic, the rest of the columns are the univariate statistic.}
 }
 
 \section{Warning}{
