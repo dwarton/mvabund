@@ -448,6 +448,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       puj = gsl_matrix_ptr(Panova, i - 1, 1);
       reinforceP(puj, nVars, sortid);
     }
+    // } // end for i loop
 
     if (BetaO != NULL)
       gsl_matrix_free(BetaO);
