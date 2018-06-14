@@ -72,6 +72,7 @@ void GlmTest::releaseTest(void) {
   if (bootStore != NULL)
     gsl_matrix_free(bootStore);
 
+
   gsl_matrix_free(L);
   gsl_matrix_free(Rlambda);
   gsl_matrix_free(Wj);
