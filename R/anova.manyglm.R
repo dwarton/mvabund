@@ -375,7 +375,7 @@ anova.manyglm <- function(object, ...,
     anova$block = block
     if(!is.null(pairwise.comp)) {
         anova$pairwise.comp.table <- do_pairwise_comp(pairwise.comp, anova, object, resamp = resamp, cor.type = cor.type, ...)
-    }else {
+    } else {
         anova$pairwise.comp = NULL
         anova$pairwise.comp.table = NULL
     }
@@ -386,6 +386,7 @@ anova.manyglm <- function(object, ...,
 do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, ...) {
     if (!is.factor(what)) what <- as.factor(what)
     n_what <- nlevels(what)
+    l_what <- levels(what)
     # step 1, what are the levels
     # number of comparisons
     n_comp <- choose(n_what, 2)
@@ -412,13 +413,11 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     for (i in 1:(n_what - 1) ) {
         for (j in (i + 1):n_what) {
             k=k+1
-            comp_levels[, k] <- c(what[c(i,j)])
-            if(verbose) print(paste('test', k, ':', what[i], 'vs', what[j]))
+            comp_levels[, k] <- c(l_what[c(i,j)])
+            if(verbose) print(paste('test', k, ':', l_what[i], 'vs', l_what[j]))
             # subset the dataset to only contain the levels we are interested in
-            row_index <- which(what %in% what[c(i, j)])
+            row_index <- which(what %in% l_what[c(i, j)])
             subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
-            #print(cbind.data.frame(subWhat, subX))
-            #print(subY)
             # get the anova, might be able to not redo the manyglm call by using bootID argument to anova
             m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
             am <- anova(m,
