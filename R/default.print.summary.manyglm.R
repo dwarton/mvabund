@@ -214,7 +214,7 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
           if(x$resamp!="none"){
              print.default(t(x$statistic.j), quote =FALSE, right = TRUE, na.print = "NA",...)
              cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-                 "\n P-value calculated using", n.bootsdone, "resampling iterations via", paste0(anova$resamp,block.text), "resampling (to account for correlation in testing).\n")
+                 "\n P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling (to account for correlation in testing).\n")
 #             cat("\nArguments: with", n.bootsdone, "resampling iterations using", x$resamp, "resampling and",corname, "\n")
           } else {
              uni.stat <- x$statistic.j[,-zap.ij, drop=FALSE]

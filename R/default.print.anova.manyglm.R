@@ -4,8 +4,11 @@
 
 # last modifed: David Warton, 06-May-2015
 
-default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3, 3), signif.stars = getOption("show.signif.stars"),  dig.tst = max(1, min(5, digits - 1)), eps.Pvalue = .Machine$double.eps, ...) 
-{
+default.print.anova.manyglm <- function(x,
+        digits = max(getOption("digits") - 3, 3),
+        signif.stars = getOption("show.signif.stars"),
+        dig.tst = max(1, min(5, digits - 1)),
+        eps.Pvalue = .Machine$double.eps, ...) {
    allargs <- match.call(expand.dots=FALSE)
    dots <- allargs$...
         
@@ -67,6 +70,14 @@ default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3
     # "no p-values calculated as 'resample=none'
     printCoefmat(round(x, digits=dig.tst), digits = digits, signif.stars = signif.stars, has.Pvalue = has.P, P.values = has.P, cs.ind = NULL, zap.ind = zap.i, tst.ind = tst.i, na.print = "", ...)
     
+    if (!is.null(anova$pairwise.comp)) {
+        cat("\n")
+        cat("Pairwise comparison results: \n")
+        printCoefmat(round(anova$pairwise.comp.table, digits=dig.tst),
+            digits = digits, signif.stars = signif.stars, has.Pvalue = TRUE, P.values = TRUE, cs.ind = NULL, na.print = "", ...)
+        cat("\n")
+        
+    }
     if(!is.null(test) & substr(anova$resamp,1,1)!="n"){
        if(substr(anova$p.uni,1,1)=="n") {
          if(dim(anova$uni.p)[2]>1)

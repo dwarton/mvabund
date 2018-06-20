@@ -10,11 +10,13 @@ anova.manyglm <- function(object, ...,
                     p.uni="none",
                     nBoot=999,
                     cor.type=object$cor.type,
+                    pairwise.comp = NULL,
                     block = NULL,
                     show.time="total",
                     show.warning=FALSE,
                     rep.seed=FALSE,
-                    bootID=NULL) {
+                    bootID=NULL,
+                    keep.boot = FALSE) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -30,11 +32,11 @@ anova.manyglm <- function(object, ...,
 
     if (any(class(object) == "manylm")) {
         if ( test == "LR" )
-        return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, block=block, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
+            return(anova.manylm(object, ..., resamp=resamp, test="LR", p.uni=p.uni, nBoot=nBoot, block=block, cor.type=cor.type, shrink.param=object$shrink.param, bootID=bootID))
         else {
-        warning("For an manylm object, only the likelihood ratio test and F test are supported. So the test option is changed to `'F''. ")
-        return(anova.manylm(object, resamp=resamp, test="F", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, bootID=bootID, ... ))
-    }
+            warning("For an manylm object, only the likelihood ratio test and F test are supported. So the test option is changed to `'F''. ")
+            return(anova.manylm(object, resamp=resamp, test="F", p.uni=p.uni, nBoot=nBoot, cor.type=cor.type, bootID=bootID, ... ))
+        }
     }
     else if (!any(class(object)=="manyglm"))
         stop("The function 'anova.manyglm' can only be used for a manyglm or manylm object.")
@@ -88,7 +90,6 @@ anova.manyglm <- function(object, ...,
     else if (object$theta.method == "Chi2") methodnum <- 1
     else if (object$theta.method == "PHI") methodnum <- 2
     else if (object$theta.method == "METHODS") methodnum <- 3
-
 
     if (resamp=="case") resampnum <- 0  #case
     # To exclude case resampling
@@ -343,6 +344,9 @@ anova.manyglm <- function(object, ...,
     anova$uni.p <- uni.p
     anova$uni.test <- uni.test
 
+    anova$uni.test <- uni.test
+    if (keep.boot) anova$bootStat <- val$bootStat
+
     ########### formal displays #########
     # Title and model formulas
     title <- if (test=="LR") "Analysis of Deviance Table\n"
@@ -368,6 +372,97 @@ anova.manyglm <- function(object, ...,
       anova$uni.p[is.numeric(anova$uni.p)] <- NA
 
     anova$block = block
+    if(!is.null(pairwise.comp)) {
+        anova$pairwise.comp.table <- do_pairwise_comp(pairwise.comp, anova, object, resamp = resamp, cor.type = cor.type, ...)
+    } else {
+        anova$pairwise.comp = NULL
+        anova$pairwise.comp.table = NULL
+    }
     class(anova) <- "anova.manyglm"
     return(anova)
+}
+
+do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, ...) {
+    if (!is.factor(what)) what <- as.factor(what)
+    n_what <- nlevels(what)
+    l_what <- levels(what)
+    # step 1, what are the levels
+    # number of comparisons
+    n_comp <- choose(n_what, 2)
+
+    if (n_comp == 0 || n_comp == 1) {
+        stop(paste("Number of comparisons = ", n_comp, ". Please increase the number of levels in your factor."))
+    }
+    Y <- manyglm_object$y
+    X <- manyglm_object$x
+    if (length(what) != nrow(X)) {
+        stop(paste0('Number of rows of the factor: ', length(what),' , must be equal to the number or rows in X: ',nrow(X)))
+    }
+
+    # initialise some vectors
+    observed_stats <- rep(NA, n_comp)
+    comp_levels <- matrix(NA, nrow = 2,ncol = n_comp)
+    resampled_stats <- matrix(NA, nrow = anova_obj$nBoot, ncol = n_comp)
+    k <- 0
+    # remove our factor from the design matrix
+    mfact <- model.matrix(~ what )
+    X <- X[, - which(apply(X, 2, function(x) any(apply(mfact, 2, function(y) all(x == y)))))]
+    if (verbose) print('Starting pairwise comparison procedure:')
+    # collect the test statistics
+    for (i in 1:(n_what - 1) ) {
+        for (j in (i + 1):n_what) {
+            k=k+1
+            comp_levels[, k] <- c(l_what[c(i,j)])
+            if(verbose) print(paste('test', k, ':', l_what[i], 'vs', l_what[j]))
+            # subset the dataset to only contain the levels we are interested in
+            row_index <- which(what %in% l_what[c(i, j)])
+            subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
+            m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
+            am <- anova.manyglm(m,
+                show.time = 'none',
+                keep.boot = TRUE,
+                nBoot = anova_obj$nBoot, ...)
+            observed_stats[k] <- am$table[2, 3]
+            # get the vector of test statistics, the first column of test statistics is the 
+            # multivariate one
+            resampled_stats[,k] <- am$bootStat[,1]
+        }
+    }
+
+    # now we can start the step down procedure
+    # sort observed in decreasing order saving the indicies
+    # these indicies are our r_i (pg66 resamplng based multiple testing)
+    # decreasing because we are using the test statistics and not the 
+    observed_stats <- sort(observed_stats, index.return = T, decreasing = T)
+    r_ <- observed_stats$ix
+    observed_stats <- observed_stats$x
+    # rearange the columns to match this ordering
+    resampled_stats <- resampled_stats[, r_]
+    # rearamge the labels to match this ordering 
+    comp_levels <- comp_levels[, r_]
+
+    per_row <- function(resampled_row) {
+        q_ <- rep(0, n_comp)
+        q_[n_comp] <- resampled_row[n_comp]
+        for (i in (n_comp - 1):1) {
+            q_[i] <- max(q_[i + 1], resampled_row[i])
+        }
+        q_  >= observed_stats
+    }
+    # apply the above function for every row 
+    df <- apply(resampled_stats, 1, per_row)
+    df <- cbind(df, T) # equivilant to adding 1 to the number of times exceeded
+    # this is to ensure a pvalue of 0 is never presented
+    # and then get the mean of this which is our free step-down adjusted p-values
+    p_hat_n <-  apply(df, 1, mean, na.rm = TRUE)
+    # enforce monoticity
+    for (i in 2:n_comp) {
+        p_hat_n[i] <- max(p_hat_n[i], p_hat_n[i -1])
+    }
+    comparison <- t(comp_levels)
+    comparison <- paste(comparison[,1], 'vs', comparison[,2])
+    pmat <- cbind(observed_stats, p_hat_n)
+    colnames(pmat) <- c('Observed statistic', 'Free Stepdown Adjusted P-Value')
+    rownames(pmat) <- comparison
+    pmat
 }

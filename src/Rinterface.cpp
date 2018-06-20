@@ -157,12 +157,14 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
       gsl_matrix_submatrix(myTest.anovaStat, 0, 1, nModels - 1, nVars);
   RcppGSL::MatrixView Pstat =
       gsl_matrix_submatrix(myTest.Panova, 0, 1, nModels - 1, nVars);
-
-  List rs = List::create(Named("multstat") = mul, Named("Pmultstat") = Pmul,
-                         Named("statj") = stat, Named("Pstatj") = Pstat,
-                         Named("dfDiff") = NumericVector(
-                             myTest.dfDiff, myTest.dfDiff + nModels - 1),
-                         Named("nSamp") = myTest.nSamp);
+  RcppGSL::MatrixView bootStore =
+      gsl_matrix_submatrix(myTest.bootStore, 0, 0, tm.nboot, nVars + 1);
+  List rs = List::create(
+      Named("multstat") = mul, Named("Pmultstat") = Pmul, Named("statj") = stat,
+      Named("Pstatj") = Pstat,
+      Named("dfDiff") =
+          NumericVector(myTest.dfDiff, myTest.dfDiff + nModels - 1),
+      Named("nSamp") = myTest.nSamp, Named("bootStat") = bootStore);
 
   // clear objects
   myTest.releaseTest();
@@ -298,7 +300,7 @@ List RtoGlmSmry(const List &sparam,                   // model params list
   // resampling test
   myTest.summary(glmPtr[mtype]);
   //    myTest.displaySmry(glmPtr[mtype]);
-
+  
   // Timing
   clk_end = clock();
   unsigned long int dif =
