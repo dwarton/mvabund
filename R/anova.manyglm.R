@@ -384,6 +384,7 @@ anova.manyglm <- function(object, ...,
 }
 
 do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, ...) {
+
     if (inherits(what, 'formula')) {
         if(attr(terms(what) , "response" ) != 0) stop('Formula for pairwise.comp must be onesided without a response. ie: "~ factor1:factor2"')
         # get a new matrix from this dataframe
@@ -431,6 +432,7 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
             # subset the dataset to only contain the levels we are interested in
             row_index <- which(what %in% l_what[c(i, j)])
             subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
+
             if(ncol(subX) == 0)
                 m <- manyglm(subY ~ subWhat, manyglm_object$family)
             else 
@@ -473,9 +475,9 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     df <- cbind(df, T) # equivilant to adding 1 to the number of times exceeded
     # this is to ensure a pvalue of 0 is never presented
     # and then get the mean of this which is our free step-down adjusted p-values
+
     # TODO add the solberg example 
     p_hat_n <-  apply(df, 1, mean, na.rm = TRUE)
-
 
     # enforce monoticity
     for (i in 2:n_comp) {
