@@ -374,15 +374,25 @@ anova.manyglm <- function(object, ...,
     anova$block = block
     if(!is.null(pairwise.comp)) {
         anova$pairwise.comp.table <- do_pairwise_comp(pairwise.comp, anova, object, resamp = resamp, cor.type = cor.type, ...)
+        anova$pairwise.comp <- pairwise.comp
     } else {
-        anova$pairwise.comp = NULL
-        anova$pairwise.comp.table = NULL
+        anova$pairwise.comp <- NULL
+        anova$pairwise.comp.table <- NULL
     }
     class(anova) <- "anova.manyglm"
     return(anova)
 }
 
 do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, ...) {
+    if (inherits(what, 'formula')) {
+        if(attr(terms(what) , "response" ) != 0) stop('Formula for pairwise.comp must be onesided without a response. ie: "~ factor1:factor2"')
+        # get a new matrix from this dataframe
+        mdf <- model.frame(what)
+        # add the column names, to the levels
+        mdf <- lapply(colnames(mdf), function(x) paste(x, mdf[[x]], sep=':'))
+        # collapse all interactiions into one factor level
+        what <- as.factor(Reduce(paste, mdf))
+    }
     if (!is.factor(what)) what <- as.factor(what)
     n_what <- nlevels(what)
     l_what <- levels(what)
@@ -391,10 +401,13 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     n_comp <- choose(n_what, 2)
 
     if (n_comp == 0 || n_comp == 1) {
-        stop(paste("Number of comparisons = ", n_comp, ". Please increase the number of levels in your factor."))
+        stop(paste0("Number of comparisons = ", n_comp, ". Please increase the number of levels in your factor."))
     }
     Y <- manyglm_object$y
     X <- manyglm_object$x
+    if (n_comp > nrow(X) && F) {
+        stop(paste('More comparisons than observations:', n_comp, 'comparisons vs', nrow(X), 'observations.'))
+    }
     if (length(what) != nrow(X)) {
         stop(paste0('Number of rows of the factor: ', length(what),' , must be equal to the number or rows in X: ',nrow(X)))
     }
@@ -404,11 +417,12 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     comp_levels <- matrix(NA, nrow = 2,ncol = n_comp)
     resampled_stats <- matrix(NA, nrow = anova_obj$nBoot, ncol = n_comp)
     k <- 0
-    # remove our factor from the design matrix
+    # remove our factor from the design matrix, and the intercept...
+    # to stop it from being over specified 
     mfact <- model.matrix(~ what )
     X <- X[, - which(apply(X, 2, function(x) any(apply(mfact, 2, function(y) all(x == y)))))]
     if (verbose) print('Starting pairwise comparison procedure:')
-    # collect the test statistics
+    # compute the levels and the the test statistics
     for (i in 1:(n_what - 1) ) {
         for (j in (i + 1):n_what) {
             k=k+1
@@ -417,7 +431,10 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
             # subset the dataset to only contain the levels we are interested in
             row_index <- which(what %in% l_what[c(i, j)])
             subY <- Y[row_index, ]; subX <- X[row_index,]; subWhat <- what[row_index]
-            m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
+            if(ncol(subX) == 0)
+                m <- manyglm(subY ~ subWhat, manyglm_object$family)
+            else 
+                m <- manyglm(subY ~ subWhat + subX, manyglm_object$family)
             am <- anova.manyglm(m,
                 show.time = 'none',
                 keep.boot = TRUE,
@@ -447,14 +464,19 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
         for (i in (n_comp - 1):1) {
             q_[i] <- max(q_[i + 1], resampled_row[i])
         }
-        q_  >= observed_stats
+        out <- q_  >= observed_stats
+        out[which(is.na(out))] <- 0 # set na test statistics to zero
+        out
     }
     # apply the above function for every row 
     df <- apply(resampled_stats, 1, per_row)
     df <- cbind(df, T) # equivilant to adding 1 to the number of times exceeded
     # this is to ensure a pvalue of 0 is never presented
     # and then get the mean of this which is our free step-down adjusted p-values
+    # TODO add the solberg example 
     p_hat_n <-  apply(df, 1, mean, na.rm = TRUE)
+
+
     # enforce monoticity
     for (i in 2:n_comp) {
         p_hat_n[i] <- max(p_hat_n[i], p_hat_n[i -1])

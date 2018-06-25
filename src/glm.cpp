@@ -16,7 +16,7 @@ glm::glm(const reg_Method *mm)
       PitRes(NULL), theta(NULL), ll(NULL), dev(NULL), aic(NULL),
       iterconv(NULL) {
   maxth = 100;
-  n = mmRef->n;
+  n = mmRef->n; // the number of trials for a binomial repsonse .....
   speclink = mmRef->speclink;
   maxiter = mmRef->maxiter;
   maxiter2 = mmRef->maxiter2;
