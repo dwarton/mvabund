@@ -162,6 +162,7 @@ tasm.cop.nb <- manyglm(tasm.cop ~ block*treatment, family="negative.binomial")
 anova(tasm.cop.nb, nBoot=199, test="wald")
 
 ## Performing the Pairwise comparison:
+\dontrun{
 data(solberg)
 abund <- mvabund(solberg$abund)
 treatment <- as.character(solberg$x)
@@ -169,6 +170,7 @@ treatment <- as.character(solberg$x)
 manyglm(abund ~ treatment) -> msolglm
 anova(msolglm, pairwise.comp = treatment, nBoot = 199)
 # Could also run: anova(msolglm, pairwise.comp = ~treatment, nBoot = 199)
+}
 }
 \keyword{models}
 \keyword{regression}
