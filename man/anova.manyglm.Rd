@@ -31,7 +31,12 @@ step-down resampling procedure.
 }
 \item{nBoot}{the number of Bootstrap iterations, default is \code{nBoot=999}.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
-\item{pairwise.comp}{A character or factor vector specifying the levels for which a pairwise comparison will be carried out, adjusting for multiple comparisons via a free stepdown resampling procedure. }
+
+\item{pairwise.comp}{
+    A character or factor vector specifying the levels for which a pairwise comparison will be carried out, adjusting for multiple comparisons via a free stepdown resampling procedure.
+    Alternativly a onesided formula specifying an interaction between factor levels.
+}
+
 \item{block}{a factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{show.time}{Whether to display timing information for the resampling procedure: "none" shows none, "all" shows all timing information and "total" shows only the overall time taken for the tests. }
 \item{show.warning}{logical. Whether to display warning messages in the operation procedure.}
@@ -98,6 +103,7 @@ Rather than stopping after testing for multivariate effects, it is often of inte
 \item{n.bootsdone}{the number of bootstrapping iterations that were done, i.e. had no error.}
 \item{table}{the table with Residual Degrees of Freedom, Degrees of Freedom, the Test Statistics and the P values.}
 \item{block}{any \code{block} argument specified as an inpout argument.}
+\item{pairwise.comp}{The \code{pairwise.comp} argument supplied.}
 
 If \code{p.uni="adjusted"} or \code{"unadjusted"} the output list also contains\cr
 \item{uni.test}{a table showing the test statistics of the univariate tests.}
@@ -105,6 +111,11 @@ If \code{p.uni="adjusted"} or \code{"unadjusted"} the output list also contains\
 
 If \code{keep.boot=TRUE} the output list also contains \cr
 \item{bootStat}{A matrix of boot strapped test statistics, the first column is the multivariate test statistic, the rest of the columns are the univariate statistic.}
+
+
+If \code{!is.null(parwise.comp)} the output list also contains \cr
+\item{pairwise.comp.table}{A data.frame containing the comparisons, the observed test statistcs and the holm free stepdown adjusted p-values.}
+
 }
 
 \section{Warning}{
@@ -154,6 +165,16 @@ tasm.cop.nb <- manyglm(tasm.cop ~ block*treatment, family="negative.binomial")
 ## using a Wald statistic and 199 resamples (better to ramp up to 999 for a paper):
 anova(tasm.cop.nb, nBoot=199, test="wald")
 
+## Performing the Pairwise comparison:
+\dontrun{
+data(solberg)
+abund <- mvabund(solberg$abund)
+treatment <- as.character(solberg$x)
+## pairwise comparison 
+manyglm(abund ~ treatment) -> msolglm
+anova(msolglm, pairwise.comp = treatment, nBoot = 199)
+# Could also run: anova(msolglm, pairwise.comp = ~treatment, nBoot = 199)
+}
 }
 \keyword{models}
 \keyword{regression}
