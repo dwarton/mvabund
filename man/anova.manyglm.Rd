@@ -34,7 +34,7 @@ step-down resampling procedure.
 
 \item{pairwise.comp}{
     A character or factor vector specifying the levels for which a pairwise comparison will be carried out, adjusting for multiple comparisons via a free stepdown resampling procedure.
-    Alternativly a onesided formula specifying an interaction between factor levels.
+    Alternatively, a onesided formula specifying an interaction between factor levels.
 }
 
 \item{block}{a factor specifying the sampling level to be resampled. Default is resampling rows.}
@@ -143,7 +143,7 @@ Wu, C. F. J. (1986) Jackknife, Bootstrap and Other Resampling Methods in
 Regression Analysis. \emph{The Annals of Statistics} 14:4, 1261-1295.
 }
 \author{
-Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
+Yi Wang, Ulrike Naumann, John Wilshire and David Warton <David.Warton@unsw.edu.au>.
 }
 \seealso{
 \code{\link{manyglm}}, \code{\link[mvabund:summary.manyglm]{summary.manyglm}}.

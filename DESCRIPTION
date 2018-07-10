@@ -1,12 +1,13 @@
 Package: mvabund
 Title: Statistical Methods for Analysing Multivariate Abundance Data
-Version: 3.13.1
-Date: 2018-01-18
+Version: 4.0
+Date: 2018-06-30
 Authors@R: c(person("Yi", "Wang", role = "aut"),
             person("Ulrike", "Naumann", role = "aut"),
             person("Dirk", "Eddelbuettel", role = "aut"),
               person("David", "Warton", role = c("aut", "cre"),
                      email = "David.Warton@unsw.edu.au"),
+              person("John", "Wilshire", role = "aut"),
               person("Julian", "Byrnes", role = "ctb"),
               person("Ralph", "dos Santos Silva", role = c("ctb","cph")),
               person("Jenni", "Niku", role = "ctb"),
