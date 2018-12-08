@@ -1,6 +1,8 @@
 ## Use the R_HOME indirection to support installations of multiple R version
 ## And RcppGSL can tell us where GSL is installed 
 
+CXX_STD = CXX11
+
 ## header files from our package and from the GSL
 PKG_CPPFLAGS = -I. -I../inst/include `$(R_HOME)/bin/Rscript -e "RcppGSL:::CFlags()"`
 
