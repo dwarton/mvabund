@@ -1,13 +1,13 @@
 Package: mvabund
 Title: Statistical Methods for Analysing Multivariate Abundance Data
-Version: 4.0
-Date: 2018-06-30
+Version: 4.0.1
+Date: 2019-01-07
 Authors@R: c(person("Yi", "Wang", role = "aut"),
             person("Ulrike", "Naumann", role = "aut"),
             person("Dirk", "Eddelbuettel", role = "aut"),
+              person("John", "Wilshire", role = "aut"),
               person("David", "Warton", role = c("aut", "cre"),
                      email = "David.Warton@unsw.edu.au"),
-              person("John", "Wilshire", role = "aut"),
               person("Julian", "Byrnes", role = "ctb"),
               person("Ralph", "dos Santos Silva", role = c("ctb","cph")),
               person("Jenni", "Niku", role = "ctb"),
@@ -25,7 +25,7 @@ Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-Packaged: 2018-01-19; David
+Packaged: 2019-01-07; David
 RoxygenNote: 6.0.1
 Suggests:
     testthat
