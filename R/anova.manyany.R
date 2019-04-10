@@ -242,7 +242,8 @@ bootAnova = function(bootRows,...)
     }
 
     # resample PIT residuals
-    resid.i = as.matrix(argList$object1$residuals[boot.Resamp,])
+    # DW, 1/3/19: pnorm these to get back from Dunn-Smyth resids to PIT-resids
+    resid.i = pnorm(as.matrix(argList$object1$residuals[boot.Resamp,]))
   
     # now use PIT-transform to get resampled yMat
     for(i.var in 1:argList$n.vars)

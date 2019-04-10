@@ -15,9 +15,7 @@ Obtains Dunn-Smyth residuals from a fitted \code{manyglm}, \code{manyany} or \co
   \item{\dots}{further arguments passed to or from other methods.}
 }
 \details{
-\code{residuals.manyglm} computes Randomised Quantile or ``Dunn-Smyth" residuals (Dunn
-& Smyth 1996) for a \code{\link{manyglm}} object. If the fitted model is correct then Dunn-Smyth residuals
-are standard normal in distribution.
+\code{residuals.manyglm} computes Randomised Quantile or ``Dunn-Smyth" residuals (Dunn & Smyth 1996) for a \code{\link{manyglm}} object. If the fitted model is correct then Dunn-Smyth residuals are standard normal in distribution.
 
 Similar functions have been written to compute Dunn-Smyth residuals from \code{manyany} and \code{glm1path} objects.
 
