@@ -123,17 +123,17 @@ if(composition==TRUE)
   # put in long format
   dat = data.frame(c(Y), data[rep(1:N,p),])
   names(dat)=c(names(mf)[1],names(data)) #match name to original object
-  # make id (row labels) and spp
-  dat$id = factor(rep(rownames(Y),p))
-  dat$spp = factor(rep(colnames(Y),each=N))
+  # make rows (row labels) and cols
+  dat$rows = factor(rep(rownames(Y),p))
+  dat$cols = factor(rep(colnames(Y),each=N))
   offset <- as.vector(model.offset(mf))[rep(1:N,p)] 
 
   # get formula for long format with composition
-  if(length(mf)==1) #if no predictors, write formula with no spp interaction:
+  if(length(mf)==1) #if no predictors, write formula with no cols interaction:
   {
     formLong=formula
-    # now add spp, id and spp:[prev formula]:
-    formLong[3] = paste0(as.character(formula[3]),"+spp+id")
+    # now add cols, rows and cols:[prev formula]:
+    formLong[3] = paste0(as.character(formula[3]),"+cols+rows")
     formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
   }
   else
@@ -141,11 +141,11 @@ if(composition==TRUE)
     if(formula[[3]]==".") #if ~., expand to variable names
       formula[[3]]=paste(names(mf[-1]),collapse="+")
     formLong=formula
-    # now add spp, id and spp:[prev formula]:
-    formLong[3] = paste0("spp+",as.character(formula[3]),"+id+spp:(",as.character(formula[3]),")")
+    # now add cols, rows and cols:[prev formula]:
+    formLong[3] = paste0("cols+",as.character(formula[3]),"+rows+cols:(",as.character(formula[3]),")")
     formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
   }
-  z=manyglm(formLong, data=dat, block=spp, composition=FALSE,
+  z=manyglm(formLong, data=dat, block=dat$cols, composition=FALSE,
                  family=family, subset=subset, K=K, theta.method=theta.method,
                  model=model, x=x, y=y, qr=qr, cor.type=cor.type, 
                  shrink.param=shrink.param, tol=tol, maxiter=maxiter, 
