@@ -5,8 +5,8 @@
   \code{manyglm} is used to fit generalized linear models to high-dimensional data, such as multivariate abundance data in ecology. This is the base model-fitting function - see \code{plot.manyglm} for assumption checking, and \code{anova.manyglm} or \code{summary.manyglm} for significance testing.
 }
 \usage{
-manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
-    na.action=options("na.action"), theta.method = "PHI", model = FALSE,
+manyglm(formula, family="negative.binomial", composition=FALSE, data=NULL, subset=NULL,
+    na.action=options("na.action"), K=1, theta.method = "PHI", model = FALSE,
     x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL,
     tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10,
     show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE,
@@ -25,12 +25,12 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     'binomial', 'cloglog' and 'poisson', 'gamma' respectively. In future we hope
     to include other family functions as described in \code{\link{family}}.
    }
-\item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
    \item{data}{an optional data frame, list or environment (or object
     coercible by \code{\link{as.data.frame}} to a data frame) containing
     the variables in the model. If not found in \code{data}, the variables
     are taken from \code{environment(formula)}, typically the environment
     from which \code{glm} is called.}
+  \item{composition}{\code{FALSE} (default) will model abundance, \code{TRUE} will model relative abundance, by adding a row effect to the model, and partition effects of environmental variables into main effects (alpha, total abundance/richness) and interactions with response (beta, relative abundance/turnover). See \code{details}.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used in the fitting process.}
   \item{na.action}{a function which indicates what should happen
@@ -39,6 +39,7 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     \code{\link{na.fail}} if that is unset.  The \sQuote{factory-fresh}
     default is \code{\link{na.omit}}.  Another possible value is
     \code{NULL}, no action.  Value \code{\link{na.exclude}} can be useful.}
+\item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
   \item{theta.method}{the method used for the estimation of the overdisperson
   parameter theta, such that the mean-variance relationship is V=m+m^2/theta for
   the negative binomial family. Here offers three options \cr
@@ -57,14 +58,6 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
   matrix, the response, the QR decomposition of the model matrix) are
   returned.
   }
-%  \item{test}{the test statistic to be used in subsequent functions for
-%  inference. It is merely stored in \code{manyglm} as an attribute.
-%  Possible options are\cr
-%  "LR" = Log-likelihood ratio test (default),\cr
-%  "F" = Lawley-Hotelling trace statistic for 'gaussian' only,\cr
-%  "wald" = Wald statistic (not available for 'gaussian' yet), \cr
-%  "score" = Score statistic (not available for 'gaussian' yet).
-%  }
   \item{cor.type}{the structure imposed on the estimated correlation
   matrix under the fitted model. Can be "I"(default), "shrink", or "R".
   See Details. This parameter is merely stored in \code{manyglm}, and
@@ -90,6 +83,8 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
 \code{manyglm} is used to calculate the parameter estimates of generalised linear models fitted to each of many variables simultaneously as in Warton et. al. (2012) and Wang et.al.(2012). Models for \code{manyglm} are specified symbolically. For details on how to specify a formula see the details section of \code{\link{lm}} and \code{\link{formula}}.
 
 Generalised linear models are designed for non-normal data for which a distribution can be specified that offers a reasonable model for data, as specified using the argument \code{family}. The \code{manyglm} function currently handles count and binary data, and accepts either a character argument or a family argument for common choices of family. For binary (presence/absence) data, \code{family=binomial()} can be used for logistic regression (logit link, "logistic regression"), or the complementary log-log link can be used \code{family=binomial("cloglog")}, arguably a better  choice for presence-absence data. Poisson regression \code{family=poisson()} can be used for counts that are not "overdispersed" (that is, if the variance is not larger than the mean), although for multivariate abundance data it has been shown that the negative binomial distribution (\code{family="negative.binomial"}) is usually a better choice (Warton 2005). In both cases, a log-link is used. If another link function or family is desired, this can be specified using the \code{\link{manyany}} function, which accepts regular \code{\link{family}} arguments.
+
+\code{composition=TRUE} allows relative abundance to be modelled rather than absolute abundance, which is useful for partitioning effects of environmental variables on alpha vs beta diversity, and is needed if there is variation in sampling intensity due to variables that haven't been measured. Data are manipulated into "long format", with column factor called \code{cols} and row variable called \code{rows}, then a model is fitted using main effects for predictors as in the provided formula, plus \code{rows}, \code{cols} and the interaction of predictors with \code{cols}. Inclusion of \code{rows} in the model accounts for variation in sampling intensity across rows, main effects for environmental variables capture their effects on total abundance/richness (alpha diversity), and their interaction with \code{cols} captures changes in relative abundance/turnover (beta diversity). Unfortunately, data are not efficiently stored in long format, so models are slower to fit using \code{composition=TRUE}.
 
 In negative binomial regression, the overdispersion parameter (\code{theta}) is estimated separately for each variable from the data, as controlled by \code{theta.method} for negative binomial distributions. We iterate between updates of \code{theta} and generalised linear model updates for regression parameters, as many as \code{maxiter2} times.
 
