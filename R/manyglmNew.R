@@ -94,7 +94,6 @@ if(missing(data)) # Only coerce to model frame if not specified by the user.
   data <- mf
 
 mt <-  attr(mf, "terms")  # Obtain the model terms.
-offset <- as.vector(model.offset(mf))
 
 abundances <- as.matrix(model.response(mf, "numeric"))
 if (any(is.na(abundances)) & is.null(na.action))
@@ -117,37 +116,50 @@ Y <- abundances
 if (any(!is.wholenumber(Y)) & familynum != 4)
   warning(paste("Non-integer data are fitted to the", familyname, "model."))
 
-# begin DW edits, 9/4/19
+# begin DW edits, 10/4/19
 # if composition=TRUE, put in long format and send back to manyglm
 if(composition==TRUE)
 {
-recover()
   # put in long format
-  dat = data.frame(c(Y), mf[rep(1:N,p),-1])
-  names(dat)=names(mf) #match name to original object
+  dat = data.frame(c(Y), data[rep(1:N,p),])
+  names(dat)=c(names(mf)[1],names(data)) #match name to original object
   # make id (row labels) and spp
-  dat$id = factor(rep(1:N,p))
-  dat$spp = factor(rep(1:p,each=N))
-  
+  dat$id = factor(rep(rownames(Y),p))
+  dat$spp = factor(rep(colnames(Y),each=N))
+  offset <- as.vector(model.offset(mf))[rep(1:N,p)] 
+
   # get formula for long format with composition
-  formLong=formula
-  formLong[3] = paste0("spp+",as.character(formula[3]),"+id+spp:(",as.character(formula[3]),")")
-  formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
-  
-  z=manyglm(formLong, data=dat, block=spp, composition=FALSE,# add things set in input
-                 family=family, subset=subset, na.action=na.action,
-                 K=K, theta.method=theta.method, model=model, x=x, y=y, qr=qr,
-                 cor.type=cor.type, shrink.param=shrink.param, tol=tol,
-                 maxiter=maxiter, maiter2=maxiter2, show.coef=show.coef,
-                 show.fitted=show.fitted, show.residuals=show.residuals,
-                 show.warning=show.warning, offset=offset,... )
+  if(length(mf)==1) #if no predictors, write formula with no spp interaction:
+  {
+    formLong=formula
+    # now add spp, id and spp:[prev formula]:
+    formLong[3] = paste0(as.character(formula[3]),"+spp+id")
+    formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
+  }
+  else
+  {
+    if(formula[[3]]==".") #if ~., expand to variable names
+      formula[[3]]=paste(names(mf[-1]),collapse="+")
+    formLong=formula
+    # now add spp, id and spp:[prev formula]:
+    formLong[3] = paste0("spp+",as.character(formula[3]),"+id+spp:(",as.character(formula[3]),")")
+    formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
+  }
+  z=manyglm(formLong, data=dat, block=spp, composition=FALSE,
+                 family=family, subset=subset, K=K, theta.method=theta.method,
+                 model=model, x=x, y=y, qr=qr, cor.type=cor.type, 
+                 shrink.param=shrink.param, tol=tol, maxiter=maxiter, 
+                 maxiter2=maxiter2, show.coef=show.coef, show.fitted=show.fitted,
+                 show.residuals=show.residuals, show.warning=show.warning, 
+                 offset=offset,... )
   return(z)
-  } #end David edits, 9/4/19
+  } #end David edits, 10/4/19
 else{
   
 
 
-
+  offset <- as.vector(model.offset(mf))
+  
 # HELP this doesn't make sense, was there previously a familynum == 4 that was meaningful
 if ( familynum==3) {
     if(!is.null(labAbund) & all(substr(labAbund, 1,4)%in%c("succ", "fail")))
