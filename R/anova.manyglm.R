@@ -238,7 +238,9 @@ anova.manyglm <- function(object, ...,
         # resdev <- c(resdev, object$deviance)
         nModels <- nterms
         ord <- (nterms-1):1
-        topnote <- paste("Model:", deparse(object$call))
+#        topnote <- paste("Model:", deparse(object$call))
+        topnote <- paste("Model:", deparse(formula(object), width.cutoff=500),
+                         collapse = "\n")
     } else {
         targs <- match.call(expand.dots = FALSE)
         if (targs[[1]] == "example" || any(class(object) == "traitglm"))

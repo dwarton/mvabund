@@ -5,10 +5,11 @@
 
 manyglm <- function (formula,
     family="negative.binomial",
-    K=1,
+    composition=FALSE,
     data=NULL,
     subset=NULL,
     na.action=options("na.action"),
+    K=1,
     theta.method = "PHI",
     model = FALSE,
     x = TRUE,
@@ -21,6 +22,7 @@ manyglm <- function (formula,
     maxiter2=10,
     show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE, show.warning=FALSE,
     offset, ... ) {
+
 
 # start by converting any family objects that can be handled over to character strings
 if(class(family)=="family"){
@@ -92,29 +94,72 @@ if(missing(data)) # Only coerce to model frame if not specified by the user.
   data <- mf
 
 mt <-  attr(mf, "terms")  # Obtain the model terms.
-offset <- as.vector(model.offset(mf))
 
 abundances <- as.matrix(model.response(mf, "numeric"))
 if (any(is.na(abundances)) & is.null(na.action))
-   stop("There are NA values in the response. An 'na.action' is necessary.")
+  stop("There are NA values in the response. An 'na.action' is necessary.")
 if(any(is.na(abundances)) & any(as.character(na.action)=="na.pass"))
-   stop("There are NA values in the response. 'na.action=na.pass' cannot be used.")
+  stop("There are NA values in the response. 'na.action=na.pass' cannot be used.")
 
 N <- NROW(abundances)     # eg number of sites
 p <- NCOL(abundances)     # number of organism types
 labAbund<-colnames(abundances)
 if (p==0) stop("A model without response cannot be fitted.")
 else if (p==1 & is.null(labAbund))
-    labAbund <- deparse(attr( mt,"variables")[[2]], width.cutoff = 500)
+  labAbund <- deparse(attr( mt,"variables")[[2]], width.cutoff = 500)
 else if (p>1 & is.null(labAbund))
-    labAbund <- paste(deparse(attr( mt,"variables")[[2]],width.cutoff = 500), 1:p,sep = "")
+  labAbund <- paste(deparse(attr( mt,"variables")[[2]],width.cutoff = 500), 1:p,sep = "")
 labObs <- rownames(abundances)
 
 Y <- abundances
 
 if (any(!is.wholenumber(Y)) & familynum != 4)
-    warning(paste("Non-integer data are fitted to the", familyname, "model."))
+  warning(paste("Non-integer data are fitted to the", familyname, "model."))
 
+# begin DW edits, 10/4/19
+# if composition=TRUE, put in long format and send back to manyglm
+if(composition==TRUE)
+{
+  # put in long format
+  dat = data.frame(c(Y), data[rep(1:N,p),])
+  names(dat)=c(names(mf)[1],names(data)) #match name to original object
+  # make rows (row labels) and cols
+  dat$rows = factor(rep(rownames(Y),p))
+  dat$cols = factor(rep(colnames(Y),each=N))
+  offset = rep(as.vector(model.offset(mf)),p) 
+
+  # get formula for long format with composition
+  if(length(mf)==1) #if no predictors, write formula with no cols interaction:
+  {
+    formLong=formula
+    # now add cols, rows and cols:[prev formula]:
+    formLong[3] = paste0(as.character(formula[3]),"+cols+rows")
+    formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
+  }
+  else
+  {
+    if(formula[[3]]==".") #if ~., expand to variable names
+      formula[[3]]=paste(names(mf[-1]),collapse="+")
+    formLong=formula
+    # now add cols, rows and cols:[prev formula]:
+    formLong[3] = paste0("cols+",as.character(formula[3]),"+rows+cols:(",as.character(formula[3]),")")
+    formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
+  }
+  z=manyglm(formLong, data=dat, block=dat$rows, composition=FALSE,
+                 family=family, subset=subset, K=K, theta.method=theta.method,
+                 model=model, x=x, y=y, qr=qr, cor.type=cor.type, 
+                 shrink.param=shrink.param, tol=tol, maxiter=maxiter, 
+                 maxiter2=maxiter2, show.coef=show.coef, show.fitted=show.fitted,
+                 show.residuals=show.residuals, show.warning=show.warning, 
+                 offset=offset,... )
+  return(z)
+  } #end David edits, 10/4/19
+else{
+  
+
+
+  offset <- as.vector(model.offset(mf))
+  
 # HELP this doesn't make sense, was there previously a familynum == 4 that was meaningful
 if ( familynum==3) {
     if(!is.null(labAbund) & all(substr(labAbund, 1,4)%in%c("succ", "fail")))
@@ -274,7 +319,9 @@ else {
     class(z) <- c("manyglm", "mglm")
     return(z)
   }
-}
+} # end composition!=TRUE
+} #end function
+
 
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)
 {
