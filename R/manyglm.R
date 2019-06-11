@@ -126,7 +126,7 @@ if(composition==TRUE)
   # make rows (row labels) and cols
   dat$rows = factor(rep(rownames(Y),p))
   dat$cols = factor(rep(colnames(Y),each=N))
-  offset <- as.vector(model.offset(mf))[rep(1:N,p)] 
+  offset = rep(as.vector(model.offset(mf)),p) 
 
   # get formula for long format with composition
   if(length(mf)==1) #if no predictors, write formula with no cols interaction:
@@ -145,7 +145,7 @@ if(composition==TRUE)
     formLong[3] = paste0("cols+",as.character(formula[3]),"+rows+cols:(",as.character(formula[3]),")")
     formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
   }
-  z=manyglm(formLong, data=dat, block=dat$cols, composition=FALSE,
+  z=manyglm(formLong, data=dat, block=dat$rows, composition=FALSE,
                  family=family, subset=subset, K=K, theta.method=theta.method,
                  model=model, x=x, y=y, qr=qr, cor.type=cor.type, 
                  shrink.param=shrink.param, tol=tol, maxiter=maxiter, 

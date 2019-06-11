@@ -86,7 +86,7 @@ default.print.anova.manyglm <- function(x,
          }
          if(dim(anova$uni.p)[2]==1)
          {   
-           cat("Arguments: P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling).\n")
+           cat("Arguments: P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
          }
 #         cat("Arguments:\n", "Test statistics calculated assuming", corname, 
 #              "\n P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
