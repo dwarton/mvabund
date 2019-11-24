@@ -336,6 +336,9 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
         nP++;
     rdf[i] = nRows - nP;
   }
+	//init glm
+  PtrNull[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
+  PtrAlt[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
 
   for (i = 1; i < nModels; i++) {
     // ======= Fit the Null model =========//
@@ -343,8 +346,8 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
     ID1 = i - 1;
     nP0 = nRows - (unsigned int)rdf[ID0];
     nP1 = nRows - (unsigned int)rdf[ID1];
-
-    // Degrees of freedom
+    
+		// Degrees of freedom
     dfDiff[i - 1] = nP1 - nP0;
 
     ref1 = gsl_matrix_row(Xin, ID1);
@@ -358,13 +361,13 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
     // Estimate shrinkage parametr only once under H1
     // See "FW: Doubts R package "mvabund" (12/14/11)
     teststat = gsl_matrix_row(anovaStat, (i - 1));
-    PtrNull[mtype]->regression(fit->Yref, X0, fit->Oref, NULL);
+    PtrNull[mtype]->regression(NULL, X0, fit->Oref, NULL);
     if (tm->test == SCORE) {
       lambda = gsl_vector_get(tm->anova_lambda, ID0);
       GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
       GeeScore(X1, PtrNull[mtype], &teststat.vector);
     } else if (tm->test == WALD) {
-      PtrAlt[mtype]->regression(fit->Yref, X1, fit->Oref, NULL);
+      PtrAlt[mtype]->regression(NULL, X1, fit->Oref, NULL);
       L1 = gsl_matrix_alloc(nP1 - nP0, nP1);
       tmp1 = gsl_matrix_alloc(nParam, nP1);
       subX(L, &ref1.vector, tmp1);
@@ -375,7 +378,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
     } else { // test is LR
       BetaO = gsl_matrix_alloc(nP1, nVars);
       addXrow2(PtrNull[mtype]->Beta, &ref1.vector, BetaO);
-      PtrAlt[mtype]->regression(fit->Yref, X1, fit->Oref, BetaO);
+      PtrAlt[mtype]->regression(NULL, X1, fit->Oref, BetaO);
       GeeLR(PtrAlt[mtype], PtrNull[mtype], &teststat.vector);
     }
     if (tm->resamp == MONTECARLO) {
@@ -390,6 +393,9 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       gsl_sort_vector_index(sortid, &unitstat.vector);
       gsl_permutation_reverse(sortid);
     }
+  	
+		bAlt[mtype]->initialGlm(fit->Yref, X1, fit->Oref, NULL);
+  	bNull[mtype]->initialGlm(fit->Yref, X0, fit->Oref, NULL);
 
     // ======= Get resampling distribution under H0 ===== //
     nSamp = 0;
@@ -410,20 +416,36 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       }
 
       if (tm->test == WALD) {
-        bAlt[mtype]->regression(bY, X1, bO, NULL);
-        lambda = gsl_vector_get(tm->anova_lambda, ID1);
+				if (tm->resamp == CASEBOOT) {
+        	bAlt[mtype]->regression(bY, X1, bO, NULL);
+				} else {
+			   	bAlt[mtype]->regression(bY, NULL, bO, NULL);
+				}
+				lambda = gsl_vector_get(tm->anova_lambda, ID1);
         GetR(bAlt[mtype]->Res, tm->corr, lambda, Rlambda);
         GeeWald(bAlt[mtype], L1, bStat);
       } else if (tm->test == SCORE) {
-        bNull[mtype]->regression(bY, X0, bO, NULL);
-        lambda = gsl_vector_get(tm->anova_lambda, ID0);
+				if (tm->resamp == CASEBOOT) {
+        	bNull[mtype]->regression(bY, X0, bO, NULL);
+				} else {
+			   	bNull[mtype]->regression(bY, NULL, bO, NULL);
+				}
+				lambda = gsl_vector_get(tm->anova_lambda, ID0);
         GetR(bNull[mtype]->Res, tm->corr, lambda, Rlambda);
         GeeScore(X1, bNull[mtype], bStat);
       } else {
-        bNull[mtype]->regression(bY, X0, bO, NULL);
-        addXrow2(bNull[mtype]->Beta, &ref1.vector, BetaO);
-        bAlt[mtype]->regression(bY, X1, bO, BetaO);
-        GeeLR(bAlt[mtype], bNull[mtype], bStat);
+				if (tm->resamp == CASEBOOT) {
+        	bNull[mtype]->regression(bY, X0, bO, NULL);
+				} else {
+			   	bNull[mtype]->regression(bY, NULL, bO, NULL);
+				}
+				addXrow2(bNull[mtype]->Beta, &ref1.vector, BetaO);
+				if (tm->resamp == CASEBOOT) {
+        	bAlt[mtype]->regression(bY, X1, bO, BetaO);
+				} else {
+			   	bAlt[mtype]->regression(bY, NULL, bO, BetaO);
+				}
+				GeeLR(bAlt[mtype], bNull[mtype], bStat);
       }
       gsl_matrix_set_row(bootStore, j, bStat);
       // ----- get multivariate counts ------- //
@@ -449,7 +471,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       puj = gsl_matrix_ptr(Panova, i - 1, 1);
       reinforceP(puj, nVars, sortid);
     }
-    // } // end for i loop
+    //  end for i loop
 
     if (BetaO != NULL)
       gsl_matrix_free(BetaO);

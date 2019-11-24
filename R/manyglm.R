@@ -145,6 +145,7 @@ if(composition==TRUE)
     formLong[3] = paste0("cols+",as.character(formula[3]),"+rows+cols:(",as.character(formula[3]),")")
     formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
   }
+
   z=manyglm(formLong, data=dat, block=dat$rows, composition=FALSE,
                  family=family, subset=subset, K=K, theta.method=theta.method,
                  model=model, x=x, y=y, qr=qr, cor.type=cor.type, 
@@ -185,7 +186,7 @@ if ( familynum==3) {
     ##################### BEGIN Estimation ###################
     # Obtain the Designmatrix.
     X <- model.matrix(mt, mf)
-
+    #print(X)
 # Obtain regression parameters
 if (familyname=="gaussian") {
     stop("Please use manylm to fit Gaussian")
@@ -287,6 +288,9 @@ else {
     names(z$aic) <- labAbund
     names(z$iter) <- labAbund
 
+    #for test purpose
+
+    
     z$data <- data
     z$stderr.coefficients <- sqrt(z$var.coefficients)
     dimnames(z$stderr.coefficients) <- list(colnames(X), labAbund)

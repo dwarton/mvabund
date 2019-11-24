@@ -4,7 +4,13 @@
 CXX_STD = CXX11
 
 ## header files from our package and from the GSL
-PKG_CPPFLAGS = -I. -I../inst/include `$(R_HOME)/bin/Rscript -e "RcppGSL:::CFlags()"`
+#PKG_CPPFLAGS = -pg -I. -I../inst/include `$(R_HOME)/bin/Rscript -e "RcppGSL:::CFlags()"`
 
 ## library from the GSL
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"`
+#PKG_LIBS = `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"` -lprofiler -lpthread
+
+## header files from our package and from the GSL
+PKG_CPPFLAGS = -O2 -I. -I../inst/include `$(R_HOME)/bin/Rscript -e "RcppGSL:::CFlags()"`
+
+## library from the GSL
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"` -lprofiler

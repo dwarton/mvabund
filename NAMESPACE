@@ -1,4 +1,4 @@
-useDynLib(mvabund)
+useDynLib(mvabundtest)
 
 export(RcppVersion,
        as.mvabund,
