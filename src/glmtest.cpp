@@ -131,6 +131,9 @@ int GlmTest::summary(glm *fit) {
   }
   // printf("\nmm->model %d, tm->test %d, tm->punit = %d, tm->corr = %d\n",
   //     fit->mmRef->model, tm->test, tm->punit, tm->corr);
+  PtrNull[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
+  PtrAlt[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
+
 
   // REDESIGN - make this a switch maybe
   // Calc test statistics
@@ -695,9 +698,9 @@ int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat) {
 
   } // end for j=1:nVars
 
-  if (tm->corr == IDENTITY)
+  if (tm->corr == IDENTITY) {
     gsl_vector_set(teststat, 0, sqrt(sum));
-  else {
+	} else {
     status = gsl_linalg_cholesky_decomp(IinvRl);
     if (status == GSL_EDOM) {
       if (tm->warning == TRUE)

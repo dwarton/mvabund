@@ -214,6 +214,7 @@ List RtoGlm(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   GammaGlm gfit(&mm);
   glm *glmPtr[4] = {&pfit, &nbfit, &lfit, &gfit};
   unsigned int mtype = mm.model - 1;
+  glmPtr[mtype]->initialGlm(Y, X, O, NULL);
   glmPtr[mtype]->regression(Y, X, O, NULL);
   // glmPtr[mtype]->display();
 
@@ -303,6 +304,7 @@ List RtoGlmSmry(const List &sparam,                   // model params list
   glm *glmPtr[4] = {&pfit, &nbfit, &lfit, &gfit};
   unsigned int mtype = mm.model - 1;
   // do the regression
+  glmPtr[mtype]->initialGlm(Y, X, O, NULL);
   glmPtr[mtype]->regression(Y, X, O, NULL);
   if (mm.warning) {
     // glmPtr[mtype]->display();

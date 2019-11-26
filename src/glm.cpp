@@ -251,12 +251,8 @@ void glm::updateGlmInfo(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O, gsl_matrix 
       gsl_matrix_memcpy(Xref, X);
       gsl_spmatrix_d2sp(Xrefsp, Xref);
       gsl_spmatrix_transpose_memcpy(XrefspT, Xrefsp);
-   		if (X->size1 == Xref->size1 && X->size2 == Xref->size2) {
-				spms_->updateXspCCS(Xrefsp, XrefspT, nParams); 
-			} else {
-				if (spms_ != NULL) delete spms_;
-				spms_ = new BetaSpmSol(nRows, nParams, Xrefsp, XrefspT);
-			}
+		  if (spms_ != NULL) delete spms_;
+			spms_ = new BetaSpmSol(nRows, nParams, Xrefsp, XrefspT);
 		  //if (varBeta != NULL) gsl_matrix_free(varBeta);
       //varBeta = gsl_matrix_alloc(nParams, nVars);
       gsl_matrix_set_zero(varBeta);  
@@ -426,23 +422,22 @@ int PoissonGlm::EstIRLS(gsl_matrix *Y, gsl_matrix *X, gsl_matrix *O,
       gsl_vector_scale(&Xwi.vector, wij);
     }
     aic[j] = -ll[j] + 2 * (nParams);
-
-    // X^T * W * X
-    gsl_matrix_set_identity(XwX);
-    gsl_blas_dsyrk(CblasLower, CblasTrans, 1.0, WX, 0.0, XwX);
-    status = gsl_linalg_cholesky_decomp(XwX);
-    if (status == GSL_EDOM) {
-      if (mmRef->warning == TRUE)
-        printf("Warning: singular matrix in calculating pit-residuals. An "
-               "eps*I is added to the singular matrix.\n");
+		if (mmRef->test != LR) {
+      // X^T * W * X
       gsl_matrix_set_identity(XwX);
-      gsl_blas_dsyrk(CblasLower, CblasTrans, 1.0, WX, mintol, XwX);
-      gsl_linalg_cholesky_decomp(XwX);
-    }
-    gsl_linalg_cholesky_invert(XwX);
+      gsl_blas_dsyrk(CblasLower, CblasTrans, 1.0, WX, 0.0, XwX);
+      status = gsl_linalg_cholesky_decomp(XwX);
+      if (status == GSL_EDOM) {
+        if (mmRef->warning == TRUE)
+          printf("Warning: singular matrix in calculating pit-residuals. An "
+                 "eps*I is added to the singular matrix.\n");
+        gsl_matrix_set_identity(XwX);
+        gsl_blas_dsyrk(CblasLower, CblasTrans, 1.0, WX, mintol, XwX);
+        gsl_linalg_cholesky_decomp(XwX);
+      }
+      gsl_linalg_cholesky_invert(XwX);
 
     // Calc varBeta
-		if (mmRef->test != LR) {
   		dj = gsl_matrix_diagonal(XwX);
       vj = gsl_matrix_column(varBeta, j);
       gsl_vector_memcpy(&vj.vector, &dj.vector);
