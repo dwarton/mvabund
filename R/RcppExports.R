@@ -6,7 +6,7 @@ RtoAnovaCpp <- function(rparam, Y, X, isXvarIn, bID) {
 }
 
 RtoGlmAnova <- function(sparam, rparam, Y, X, O, B, isXvarIn, bID, lambda) {
-    .Call('_mvabundtest_RtoGlmAnova', PACKAGE = 'mvabund', sparam, rparam, Y, X, O, B, isXvarIn, bID, lambda)
+    .Call('_mvabundtest_RtoGlmAnova', PACKAGE = 'mvabundtest', sparam, rparam, Y, X, O, B, isXvarIn, bID, lambda)
 }
 
 RtoGlm <- function(rparam, Y, X, O) {
@@ -27,13 +27,5 @@ start_profiler <- function(str) {
 
 stop_profiler <- function() {
     .Call('_mvabundtest_stop_profiler', PACKAGE = 'mvabundtest')
-}
-
-start_profiler <- function(str) {
-    .Call('_mvabund_start_profiler', PACKAGE = 'mvabund', str)
-}
-
-stop_profiler <- function() {
-    .Call('_mvabund_stop_profiler', PACKAGE = 'mvabund')
 }
 
