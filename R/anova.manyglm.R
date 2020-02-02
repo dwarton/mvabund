@@ -16,7 +16,7 @@ anova.manyglm <- function(object, ...,
                     show.warning=FALSE,
                     rep.seed=FALSE,
                     bootID=NULL,
-                    keep.boot = FALSE) {
+                    keep.boot = FALSE, thread.num = 4) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
@@ -70,9 +70,9 @@ anova.manyglm <- function(object, ...,
         eta <- object$linear.predictor
         Y <- object$fitted.values + object$residuals * log(eta)
      }
-    B <- matrix(object$coefficients, nrow=nParam, ncol=nVars) 
+    #B <- matrix(object$coefficients, nrow=nParam, ncol=nVars) 
 	  #todo if B is null
-    if (is.null(B)) B<-matrix(0, nrow = nParam, ncol = nVars)
+    #if (is.null(B)) B<-matrix(0, nrow = nParam, ncol = nVars)
 
 		w <- object$weights
     if (is.null(w)) w  <- rep(1, times=nRows)
@@ -323,7 +323,7 @@ anova.manyglm <- function(object, ...,
     }
 
     ######## call resampTest Rcpp #########
-    val <- RtoGlmAnova(modelParam, testParams, Y, X, O, B, XvarIn, bootID, shrink.param)
+    val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, bootID, shrink.param, thread.num)
 
     # prepare output summary
     table <- data.frame(resdf, c(NA, val$dfDiff[ord]),

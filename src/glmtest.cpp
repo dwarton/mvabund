@@ -4,7 +4,7 @@
 
 #include "resampTest.h"
 //#include "time.h"
-
+#include "multi_thread.h"
 // constructor
 GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
   eps = tm->tol;
@@ -26,7 +26,8 @@ GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
   // Prepared for geeCalc
   L = gsl_matrix_alloc(tm->nParam, tm->nParam);
   gsl_matrix_set_identity(L);
-  Rlambda = gsl_matrix_alloc(tm->nVars, tm->nVars);
+  //Rlambda = gsl_matrix_alloc(tm->nVars, tm->nVars);
+
   Wj = gsl_matrix_alloc(tm->nRows, tm->nRows);
 
   // Initialize GSL rnd environment variables
@@ -54,9 +55,16 @@ GlmTest::GlmTest(const mv_Method *tm) : tm(tm) {
     Sigma = gsl_matrix_alloc(tm->nVars, tm->nVars);
   }
   aic = new double[tm->nVars];
+
+	thread_num = 0;
 }
 
 GlmTest::~GlmTest(void) {}
+
+void GlmTest::init_multthread(int num) {
+	if (num <= 0) return;
+	thread_num = num;
+}
 
 // cleanup
 void GlmTest::releaseTest(void) {
@@ -74,7 +82,7 @@ void GlmTest::releaseTest(void) {
 
 
   gsl_matrix_free(L);
-  gsl_matrix_free(Rlambda);
+  //gsl_matrix_free(Rlambda);
   gsl_matrix_free(Wj);
 
   gsl_rng_free(rnd);
@@ -92,7 +100,9 @@ void GlmTest::releaseTest(void) {
 }
 
 int GlmTest::summary(glm *fit) {
-  double lambda;
+
+  gsl_matrix *Rlambda =  gsl_matrix_alloc(tm->nVars, tm->nVars);
+
   unsigned int k;
   unsigned int nRows = tm->nRows, nVars = tm->nVars, nParam = tm->nParam;
   unsigned int mtype = fit->mmRef->model - 1;
@@ -141,23 +151,23 @@ int GlmTest::summary(glm *fit) {
     // the overall test compares to mean
     teststat = gsl_matrix_row(smryStat, 0);
     L1 = gsl_matrix_submatrix(L, 1, 0, nParam - 1, nParam);
-    lambda = gsl_vector_get(tm->smry_lambda, 0);
+    double lambda = gsl_vector_get(tm->smry_lambda, 0);
     GetR(fit->Res, tm->corr, lambda, Rlambda);
     // Errors here if we have less than 2 predictors
-    GeeWald(fit, &L1.matrix, &teststat.vector);
+    GeeWald(fit, &L1.matrix, &teststat.vector, Rlambda);
     // the significance test
     for (k = 2; k < nParam + 2; k++) {
       teststat = gsl_matrix_row(smryStat, k - 1);
       L1 = gsl_matrix_submatrix(L, k - 2, 0, 1, nParam);
-      GeeWald(fit, &L1.matrix, &teststat.vector);
+      GeeWald(fit, &L1.matrix, &teststat.vector, Rlambda);
     }
   } else if (tm->test == SCORE) {
     for (k = 1; k < nParam + 2; k++) {
       teststat = gsl_matrix_row(smryStat, k - 1);
       PtrNull[mtype]->regression(fit->Yref, GrpXs[k].matrix, fit->Oref, NULL);
-      lambda = gsl_vector_get(tm->smry_lambda, k);
+      double lambda = gsl_vector_get(tm->smry_lambda, k);
       GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
-      GeeScore(GrpXs[0].matrix, PtrNull[mtype], &teststat.vector);
+      GeeScore(GrpXs[0].matrix, PtrNull[mtype], &teststat.vector, Rlambda);
     }
   } else {
     for (k = 1; k < nParam + 2; k++) {
@@ -178,7 +188,7 @@ int GlmTest::summary(glm *fit) {
   }
 
   if (tm->resamp == MONTECARLO) {
-    lambda = gsl_vector_get(tm->smry_lambda, 0);
+    double lambda = gsl_vector_get(tm->smry_lambda, 0);
     GetR(fit->Res, tm->corr, lambda, Sigma);
     setMonteCarlo(fit, XBeta, Sigma);
   }
@@ -204,22 +214,22 @@ int GlmTest::summary(glm *fit) {
       // the overall test compares to mean
       teststat = gsl_matrix_row(bStat, 0);
       L1 = gsl_matrix_submatrix(L, 1, 0, nParam - 1, nParam);
-      lambda = gsl_vector_get(tm->smry_lambda, 0);
+      double lambda = gsl_vector_get(tm->smry_lambda, 0);
       GetR(PtrAlt[mtype]->Res, tm->corr, lambda, Rlambda);
-      GeeWald(PtrAlt[mtype], &L1.matrix, &teststat.vector);
+      GeeWald(PtrAlt[mtype], &L1.matrix, &teststat.vector, Rlambda);
       // the significance test
       for (k = 2; k < nParam + 2; k++) {
         teststat = gsl_matrix_row(bStat, k - 1);
         L1 = gsl_matrix_submatrix(L, k - 2, 0, 1, nParam);
-        GeeWald(PtrAlt[mtype], &L1.matrix, &teststat.vector);
+        GeeWald(PtrAlt[mtype], &L1.matrix, &teststat.vector, Rlambda);
       }
     } else if (tm->test == SCORE) {
       for (k = 1; k < nParam + 2; k++) {
         teststat = gsl_matrix_row(bStat, k - 1);
         PtrNull[mtype]->regression(bY, GrpXs[k].matrix, bO, NULL);
-        lambda = gsl_vector_get(tm->smry_lambda, k);
+        double lambda = gsl_vector_get(tm->smry_lambda, k);
         GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
-        GeeScore(GrpXs[0].matrix, PtrNull[mtype], &teststat.vector);
+        GeeScore(GrpXs[0].matrix, PtrNull[mtype], &teststat.vector, Rlambda);
       }
     } else { // use single bAlt estimate works better
       PtrAlt[mtype]->regression(bY, GrpXs[0].matrix, bO, NULL);
@@ -281,12 +291,288 @@ int GlmTest::summary(glm *fit) {
         gsl_matrix_free(GrpXs[k].matrix);
     free(GrpXs);
   }
+  gsl_matrix_free(Rlambda);
 
   return SUCCESS;
 }
 
+int GlmTest::anova_mt(glm *fit, gsl_matrix *isXvarIn){
+  // Assume the models have been already sorted (in R)
+  gsl_matrix *Rlambda =  gsl_matrix_alloc(tm->nVars, tm->nVars);
+	Xin = isXvarIn;
+  nModels = Xin->size1;
+  double *rdf = new double[nModels];
+  unsigned int nP, i, j;
+  unsigned int ID0, ID1, nP0, nP1;
+  unsigned int nRows = tm->nRows, nVars = tm->nVars, nParam = tm->nParam;
+  unsigned int mtype = fit->mmRef->model - 1;
+
+  dfDiff = new unsigned int[nModels - 1];
+  anovaStat = gsl_matrix_alloc((nModels - 1), nVars + 1);
+  Panova = gsl_matrix_alloc((nModels - 1), nVars + 1);
+  bootStore = gsl_matrix_alloc(tm->nboot, nVars + 1);
+	
+  gsl_matrix_set_zero(anovaStat);
+  gsl_matrix_set_zero(Panova);
+  PoissonGlm pNull(fit->mmRef), pAlt(fit->mmRef);
+  BinGlm binNull(fit->mmRef), binAlt(fit->mmRef);
+  NBinGlm nbNull(fit->mmRef), nbAlt(fit->mmRef);
+  GammaGlm gammaNull(fit->mmRef), gammaAlt(fit->mmRef);
+  glm *PtrNull[4] = {&pNull, &nbNull, &binNull, &gammaNull};
+  glm *PtrAlt[4] = {&pAlt, &nbAlt, &binAlt, &gammaAlt};
+
+  
+	glm *bNull[thread_num][4];
+  glm *bAlt[thread_num][4];
+
+	for (int k = 0; k < thread_num; ++k) {
+	  bNull[k][0] = new PoissonGlm(fit->mmRef);
+	  bNull[k][1] = new NBinGlm(fit->mmRef);
+	  bNull[k][2] = new BinGlm(fit->mmRef);
+	  bNull[k][3] = new GammaGlm(fit->mmRef);
+	  bAlt[k][0] = new PoissonGlm(fit->mmRef);
+	  bAlt[k][1] = new NBinGlm(fit->mmRef);
+	  bAlt[k][2] = new BinGlm(fit->mmRef);
+	  bAlt[k][3] = new GammaGlm(fit->mmRef);
+	}
+  
+  double *suj, *buj, *puj;
+  gsl_vector_view teststat, unitstat, ref1, ref0;
+  gsl_matrix** X0 =  (gsl_matrix**) malloc(thread_num* sizeof (gsl_matrix*));
+  gsl_matrix** X1 =  (gsl_matrix**) malloc(thread_num* sizeof (gsl_matrix*));
+	gsl_matrix *L1 = NULL, *tmp1 = NULL;
+	gsl_matrix **BetaO = (gsl_matrix**) malloc(thread_num*sizeof(gsl_matrix*));
+  gsl_matrix **bO =(gsl_matrix**) malloc(thread_num*sizeof(gsl_matrix*)); 
+	gsl_matrix** bY =(gsl_matrix**) malloc(thread_num*sizeof(gsl_matrix*)); 
+	for (int k = 0; k < thread_num; ++k) {	
+	  bY[k] = gsl_matrix_alloc(nRows, nVars);
+		bO[k] = gsl_matrix_alloc(nRows, nVars);
+	}
+	for (int k = 0; k < thread_num; ++k) {
+		BetaO[k] = NULL;
+		X0[k] = NULL;
+		X1[k] = NULL;
+	}
+  gsl_permutation *sortid = NULL;
+  if (tm->punit == FREESTEP)
+    sortid = gsl_permutation_alloc(nVars);
+
+  // ======= Fit the (first) Alt model =========//
+  for (i = 0; i < nModels; i++) {
+    nP = 0;
+    for (int k = 0; k < nParam; k++)
+      if (gsl_matrix_get(Xin, i, k) != FALSE)
+        nP++;
+    rdf[i] = nRows - nP;
+  }
+	//init glm
+	PtrNull[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
+  PtrAlt[mtype]->initialGlm(fit->Yref, fit->Xref, fit->Oref, fit->Beta);
+
+  for (i = 1; i < nModels; i++) {
+    // ======= Fit the Null model =========//
+    ID0 = i;
+    ID1 = i - 1;
+    nP0 = nRows - (unsigned int)rdf[ID0];
+    nP1 = nRows - (unsigned int)rdf[ID1];
+    
+		// Degrees of freedom
+    dfDiff[i - 1] = nP1 - nP0;
+
+    ref1 = gsl_matrix_row(Xin, ID1);
+    ref0 = gsl_matrix_row(Xin, ID0);
+		for (int k = 0; k < thread_num; ++k) {
+    	X0[k] = gsl_matrix_alloc(nRows, nP0);
+    	subX(fit->Xref, &ref0.vector, X0[k]);
+    	X1[k] = gsl_matrix_alloc(nRows, nP1);
+    	subX(fit->Xref, &ref1.vector, X1[k]);
+		}
+    // ======= Get multivariate test statistics =======//
+    // Estimate shrinkage parametr only once under H1
+    // See "FW: Doubts R package "mvabund" (12/14/11)
+    teststat = gsl_matrix_row(anovaStat, (i - 1));
+		PtrNull[mtype]->regression(NULL, X0[0], fit->Oref, NULL);
+		if (tm->test == SCORE) {
+			double lambda = gsl_vector_get(tm->anova_lambda, ID0);
+			GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
+			GeeScore(X1[0], PtrNull[mtype], &teststat.vector, Rlambda);
+		} else if (tm->test == WALD) {
+			PtrAlt[mtype]->regression(NULL, X1[0], fit->Oref, NULL);
+			L1 = gsl_matrix_alloc(nP1 - nP0, nP1);
+			tmp1 = gsl_matrix_alloc(nParam, nP1);
+			subX(L, &ref1.vector, tmp1);
+			subXrow1(tmp1, &ref0.vector, &ref1.vector, L1);
+			double lambda = gsl_vector_get(tm->anova_lambda, ID1);
+			GetR(PtrAlt[mtype]->Res, tm->corr, lambda, Rlambda);
+			GeeWald(PtrAlt[mtype], L1, &teststat.vector, Rlambda);
+		} else { // test is LR
+			BetaO[0] = gsl_matrix_alloc(nP1, nVars);
+			addXrow2(PtrNull[mtype]->Beta, &ref1.vector, BetaO[0]);
+			PtrAlt[mtype]->regression(NULL, X1[0], fit->Oref, BetaO[0]);
+			GeeLR(PtrAlt[mtype], PtrNull[mtype], &teststat.vector);
+		}
+		if (tm->resamp == MONTECARLO) {
+			double lambda = gsl_vector_get(tm->anova_lambda, ID0);
+			GetR(fit->Res, tm->corr, lambda, Sigma);
+			setMonteCarlo(PtrNull[mtype], XBeta, Sigma);
+		}
+
+		if (BetaO[0] != NULL) {
+			for (int k = 1; k < thread_num; ++k) {
+				BetaO[k] = gsl_matrix_alloc(nP1, nVars);
+				gsl_matrix_memcpy(BetaO[k], BetaO[0]);	
+			}
+		}
+    // ======= Get univariate test statistics =======//
+  	for (int k = 0; k < thread_num; ++k) {	
+			bAlt[k][mtype]->initialGlm(fit->Yref, X1[k], fit->Oref, NULL);
+  		bNull[k][mtype]->initialGlm(fit->Yref, X0[k], fit->Oref, NULL);
+		}
+		
+		//int stacksize = 1024 * 128;
+		//pthread_attr_t attr;
+		//int attr_ret = pthread_attr_init(&attr); 
+		//attr_ret = pthread_attr_setstacksize(&attr, stacksize);
+	  nSamp = tm->nboot;
+
+		pthread_t* threadid = new pthread_t[thread_num]; 
+		int thread_task = tm->nboot / thread_num + 1; 
+		int last = 0;
+		anovaboot* thread_data[thread_num];
+		for (int k = 0; k < thread_num; ++k) {
+			threadid[k] = k;
+			thread_data[k] = (anovaboot*) malloc( 1* sizeof (anovaboot)); 
+			anovaboot* th_data = thread_data[k];
+			th_data->fit = fit;
+			th_data->PtrAlt = PtrAlt[mtype];
+			th_data->PtrNull = PtrNull[mtype];
+			th_data->ref0 = &ref0.vector;;
+			th_data->ref1 = &ref1.vector;
+			th_data->L1 = L1;
+			th_data->ID0 = ID0;
+			th_data->ID1 = ID1;
+			th_data->tm = (mv_Method*) tm;
+			th_data->bAlt = bAlt[k][mtype];
+			th_data->bNull = bNull[k][mtype];
+			th_data->bY = bY[k];
+			th_data->X1 = X1[k];
+			th_data->X0 = X0[k];
+			th_data->bO = bO[k];
+			th_data->BetaO = BetaO[k];
+			th_data->bootStore = bootStore;
+		  
+			th_data->bootID = bootID;
+			th_data->rnd = rnd;
+			th_data->XBeta = XBeta;
+			th_data->Sigma = Sigma;
+				
+			th_data->start_counter = last;
+			if (last + thread_task < tm->nboot) {
+				th_data->loop_cnt = thread_task;
+			} else {
+				th_data->loop_cnt = tm->nboot - last;	
+			}
+			last += th_data->loop_cnt;
+    	pthread_create(&threadid[k], NULL, &anovaboot_mt, th_data);
+			//pthread_join (threadid[k], NULL);
+		}
+		for (int k = 0; k < thread_num; ++k) {
+			pthread_join (threadid[k], NULL);
+		}
+		delete threadid;
+ 		//pthread_attr_destroy(&attr);
+		for (int k = 0; k < thread_num; ++k) free(thread_data[k]);
+    
+		if (tm->punit == FREESTEP) {
+      unitstat = gsl_vector_subvector(&teststat.vector, 1, nVars);
+      gsl_sort_vector_index(sortid, &unitstat.vector);
+      gsl_permutation_reverse(sortid);
+    }
+		gsl_vector* buv = gsl_vector_alloc(nVars + 1);
+
+		for (int k = 0; k < tm->nboot; ++k) {
+			gsl_matrix_get_row(buv, bootStore, k);
+      //buj = gsl_matrix_ptr(bootStore, k, 0);
+			buj = gsl_vector_ptr(buv, 0);
+      suj = gsl_matrix_ptr(anovaStat, i - 1, 0);
+      puj = gsl_matrix_ptr(Panova, i - 1, 0);
+      if (*(buj) > (*(suj)-1e-8))
+        *puj = *puj + 1;
+      // ------ get univariate counts ---------//
+      calcAdjustP(tm->punit, nVars, buj + 1, suj + 1, puj + 1, sortid);
+		}
+		gsl_vector_free(buv);
+    // ========= get p-values ======== //
+    if (tm->punit == FREESTEP) {
+      puj = gsl_matrix_ptr(Panova, i - 1, 1);
+      reinforceP(puj, nVars, sortid);
+    }
+
+    //  end for i loop
+		
+		for (int k = 0; k < thread_num; ++k) {
+    	if (BetaO[k] != NULL) gsl_matrix_free(BetaO[k]);
+    	if (X0[k] != NULL) gsl_matrix_free(X0[k]);
+    	if (X1[k] != NULL) gsl_matrix_free(X1[k]);
+		}
+
+    if (tm->test == WALD) {
+      if (L1 != NULL) gsl_matrix_free(L1);
+      if (tmp1 != NULL) gsl_matrix_free(tmp1);
+    }
+  } // end i for loop  and test for loop
+  
+  // p = (#exceeding observed stat + 1)/(#nboot+1)
+  gsl_matrix_add_constant(Panova, 1.0);
+  gsl_matrix_scale(Panova, (double)1 / (nSamp + 1.0));
+  
+	//free resources
+	for (int i = 0; i < thread_num; ++i) {
+		bAlt[i][mtype]->releaseGlm();
+		delete bAlt[i][0];
+	  delete bAlt[i][1];
+	  delete bAlt[i][2];
+	  delete bAlt[i][3];
+	 	bNull[i][mtype]->releaseGlm(); 
+		delete bNull[i][0];
+	  delete bNull[i][1];
+	  delete bNull[i][2];
+	  delete bNull[i][3];
+	}
+
+	PtrAlt[mtype]->releaseGlm();	  
+  if (tm->test != WALD) {
+   	PtrNull[mtype]->releaseGlm();
+  }
+  delete[] rdf;
+  if (sortid != NULL)
+    gsl_permutation_free(sortid);
+  for (int i = 0; i < thread_num; ++i) {
+  	gsl_matrix_free(bY[i]);
+		if (bO[i] != NULL)	gsl_matrix_free(bO[i]);
+ 	}
+  free(X0);
+	free(X1);
+	free(bY);
+	free(BetaO);
+	free(bO);
+  /*for (j = 0; j < nVars + 1; j++) {
+    printf("[Response %d]:", (unsigned int)j);
+    for (i = 0; i < nModels - 1; i++)
+      printf("\t%.3f (%.3f)", gsl_matrix_get(anovaStat, i, j),
+             gsl_matrix_get(Panova, i, j));
+    printf("\n");
+  }*/
+  gsl_matrix_free(Rlambda);
+	//DisplayMatrix mat = DisplayMatrix(bootStore, "bootstore");
+  //mat.Print();
+	return SUCCESS;
+}
+
 int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
   // Assume the models have been already sorted (in R)
+  gsl_matrix *Rlambda =  gsl_matrix_alloc(tm->nVars, tm->nVars);
+
   Xin = isXvarIn;
   nModels = Xin->size1;
   double *rdf = new double[nModels];
@@ -366,49 +652,42 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
     teststat = gsl_matrix_row(anovaStat, (i - 1));
     PtrNull[mtype]->regression(NULL, X0, fit->Oref, NULL);
     if (tm->test == SCORE) {
-      lambda = gsl_vector_get(tm->anova_lambda, ID0);
+      double lambda = gsl_vector_get(tm->anova_lambda, ID0);
       GetR(PtrNull[mtype]->Res, tm->corr, lambda, Rlambda);
-      GeeScore(X1, PtrNull[mtype], &teststat.vector);
+      GeeScore(X1, PtrNull[mtype], &teststat.vector, Rlambda);
     } else if (tm->test == WALD) {
       PtrAlt[mtype]->regression(NULL, X1, fit->Oref, NULL);
       L1 = gsl_matrix_alloc(nP1 - nP0, nP1);
       tmp1 = gsl_matrix_alloc(nParam, nP1);
       subX(L, &ref1.vector, tmp1);
       subXrow1(tmp1, &ref0.vector, &ref1.vector, L1);
-      lambda = gsl_vector_get(tm->anova_lambda, ID1);
+      double lambda = gsl_vector_get(tm->anova_lambda, ID1);
       GetR(PtrAlt[mtype]->Res, tm->corr, lambda, Rlambda);
-      GeeWald(PtrAlt[mtype], L1, &teststat.vector);
+      GeeWald(PtrAlt[mtype], L1, &teststat.vector, Rlambda);
     } else { // test is LR
       BetaO = gsl_matrix_alloc(nP1, nVars);
       addXrow2(PtrNull[mtype]->Beta, &ref1.vector, BetaO);
       PtrAlt[mtype]->regression(NULL, X1, fit->Oref, BetaO);
       GeeLR(PtrAlt[mtype], PtrNull[mtype], &teststat.vector);
     }
+
     if (tm->resamp == MONTECARLO) {
-      lambda = gsl_vector_get(tm->anova_lambda, ID0);
+      double lambda = gsl_vector_get(tm->anova_lambda, ID0);
       GetR(fit->Res, tm->corr, lambda, Sigma);
       setMonteCarlo(PtrNull[mtype], XBeta, Sigma);
     }
 
-    // ======= Get univariate test statistics =======//
-    if (tm->punit == FREESTEP) {
-      unitstat = gsl_vector_subvector(&teststat.vector, 1, nVars);
-      gsl_sort_vector_index(sortid, &unitstat.vector);
-      gsl_permutation_reverse(sortid);
-    }
   	
 		bAlt[mtype]->initialGlm(fit->Yref, X1, fit->Oref, NULL);
   	bNull[mtype]->initialGlm(fit->Yref, X0, fit->Oref, NULL);
 
     // ======= Get resampling distribution under H0 ===== //
-    nSamp = 0;
     double dif, timelast = 0;
     clock_t clk_start = clock();
     if (tm->showtime == TRUE)
       printf("Resampling begins for test %d.\n", i);
     for (j = 0; j < tm->nboot; j++) {
       //            printf("simu %d :", j);
-      nSamp++;
       gsl_vector_set_zero(bStat);
       if (tm->resamp == CASEBOOT) {
         resampAnovaCase(PtrAlt[mtype], bY, X1, bO, j);
@@ -424,18 +703,18 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
 				} else {
 			   	bAlt[mtype]->regression(bY, NULL, bO, NULL);
 				}
-				lambda = gsl_vector_get(tm->anova_lambda, ID1);
+				double lambda = gsl_vector_get(tm->anova_lambda, ID1);
         GetR(bAlt[mtype]->Res, tm->corr, lambda, Rlambda);
-        GeeWald(bAlt[mtype], L1, bStat);
+        GeeWald(bAlt[mtype], L1, bStat, Rlambda);
       } else if (tm->test == SCORE) {
 				if (tm->resamp == CASEBOOT) {
         	bNull[mtype]->regression(bY, X0, bO, NULL);
 				} else {
 			   	bNull[mtype]->regression(bY, NULL, bO, NULL);
 				}
-				lambda = gsl_vector_get(tm->anova_lambda, ID0);
+				double lambda = gsl_vector_get(tm->anova_lambda, ID0);
         GetR(bNull[mtype]->Res, tm->corr, lambda, Rlambda);
-        GeeScore(X1, bNull[mtype], bStat);
+        GeeScore(X1, bNull[mtype], bStat, Rlambda);
       } else {
 				if (tm->resamp == CASEBOOT) {
         	bNull[mtype]->regression(bY, X0, bO, NULL);
@@ -452,14 +731,6 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
       }
       gsl_matrix_set_row(bootStore, j, bStat);
       // ----- get multivariate counts ------- //
-      buj = gsl_vector_ptr(bStat, 0);
-      suj = gsl_matrix_ptr(anovaStat, i - 1, 0);
-      puj = gsl_matrix_ptr(Panova, i - 1, 0);
-      if (*(buj) > (*(suj)-1e-8))
-        *puj = *puj + 1;
-      // ------ get univariate counts ---------//
-      calcAdjustP(tm->punit, nVars, buj + 1, suj + 1, puj + 1, sortid);
-      // Prompts
       if ((tm->showtime == TRUE) & (j % 100 == 0)) {
         dif = (float)(clock() - clk_start) / (float)CLOCKS_PER_SEC;
         timelast += (double)dif / 60;
@@ -467,6 +738,26 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
                j, timelast);
         clk_start = clock();
       }
+		}
+    
+		
+		// ======= Get univariate test statistics =======//
+    if (tm->punit == FREESTEP) {
+      unitstat = gsl_vector_subvector(&teststat.vector, 1, nVars);
+      gsl_sort_vector_index(sortid, &unitstat.vector);
+      gsl_permutation_reverse(sortid);
+    }
+
+		//do statistics
+		for (int k = 0; k < tm->nboot; k++){
+			buj = gsl_matrix_ptr(bootStore, k, 0);
+      suj = gsl_matrix_ptr(anovaStat, i - 1, 0);
+      puj = gsl_matrix_ptr(Panova, i - 1, 0);
+      if (*(buj) > (*(suj)-1e-8))
+        *puj = *puj + 1;
+      // ------ get univariate counts ---------//
+      calcAdjustP(tm->punit, nVars, buj + 1, suj + 1, puj + 1, sortid);
+      // Prompts
     } // end j for loop
 
     // ========= get p-values ======== //
@@ -489,7 +780,8 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
         gsl_matrix_free(tmp1);
     }
   } // end i for loop  and test for loop
-
+  
+	nSamp = tm->nboot;
   // p = (#exceeding observed stat + 1)/(#nboot+1)
   gsl_matrix_add_constant(Panova, 1.0);
   gsl_matrix_scale(Panova, (double)1 / (nSamp + 1.0));
@@ -507,7 +799,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
   gsl_matrix_free(bY);
   if (bO != NULL)
     gsl_matrix_free(bO);
-
+	gsl_matrix_free(Rlambda);
   return SUCCESS;
 }
 
@@ -529,7 +821,7 @@ int GlmTest::GeeLR(glm *PtrAlt, glm *PtrNull, gsl_vector *teststat) {
   return SUCCESS;
 }
 
-int GlmTest::GeeScore(gsl_matrix *X1, glm *PtrNull, gsl_vector *teststat) {
+int GlmTest::GeeScore(gsl_matrix *X1, glm *PtrNull, gsl_vector *teststat, gsl_matrix* rlambda) {
   gsl_set_error_handler_off();
 
   double result, alpha, sum = 0;
@@ -579,7 +871,7 @@ int GlmTest::GeeScore(gsl_matrix *X1, glm *PtrNull, gsl_vector *teststat) {
 
     if (tm->corr != IDENTITY) {
       for (l = 0; l <= j; l++) { // lower half
-        alpha = gsl_matrix_get(Rlambda, j, l);
+        alpha = gsl_matrix_get(rlambda, j, l);
         Rl = gsl_matrix_submatrix(kRlNull, j * nP, l * nP, nP, nP);
         gsl_blas_dgemm(CblasTrans, CblasNoTrans, alpha, Z[j].matrix,
                        Z[l].matrix, 0, &Rl.matrix);
@@ -614,7 +906,7 @@ int GlmTest::GeeScore(gsl_matrix *X1, glm *PtrNull, gsl_vector *teststat) {
 }
 
 // Wald Test used in both summary and anova (polymophism)
-int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat) {
+int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat, gsl_matrix* rlambda) {
   gsl_set_error_handler_off();
 
   unsigned int i, j, l;
@@ -686,7 +978,7 @@ int GlmTest::GeeWald(glm *Alt, gsl_matrix *LL, gsl_vector *teststat) {
       // IinvRl=L*vSandRl*L^T
       for (l = 0; l <= j; l++) {
         Rl = gsl_matrix_submatrix(IinvRl, j * nDF, l * nDF, nDF, nDF);
-        alpha = gsl_matrix_get(Rlambda, j, l);
+        alpha = gsl_matrix_get(rlambda, j, l);
         // borrow XwX space to store vSandRl
         gsl_blas_dgemm(CblasNoTrans, CblasTrans, alpha, Z[j].matrix,
                        Z[l].matrix, 0.0, XwX);

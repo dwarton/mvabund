@@ -11,6 +11,7 @@ extern "C" {
 #include "resampTest.h"
 #include "time.h"
 }
+#include "multi_thread.h"
 #include "profile.h"
 #include "Rcpp.h"
 #include <gperftools/profiler.h>
@@ -41,7 +42,7 @@ List RtoAnovaCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 	TimeDebug tmd = TimeDebug();			
 	Rcpp::Rcout<<"enter RtoAnovaCpp C code "<<tmd.currentTime()<<"\n";
 
-  unsigned int nRows = Y.nrow();
+  //unsigned int nRows = Y.nrow();
   unsigned int nModels = isXvarIn.nrow();
 
   // initialize anova class
@@ -81,10 +82,10 @@ List RtoAnovaCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 // declare the function to be 'exported' to R
 // [[Rcpp::export]]
 List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
-                 RcppGSL::Matrix &X, RcppGSL::Matrix &O, RcppGSL::Matrix &B,
+                 RcppGSL::Matrix &X, RcppGSL::Matrix &O, 
                  RcppGSL::Matrix &isXvarIn,
                  Rcpp::Nullable<RcppGSL::Matrix> &bID,
-                 RcppGSL::Vector &lambda) {
+                 RcppGSL::Vector &lambda, int thread_num) {
   // pass regression parameters
   reg_Method mm;
   mm.tol = as<double>(sparam["tol"]);
@@ -109,9 +110,9 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
   tm.punit = as<unsigned int>(rparam["punit"]);
   tm.showtime = as<unsigned int>(rparam["showtime"]);
   tm.warning = as<unsigned int>(rparam["warning"]);
-
+  
 	TimeDebug tmd = TimeDebug();			
-	Rprintf("enter RtoGlm Anova C code %s\n", tmd.currentTime().c_str());
+	Rprintf("enter RtoGlm Anova %s\n", tmd.currentTime().c_str());
 
   unsigned int nRows = Y.nrow();
   unsigned int nVars = Y.ncol();
@@ -137,12 +138,12 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
   GammaGlm gfit(&mm);
   glm *glmPtr[4] = {&pfit, &nbfit, &binfit, &gfit};
   unsigned int mtype = mm.model - 1;
-  glmPtr[mtype]->initialGlm(Y, X, O, B);
-  glmPtr[mtype]->regression(Y, X, O, B);
+  glmPtr[mtype]->initialGlm(Y, X, O, NULL);
+  glmPtr[mtype]->regression(Y, X, O, NULL);
   //    glmPtr[mtype]->display();
 
   GlmTest myTest(&tm);
-  // Resampling indices
+	// Resampling indices
   if (bID.isNotNull()) {
     RcppGSL::Matrix m(bID);
     tm.nboot = m.nrow();
@@ -150,7 +151,8 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
   }
 
   // resampling test
-  myTest.anova(glmPtr[mtype], isXvarIn);
+	myTest.init_multthread(thread_num);
+  myTest.anova_mt(glmPtr[mtype], isXvarIn);
   //    myTest.displayAnova();
 
   // Timing
@@ -378,7 +380,7 @@ List RtoSmryCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   mm.punit = as<unsigned int>(rparam["punit"]);
   mm.rsquare = as<unsigned int>(rparam["rsquare"]);
 
-  unsigned int nRows = Y.nrow();
+  //unsigned int nRows = Y.nrow();
   unsigned int nVars = Y.ncol();
   unsigned int nParam = X.ncol();
 

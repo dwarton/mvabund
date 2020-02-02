@@ -1,5 +1,6 @@
 #ifndef UTILITY_H_
 #define UTILITY_H_
+#include <iostream>
 #include "gsl/gsl_spmatrix.h"
 #include "gsl/gsl_vector.h"
 #include <gsl/gsl_spmatrix.h>
@@ -78,6 +79,28 @@ class MatrixSol {
 		gsl_matrix* W_;
     gsl_matrix* XwX_;
 	  gsl_vector* Xwz_;
+};
+
+class DisplayMatrix {
+ public:	
+	DisplayMatrix(gsl_matrix* m, const std::string& name) : mat_(m), name_(name) {}
+	void Print() {
+		int row = mat_->size1;
+		int col = mat_->size2;
+		std::cout << "matrix: " << name_ << "\n";
+		for (int i = 0; i < row; ++i) {
+			std::cout <<"[ ";
+			for (int j = 0; j < col; ++j) {
+			  std::cout << gsl_matrix_get(mat_, i, j) <<" ";
+			}	
+			std::cout << "]\n";
+		}	
+		std::cout<<"end of matrix "<< name_ <<"\n";
+	}
+	
+	private:
+		gsl_matrix* mat_;
+		std::string name_;
 };
 
 

@@ -17,6 +17,7 @@
 #include <gsl/gsl_statistics_double.h>
 #include <gsl/gsl_vector.h>
 #include <math.h>
+#include "resampTest.h"
 
 struct thread_data {
    int  thread_id;
@@ -30,8 +31,53 @@ struct mt_data{
 		double k;
 };
 
+struct anova_boot {
+  GlmTest* gtest;
+	glm *fit;
+	gsl_matrix *isXvarIn;
+};
+void *run_anova_mt(void *anova_pack);
+
 int run_task(int total, int num_cores, void* task(void* data), void* data);
 
+struct anovaboot {
+
+//read only vars
+glm* fit;
+glm* PtrAlt;
+glm* PtrNull;
+gsl_vector* ref0;
+gsl_vector* ref1;
+gsl_matrix* L1;
+int ID0;
+int ID1;
+mv_Method* tm;
+//glmtest vars
+
+gsl_rng *rnd;
+gsl_matrix *bootID;
+
+gsl_matrix *XBeta;
+gsl_matrix *Sigma; // used in monte carlo simulation
+
+//R/W vars
+glm* bAlt;
+glm* bNull;
+gsl_matrix* bY;
+gsl_matrix* X1;
+gsl_matrix* X0;
+gsl_matrix* bO;
+gsl_matrix* BetaO;
+
+
+//mux loc vars
+gsl_matrix* bootStore;
+
+int start_counter;
+int loop_cnt;
+};
+
+void *anovaboot_mt(void *anova_pack);
 
 #endif
 
