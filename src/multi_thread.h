@@ -18,7 +18,7 @@
 #include <gsl/gsl_vector.h>
 #include <math.h>
 #include "resampTest.h"
-
+/*
 struct thread_data {
    int  thread_id;
    void *data;
@@ -39,7 +39,7 @@ struct anova_boot {
 void *run_anova_mt(void *anova_pack);
 
 int run_task(int total, int num_cores, void* task(void* data), void* data);
-
+*/
 struct anovaboot {
 
 //read only vars

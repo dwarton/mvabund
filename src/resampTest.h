@@ -329,7 +329,7 @@ public: // public functions
   }
   int EstIRLS(gsl_matrix *, gsl_matrix *, gsl_matrix *, gsl_matrix *, double *);
   int betaEst(unsigned int id, unsigned int iter, double *tol, double a);
-	int betaEstSp(unsigned int id, unsigned int iter, double *tol, double a);
+	//int betaEstSp(unsigned int id, unsigned int iter, double *tol, double a);
 
   double getDisper(unsigned int id, double th) const;
   int update(gsl_vector *bj, unsigned int id);
@@ -565,7 +565,7 @@ public:
 
   double getfAfAdash(double th, unsigned int id, unsigned int limit);
   double thetaML(double th0, unsigned int id, unsigned int limit);
-  double getfAfAdashMT(double th, unsigned int id, unsigned int limit);
+  //double getfAfAdashMT(double th, unsigned int id, unsigned int limit);
 };
 
 // base test class

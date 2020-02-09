@@ -119,8 +119,8 @@ int GlmTest::summary(glm *fit) {
   gsl_vector_view teststat, unitstat;
   gsl_matrix_view L1;
   // To estimate initial Beta from PtrNull->Beta
-  //    gsl_vector *ref=gsl_vector_alloc(nParam);
-  //    gsl_matrix *BetaO=gsl_matrix_alloc(nParam, nVars);
+  //  gsl_vector *ref=gsl_vector_alloc(nParam);
+  //  gsl_matrix *BetaO=gsl_matrix_alloc(nParam, nVars);
 
   smryStat = gsl_matrix_alloc((nParam + 1), nVars + 1);
   Psmry = gsl_matrix_alloc((nParam + 1), nVars + 1);

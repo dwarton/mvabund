@@ -13,6 +13,7 @@ int GeeScore(gsl_matrix *, glm *, gsl_vector *, gsl_matrix *, mv_Method* tm);
 int GeeLR(glm *PtrAlt, glm *PtrNull, gsl_vector *teststat, mv_Method* tm);
 
 pthread_mutex_t anova_mutex = PTHREAD_MUTEX_INITIALIZER;
+/*
 int run_task(int total, int num_cores, void* task(void* data), void* data) {
    int ret;
    int i;
@@ -53,7 +54,7 @@ void *run_anova_mt(void *anova_pack) {
   glmtest->anova(fit, matrix);
   return NULL;
 }
-
+*/
 void *anovaboot_mt(void *anova_pack) {
   anovaboot* th_data = (anovaboot*) anova_pack;
   glm* fit = th_data->fit;

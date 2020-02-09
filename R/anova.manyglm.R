@@ -16,7 +16,8 @@ anova.manyglm <- function(object, ...,
                     show.warning=FALSE,
                     rep.seed=FALSE,
                     bootID=NULL,
-                    keep.boot = FALSE, thread.num = 4) {
+                    keep.boot = FALSE, 
+										thread.num = parallel::detectCores()) {
 
     if (cor.type!="I" & test=="LR") {
         warning("The likelihood ratio test can only be used if correlation matrix of the abundances is is assumed to be the Identity matrix. The Wald Test will be used.")
