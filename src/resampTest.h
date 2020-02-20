@@ -9,7 +9,7 @@
 #include "Rmath.h"
 #define printf Rprintf
 
-#undef warning
+#define STRICT_R_HEADERS
 /*
 #define MATHLIB_STANDALONE
 #include "/usr/local/R/2.13/lib64/R/include/Rmath.h"
