@@ -1,10 +1,13 @@
-## Use the R_HOME indirection to support installations of multiple R version
-## And RcppGSL can tell us where GSL is installed 
 
+## We want C++11
 CXX_STD = CXX11
 
-## header files from our package and from the GSL
-PKG_CPPFLAGS = -I. -I../inst/include `$(R_HOME)/bin/Rscript -e "RcppGSL:::CFlags()"`
+## Header files from our package, RcppGSL comes in via LinkingTo: in DESCRIPTIPM
+PKG_CPPFLAGS = -I. -I../inst/include
 
-## library from the GSL
+## If we want LTO (for testing or optimization)
+#PKG_CXXFLAGS = -flto
+
+## Use the R_HOME indirection to support installations of multiple R version
+## And RcppGSL can tell us where GSL is installed so we get the libraries for linking
 PKG_LIBS = `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"`
