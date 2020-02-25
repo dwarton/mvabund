@@ -5,11 +5,12 @@
 #ifndef _RESAMPTEST_H
 #define _RESAMPTEST_H
 
-#include "R.h"
-#include "Rmath.h"
+// include R headers, but under 'strict' definitions
+#define STRICT_R_HEADERS
+#include <RcppGSL.h>
+
 #define printf Rprintf
 
-#define STRICT_R_HEADERS
 /*
 #define MATHLIB_STANDALONE
 #include "/usr/local/R/2.13/lib64/R/include/Rmath.h"
