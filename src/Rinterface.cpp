@@ -3,13 +3,12 @@
 // Author: Yi Wang (yi dot wang at unsw dot edu dot au)
 // Last modified: 20-April-2010
 //
-// Rcpp/RcppGSL changes by Dirk Eddelbuettel, July - August 2015
+// Rcpp/RcppGSL changes by Dirk Eddelbuettel, July - August 2015, Feb 2020
 
 #include "mvabund_types.h"
-#include <RcppGSL.h>
-extern "C" {
 #include "resampTest.h"
-#include "time.h"
+extern "C" {
+  #include "time.h"
 }
 
 using namespace Rcpp;
@@ -36,7 +35,7 @@ List RtoAnovaCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   mm.punit = as<unsigned int>(rparam["punit"]);
   mm.rsquare = as<unsigned int>(rparam["rsquare"]);
 
-  unsigned int nRows = Y.nrow();
+  //unsigned int nRows = Y.nrow();
   unsigned int nModels = isXvarIn.nrow();
 
   // initialize anova class
@@ -359,7 +358,7 @@ List RtoSmryCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   mm.punit = as<unsigned int>(rparam["punit"]);
   mm.rsquare = as<unsigned int>(rparam["rsquare"]);
 
-  unsigned int nRows = Y.nrow();
+  //unsigned int nRows = Y.nrow();
   unsigned int nVars = Y.ncol();
   unsigned int nParam = X.ncol();
 
