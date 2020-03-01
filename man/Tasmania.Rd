@@ -62,8 +62,7 @@ tasm.cop <- mvabund(Tasmania$copepods)
 treatment <- Tasmania$treatment
 block <- Tasmania$block
 
-foo <- mvformula(tasm.cop~block*treatment)
-plot(foo)
+plot(tasm.cop~block*treatment)
 
 }
 \keyword{datasets}

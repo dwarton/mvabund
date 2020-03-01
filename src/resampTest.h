@@ -5,27 +5,14 @@
 #ifndef _RESAMPTEST_H
 #define _RESAMPTEST_H
 
-#include "R.h"
-#include "Rmath.h"
+// include R headers, but under 'strict' definitions
+//
+// RcppGSL includes GSL vector and matrix headers, plus
+// Rcpp headers and a number of C++ standard library headers
+#define STRICT_R_HEADERS
+#include <RcppGSL.h>
+
 #define printf Rprintf
-/*
-#define MATHLIB_STANDALONE
-#include "/usr/local/R/2.13/lib64/R/include/Rmath.h"
-#define Rf_runif runif
-#define Rf_rnorm rnorm
-#define Rf_dpois dpois
-#define Rf_ppois ppois
-#define Rf_qpois qpois
-#define Rf_rpois rpois
-#define Rf_dbinom dbinom
-#define Rf_pbinom pbinom
-#define Rf_qbinom qbinom
-#define Rf_rbinom rbinom
-#define Rf_dnbinom dnbinom
-#define Rf_pnbinom pnbinom
-#define Rf_qnbinom qnbinom
-#define Rf_rnbinom rnbinom
-*/
 
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_cdf.h>
@@ -41,10 +28,7 @@
 #include <gsl/gsl_sort_vector.h>
 #include <gsl/gsl_statistics_double.h>
 #include <gsl/gsl_vector.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include <sys/time.h>
 #include <time.h>
 //#include <R_ext/Rdynload.h>
@@ -181,7 +165,7 @@ typedef struct RegressionMethod {
 
 	unsigned int test;//for test
 	unsigned int resamp;
-	
+
 } reg_Method;
 
 // ManyLM related
@@ -301,7 +285,7 @@ public:
   unsigned int nRows, nVars, nParams;
 
 	std::unordered_map<double, double> diagamma_map_;
-  std::unordered_map<double, double> trigamma_map_;	
+  std::unordered_map<double, double> trigamma_map_;
   // private:
   // abstract
   virtual  double link(double) const = 0;

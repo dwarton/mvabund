@@ -2,30 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 RtoAnovaCpp <- function(rparam, Y, X, isXvarIn, bID) {
-    .Call('_mvabundtest_RtoAnovaCpp', PACKAGE = 'mvabundtest', rparam, Y, X, isXvarIn, bID)
+    .Call('_mvabund_RtoAnovaCpp', PACKAGE = 'mvabund', rparam, Y, X, isXvarIn, bID)
 }
 
 RtoGlmAnova <- function(sparam, rparam, Y, X, O, isXvarIn, bID, lambda, thread_num) {
-    .Call('_mvabundtest_RtoGlmAnova', PACKAGE = 'mvabundtest', sparam, rparam, Y, X, O, isXvarIn, bID, lambda, thread_num)
+    .Call('_mvabund_RtoGlmAnova', PACKAGE = 'mvabund', sparam, rparam, Y, X, O, isXvarIn, bID, lambda, thread_num)
 }
 
 RtoGlm <- function(rparam, Y, X, O) {
-    .Call('_mvabundtest_RtoGlm', PACKAGE = 'mvabundtest', rparam, Y, X, O)
+    .Call('_mvabund_RtoGlm', PACKAGE = 'mvabund', rparam, Y, X, O)
 }
 
 RtoGlmSmry <- function(sparam, rparam, Y, X, O, bID, lambda) {
-    .Call('_mvabundtest_RtoGlmSmry', PACKAGE = 'mvabundtest', sparam, rparam, Y, X, O, bID, lambda)
+    .Call('_mvabund_RtoGlmSmry', PACKAGE = 'mvabund', sparam, rparam, Y, X, O, bID, lambda)
 }
 
 RtoSmryCpp <- function(rparam, Y, X, bID) {
-    .Call('_mvabundtest_RtoSmryCpp', PACKAGE = 'mvabundtest', rparam, Y, X, bID)
-}
-
-start_profiler <- function(str) {
-    .Call('_mvabundtest_start_profiler', PACKAGE = 'mvabundtest', str)
-}
-
-stop_profiler <- function() {
-    .Call('_mvabundtest_stop_profiler', PACKAGE = 'mvabundtest')
+    .Call('_mvabund_RtoSmryCpp', PACKAGE = 'mvabund', rparam, Y, X, bID)
 }
 

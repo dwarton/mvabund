@@ -3,13 +3,12 @@
 // Author: Yi Wang (yi dot wang at unsw dot edu dot au)
 // Last modified: 20-April-2010
 //
-// Rcpp/RcppGSL changes by Dirk Eddelbuettel, July - August 2015
+// Rcpp/RcppGSL changes by Dirk Eddelbuettel, July - August 2015, Feb 2020
 
 #include "mvabund_types.h"
-#include <RcppGSL.h>
-extern "C" {
 #include "resampTest.h"
-#include "time.h"
+extern "C" {
+  #include "time.h"
 }
 #include "multi_thread.h"
 #include "profile.h"
@@ -38,9 +37,6 @@ List RtoAnovaCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   mm.student = as<unsigned int>(rparam["studentize"]);
   mm.punit = as<unsigned int>(rparam["punit"]);
   mm.rsquare = as<unsigned int>(rparam["rsquare"]);
-
-	TimeDebug tmd = TimeDebug();			
-	Rcpp::Rcout<<"enter RtoAnovaCpp C code "<<tmd.currentTime()<<"\n";
 
   //unsigned int nRows = Y.nrow();
   unsigned int nModels = isXvarIn.nrow();
@@ -73,8 +69,6 @@ List RtoAnovaCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 
   // clear objects
   anova.releaseTest();
-	Rcpp::Rcout<< " run time for RtoAnovaCpp "<< tmd.elapsed_time() << "\n";
-	Rcpp::Rcout<<"exit RtoAnovaCpp C code "<<tmd.currentTime()<<"\n";
 
   return rs;
 }
@@ -85,7 +79,7 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
                  RcppGSL::Matrix &X, RcppGSL::Matrix &O, 
                  RcppGSL::Matrix &isXvarIn,
                  Rcpp::Nullable<RcppGSL::Matrix> &bID,
-                 RcppGSL::Vector &lambda, int thread_num) {
+                 RcppGSL::Vector &lambda, int &thread_num) {
   // pass regression parameters
   reg_Method mm;
   mm.tol = as<double>(sparam["tol"]);
@@ -111,8 +105,8 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
   tm.showtime = as<unsigned int>(rparam["showtime"]);
   tm.warning = as<unsigned int>(rparam["warning"]);
   
-	TimeDebug tmd = TimeDebug();			
-	Rprintf("enter RtoGlm Anova %s\n", tmd.currentTime().c_str());
+	//TimeDebug tmd = TimeDebug();			
+	//Rprintf("enter RtoGlm Anova %s\n", tmd.currentTime().c_str());
 
   unsigned int nRows = Y.nrow();
   unsigned int nVars = Y.ncol();
@@ -185,8 +179,8 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
   myTest.releaseTest();
   glmPtr[mtype]->releaseGlm();
   gsl_vector_free(tm.anova_lambda);
-	Rcpp::Rcout<< " run time for RtoGlmAnova "<< tmd.elapsed_time() << "\n";
-	Rprintf("exit RtoGlmAnova %s\n", tmd.currentTime().c_str());
+	//Rcpp::Rcout<< " run time for RtoGlmAnova "<< tmd.elapsed_time() << "\n";
+	//Rprintf("exit RtoGlmAnova %s\n", tmd.currentTime().c_str());
 
   return rs;
 }
@@ -207,7 +201,7 @@ List RtoGlm(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
   mm.maxiter = as<unsigned int>(rparam["maxiter"]);
   mm.maxiter2 = as<unsigned int>(rparam["maxiter2"]);
   mm.warning = as<unsigned int>(rparam["warning"]);
-	TimeDebug tmd = TimeDebug();			
+	//TimeDebug tmd = TimeDebug();			
 
   // do stuff
   PoissonGlm pfit(&mm);
@@ -244,7 +238,7 @@ List RtoGlm(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 
   // clear objects
   glmPtr[mtype]->releaseGlm();
-	Rcpp::Rcout<< " run time for RtoGlm "<< tmd.elapsed_time() << "\n";
+	//Rcpp::Rcout<< " run time for RtoGlm "<< tmd.elapsed_time() << "\n";
 
   return rs;
 }
@@ -428,7 +422,7 @@ List RtoSmryCpp(const List &rparam, RcppGSL::Matrix &Y, RcppGSL::Matrix &X,
 }
 
 
-
+/* proflie function 
 // [[Rcpp::export]]
 SEXP start_profiler(SEXP str) {
   ProfilerStart(as<const char*>(str));
@@ -441,3 +435,4 @@ SEXP stop_profiler() {
   return R_NilValue;
 }
 
+ */

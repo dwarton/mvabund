@@ -175,7 +175,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       if(i.var==1)
       {
         cf = try(coef(manyfit[[i.var]]),silent=TRUE) #don't know if this function is defined
-        if(any(class(cf)=="try-error"))
+        if(inherits(cf, "try-error"))
         {
           do.coef   = FALSE
           coefs     = NULL
