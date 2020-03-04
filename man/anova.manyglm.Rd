@@ -8,8 +8,10 @@ generalized linear model fits.}
 \usage{
  %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%%
 \method{anova}{manyglm}(object, \dots, resamp="pit.trap", test="LR", p.uni="none",
-    nBoot=999, cor.type=object$cor.type, block=NULL, show.time="total",
-    show.warning=FALSE, rep.seed=FALSE, bootID=NULL) 
+    nBoot=999, cor.type=object$cor.type,
+    pairwise.comp = NULL,
+    block=NULL, show.time="total",
+    show.warning=FALSE, rep.seed=FALSE, bootID=NULL, keep.boot=FALSE) 
 \method{print}{anova.manyglm}(x, \dots) 
 }
 \arguments{
@@ -17,7 +19,7 @@ generalized linear model fits.}
 }
 \item{\dots}{for the \code{anova.manyglm} method, these are optional further objects of class \code{manyglm}, which are usually a result of a call to \code{\link{manyglm}}
 for the \code{print.anova.manyglm} method these are optional further arguments passed to or from other methods. See \code{\link{print.summary.glm}} for more details.}        
-\item{resamp}{the method of resampling used. Can be one of "perm.resid", "montecarlo" or "pit.trap" (default). See Details.}
+\item{resamp}{the method of resampling used. Can be one of "case", "perm.resid", "montecarlo" or "pit.trap" (default). See Details.}
 \item{test}{the test to be used. If \code{cor.type="I"}, this can be one of "wald" for a Wald-Test or "score" for a Score-Test or "LR" for a Likelihood-Ratio-Test, otherwise only "wald" and "score" is allowed. The default value is "LR".
 }
 \item{p.uni}{whether to calculate univariate test statistics and their P-values, and if so, what type. This can be one of the following options. \cr
@@ -29,11 +31,18 @@ step-down resampling procedure.
 }
 \item{nBoot}{the number of Bootstrap iterations, default is \code{nBoot=999}.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+
+\item{pairwise.comp}{
+    A character or factor vector specifying the levels for which a pairwise comparison will be carried out, adjusting for multiple comparisons via a free stepdown resampling procedure.
+    Alternatively, a onesided formula specifying an interaction between factor levels.
+}
+
 \item{block}{a factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{show.time}{Whether to display timing information for the resampling procedure: "none" shows none, "all" shows all timing information and "total" shows only the overall time taken for the tests. }
 \item{show.warning}{logical. Whether to display warning messages in the operation procedure.}
 \item{rep.seed}{logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.}
 \item{bootID}{an integer matrix where each row specifies bootstrap id's in each resampling run. When \code{bootID} is supplied, \code{nBoot} is set to the number of rows in \code{bootID}. Default is \code{NULL}.}
+\item{keep.boot}{logical. Whether to return the bootstrapped test statistics.}
 \item{x}{an object of class "anova.manyglm", usually, a result of a call to
 \code{\link[mvabund:anova.manyglm]{anova.manyglm}}.}
 }
@@ -46,8 +55,8 @@ P-values are calculated by resampling rows of the data using a method
 determined by the argument \code{resamp}. \code{resamp}. Two of the three 
 available resampling methods (residual permutation and parametric bootstrap) 
 are described in more detail in Davison and Hinkley (1997, chapter 6), 
-whereas the default (the ``PIT-trap'') is a new method (in review) which 
-bootstraps probability integral transform residuals, and which we have found 
+whereas the default (the ``PIT-trap'', Warton et al 2017) 
+bootstraps probability integral transform residuals, which we have found 
 to give the most reliable Type I error rates. All methods involve resampling 
 under the resampling under the null hypothesis. These methods ensure 
 approximately valid inference even when the mean-variance relationship or the 
@@ -80,7 +89,7 @@ The \code{cor.type="shrink"} option applies ridge regularisation (Warton 2008), 
 
 The shrinkage parameter is an attribute of a \code{\link{manyglm}} object. For a Wald test, the sample correlation matrix of the alternative model is used to calculate the test statistics. So \code{shrink.param} of the alternative model is used. For a score test, the sample correlation matrix of the null model is used to calculate the test statistics. So \code{shrink.param} of the null model is used instead. If \code{cor.type=="shrink"} and \code{shrink.param} is NULL, then the shrinkage parameter will be estimated by cross-validation using the multivariate normal likelihood function (see \code{\link{ridgeParamEst}} and (Warton 2008)) for the corresponding model in the anova test.
 
-Rather than stopping after testing for multivariate effects, it is often of interest to find out which response variables express significant effects. Univariate statistics are required to answer this question, and these are reported if requested. Setting \code{p.uni="unadjusted"} returns resampling-based univariate P-values for all effects as well as the multivariate P-values, whereas \code{p.uni="adjusted"} returns adjusted P-values (that have been adjusted for multiple testing), calculated using a step-down resampling algorithm as in Westfall & Young (1993, Algorithm 2.8). This method provides strong control of family-wise error rates, and makes use of resampling (using the method controlled by \code{resamp}) to ensure inferences take into account correlation between variables.
+Rather than stopping after testing for multivariate effects, it is often of interest to find out which response variables express significant effects. Univariate statistics are required to answer this question, and these are reported if requested. Setting \code{p.uni="unadjusted"} returns resampling-based univariate P-values for all effects as well as the multivariate P-values, whereas \code{p.uni="adjusted"} returns adjusted P-values (that have been adjusted for multiple testing), calculated using a step-down resampling algorithm as in Westfall & Young (1993, Algorithm 2.8). This method provides strong control of family-wise error rates, and makes use of resampling (using the method controlled by \code{resamp}) to ensure inferences take into account correlation between variables. This functionality is not currently available for models of relative abundance via \code{composition=TRUE}.
 }
 
 \value{
@@ -94,10 +103,19 @@ Rather than stopping after testing for multivariate effects, it is often of inte
 \item{n.bootsdone}{the number of bootstrapping iterations that were done, i.e. had no error.}
 \item{table}{the table with Residual Degrees of Freedom, Degrees of Freedom, the Test Statistics and the P values.}
 \item{block}{any \code{block} argument specified as an inpout argument.}
+\item{pairwise.comp}{The \code{pairwise.comp} argument supplied.}
 
 If \code{p.uni="adjusted"} or \code{"unadjusted"} the output list also contains\cr
 \item{uni.test}{a table showing the test statistics of the univariate tests.}
 \item{uni.p}{a table showing the p-values of the univariate tests.}
+
+If \code{keep.boot=TRUE} the output list also contains \cr
+\item{bootStat}{A matrix of boot strapped test statistics, the first column is the multivariate test statistic, the rest of the columns are the univariate statistic.}
+
+
+If \code{!is.null(parwise.comp)} the output list also contains \cr
+\item{pairwise.comp.table}{A data.frame containing the comparisons, the observed test statistcs and the holm free stepdown adjusted p-values.}
+
 }
 
 \section{Warning}{
@@ -116,6 +134,8 @@ Warton D.I. (2008). Penalized normal likelihood and ridge regularization of corr
 
 Warton D. I., Wright S., and Wang, Y. (2012). Distance-based multivariate analyses confound location and dispersion effects. \emph{Methods in Ecology and Evolution}, 3(1), 89-101.
 
+Warton D. I., Thibaut L., Wang Y. A.  (2017). The PIT-trap - A "model-free" bootstrap procedure for inference about regression models with discrete, multivariate responses. \emph{PLoS One}, 12(7), e0181790.
+
 Westfall, P. H. and Young, S. S. (1993) \emph{Resampling-based multiple 
 testing.} John Wiley & Sons, New York.
 
@@ -123,7 +143,7 @@ Wu, C. F. J. (1986) Jackknife, Bootstrap and Other Resampling Methods in
 Regression Analysis. \emph{The Annals of Statistics} 14:4, 1261-1295.
 }
 \author{
-Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
+Yi Wang, Ulrike Naumann, John Wilshire and David Warton <David.Warton@unsw.edu.au>.
 }
 \seealso{
 \code{\link{manyglm}}, \code{\link[mvabund:summary.manyglm]{summary.manyglm}}.
@@ -145,6 +165,16 @@ tasm.cop.nb <- manyglm(tasm.cop ~ block*treatment, family="negative.binomial")
 ## using a Wald statistic and 199 resamples (better to ramp up to 999 for a paper):
 anova(tasm.cop.nb, nBoot=199, test="wald")
 
+## Performing the Pairwise comparison:
+\dontrun{
+data(solberg)
+abund <- mvabund(solberg$abund)
+treatment <- as.character(solberg$x)
+## pairwise comparison 
+manyglm(abund ~ treatment) -> msolglm
+anova(msolglm, pairwise.comp = treatment, nBoot = 199)
+# Could also run: anova(msolglm, pairwise.comp = ~treatment, nBoot = 199)
+}
 }
 \keyword{models}
 \keyword{regression}

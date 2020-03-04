@@ -24,7 +24,7 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
        if (!fndObj2) stop("cannot find object 2")
     }
 
-  if(any(names(object1$call)=="composition"))
+    if(any(names(object1$call)=="composition"))
   {
     if(object1$call$composition==TRUE) #recode so that it fits compositional models as univariate, to save time and fuss/bother.
     {
@@ -39,7 +39,19 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
       assign(as.character(object2$call[[3]]),object2$model$y) 
     }
   }
-  n.rows = dim(object1$resid)[1]
+  
+
+    #DW, 18/1/18: check for same composition arguments in each call
+    if(all(names(object1$call)!="composition"))
+      object1$call$composition = FALSE
+    if(all(names(object2$call)!="composition"))
+      object2$call$composition = FALSE
+
+    if(object1$call$composition!=object2$call$composition)
+      stop("Sorry, either both manyany objects will need to be compositional, or neither")
+    
+    
+    n.rows = dim(object1$resid)[1]
   n.vars = dim(object1$resid)[2]
   
   qfn = rep(NA,n.vars)
@@ -230,7 +242,8 @@ bootAnova = function(bootRows,...)
     }
 
     # resample PIT residuals
-    resid.i = as.matrix(argList$object1$residuals[boot.Resamp,])
+    # DW, 1/3/19: pnorm these to get back from Dunn-Smyth resids to PIT-resids
+    resid.i = pnorm(as.matrix(argList$object1$residuals[boot.Resamp,]))
   
     # now use PIT-transform to get resampled yMat
     for(i.var in 1:argList$n.vars)

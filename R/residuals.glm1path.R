@@ -27,7 +27,7 @@ residuals.glm1path = function(object, ... )
                 )
 
     params = switch(familyString, #set the parameters for call to pnf
-                    "negative.binomial" = list(q=object$y, mu=fits, size=object$glm1$phi),
+                    "negative.binomial" = list(q=object$y, mu=fits, size=1/object$glm1$phi),
                     "poisson" = list(q=object$y, lambda=fits),
                     "binomial" = list(q=object$y, size=1, prob=fits ),
                     "gaussian" = list(q=object$y, mu=fits, sd=sqrt(sigma2))

@@ -1,18 +1,31 @@
 Package: mvabund
 Title: Statistical Methods for Analysing Multivariate Abundance Data
-Version: 3.12.2
-Date: 2017-04-02
-Author: Yi Wang, Ulrike Naumann, Stephen Wright, Dirk Eddelbuettel and David Warton
-Maintainer: David Warton <David.Warton@unsw.edu.au>
+Version: 4.1.3
+Date: 2020-02-20
+Authors@R: c(person("Yi", "Wang", role = "aut"),
+            person("Ulrike", "Naumann", role = "aut"),
+            person("Dirk", "Eddelbuettel", role = "aut"),
+              person("John", "Wilshire", role = "aut"),
+              person("David", "Warton", role = c("aut", "cre"),
+                     email = "David.Warton@unsw.edu.au"),
+              person("Julian", "Byrnes", role = "ctb"),
+              person("Ralph", "dos Santos Silva", role = c("ctb","cph")),
+              person("Jenni", "Niku", role = "ctb"),
+              person("Ian", "Renner", role = "ctb"),
+              person("Stephen", "Wright", role = "ctb"))
 Description: A set of tools for displaying, modeling and analysing
         multivariate abundance data in community ecology. See
         'mvabund-package.Rd' for details of overall package organization.
         The package is implemented with the Gnu Scientific Library
-        (http://www.gnu.org/software/gsl/) and Rcpp
-        (http://dirk.eddelbuettel.com/code/rcpp.html) R / C++ classes.
+        (<http://www.gnu.org/software/gsl/>) and 'Rcpp'
+        (<http://dirk.eddelbuettel.com/code/rcpp.html>) 'R' / 'C++' classes.
 Depends: R (>= 3.0.0)
+Encoding: UTF-8
 Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-Packaged: 2016-10-06 08:18:43 UTC; alice
+Packaged: 2019-04-21; David
+RoxygenNote: 6.0.1
+Suggests:
+    testthat

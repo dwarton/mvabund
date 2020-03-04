@@ -9,10 +9,10 @@ abundance data in ecology.}
 
 \usage{
 \method{summary}{manylm}(object, nBoot=1000, resamp="residual", 
-   test="F", cor.type=object$cor.type, shrink.param=NULL, 
+   test="F", cor.type=object$cor.type, block=NULL, shrink.param=NULL, 
    p.uni="none", studentize=TRUE, R2="h", show.cor = FALSE, 
    show.est=FALSE, show.residuals=FALSE, symbolic.cor=FALSE, 
-   tol=1.0e-6, \dots )
+   rep.seed=FALSE, tol=1.0e-6, \dots )
   
 \method{print}{summary.manylm}(
    x, digits = max(getOption("digits") - 3, 3), 
@@ -29,6 +29,7 @@ abundance data in ecology.}
 \item{test}{ the test to be used. Possible values are: "LR" = likelihood ratio statistic (default) and "F" = Lawley-Hotelling trace statistic.\cr
 Note that if all variables are assumed independent (\code{cor.shrink="I"}) then "LR" is equivalent to LR-IND and "F" is the sum-of-F statistics from Warton & Hudson (2004).}
 \item{cor.type}{ structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{block}{A factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{shrink.param}{shrinkage parameter to be used if \code{cor.type="shrink"}. If not supplied, but needed, it will be estimated from the data by Cross
 Validation using the normal likelihood as in Warton (2008).}
 \item{p.uni}{whether to calculate univariate test statistics and their P-values, and if so, what type. \cr
@@ -51,6 +52,7 @@ returned and printed.}
 \item{show.est}{logical. Whether to show the estimated model parameters.}
 \item{show.residuals}{logical. Whether to show residuals/a residual summary.}
 \item{symbolic.cor}{logical. If \code{TRUE}, print the correlations in a symbolic form rather than as numbers.}
+\item{rep.seed}{logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.}
 \item{tol}{the tolerance used in estimations.}
 
 \item{x}{an object of class \code{"summary.manylm"}, usually, a result of a call to \code{summary.manylm}.}
@@ -59,7 +61,6 @@ returned and printed.}
 \item{dig.tst}{the number of digits to round the estimates of the model parameters.}
 \item{eps.Pvalue}{a numerical tolerance for the formatting of p values.}
 \item{\dots}{for \code{summary.manyglm} method, these are additional arguments including: \cr
-\code{rep.seed} - logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.\cr
 \code{bootID} - this matrix should be integer numbers where each row specifies bootstrap id's in each resampling run. When \code{bootID} is supplied, \code{nBoot} is set to the number of rows in \code{bootID}. Default is \code{NULL}.\cr
 for \code{print.summary.manyglm} method, these are optional further arguments passed to or from other methods. See \code{\link{print.summary.glm}} for more details.}
 }

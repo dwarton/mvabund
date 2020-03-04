@@ -2,25 +2,27 @@ useDynLib(mvabund)
 
 export(RcppVersion,
        as.mvabund,
-       anova.manylm, 
+       anova.manylm,
        anova.manyglm,
        anova.manyany,
        anova.traitglm,
-       boxplot.mvabund, 
+       boxplot.mvabund,
        boxplot.mvformula,
        best.r.sq,
+       coefplot,
+       coefplot.manyglm,
        cv.glm1path,
        deviance.manylm,
-       extend.x.formula, 
+       extend.x.formula,
        formulaUnimva,
        glm1,
        glm1path,
        is.mvabund,
        is.mvformula,
-       mvabund, 
+       mvabund,
        mvformula,
-       manylm, 
-       manyglm, 
+       manylm,
+       manyglm,
        manyany,
        predict.manylm,
        predict.manyglm,
@@ -28,13 +30,13 @@ export(RcppVersion,
        print.manyany,
        print.manyglm,
        print.anova.manyany,
-       print.anova.manylm, 
-       print.summary.manylm, 
-       print.anova.manyglm, 
-       print.summary.manyglm, 
+       print.anova.manylm,
+       print.summary.manylm,
+       print.anova.manyglm,
+       print.summary.manyglm,
        print.mvformula,
-       plotMvaFactor, 
-       plotFormulafeature, 
+       plotMvaFactor,
+       plotFormulafeature,
        plot.glm1path,
        plot.mvabund,
        plot.manylm,
@@ -43,13 +45,13 @@ export(RcppVersion,
        plot.mvformula,
        ridgeParamEst,
        residuals.glm1path,
-       residuals.manyany, 
-       residuals.manyglm, 
+       residuals.manyany,
+       residuals.manyglm,
        summary.manylm,
        summary.manyglm,
        shiftpoints,
        traitglm,
-       unabund       
+       unabund
        )
 
 exportClasses(mvabund, mvformula)
@@ -83,6 +85,7 @@ S3method(plot, mvformula)
 S3method(plot, glm1path)
 S3method(boxplot, mvabund)
 S3method(boxplot, mvformula)
+S3method(coefplot, manyglm)
 S3method(print, anova.manyany)
 S3method(print, anova.manyglm)
 S3method(print, anova.manylm)
@@ -103,5 +106,5 @@ importFrom("stats", ".getXlevels", "as.formula", "binomial", "coef", "contrasts"
            "predict.glm", "predict.lm", "printCoefmat", "qbinom", "qcauchy", "qnbinom", "qnorm",
            "qpois", "quantile", "rbinom", "reformulate", "residuals", "rnbinom", "rpois", "runif",
            "sd", "symnum", "terms", "update", "var", "variable.names", "weighted.residuals",
-           "weights") 
+           "weights", "Gamma")
 importFrom("utils", "data", "flush.console", "installed.packages")

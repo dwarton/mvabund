@@ -25,7 +25,24 @@ function (x, digits = max(3, getOption("digits") - 3), ...)
 # the (default) methods coef, residuals, fitted values can be used             #
 ################################################################################
 
-manylm <- function (formula, data=NULL, subset=NULL, weights=NULL, na.action=options("na.action"), method = "qr", model = FALSE, x = TRUE, y = TRUE, qr = TRUE, singular.ok = TRUE, contrasts = NULL, offset, test="LR", cor.type= "I", shrink.param=NULL, tol=1.0e-5, ...) {
+manylm <- function (formula,
+                    data=NULL,
+                    subset=NULL,
+                    weights=NULL,
+                    na.action=options("na.action"),
+                    method = "qr",
+                    model = FALSE,
+                    x = TRUE,
+                    y = TRUE,
+                    qr = TRUE,
+                    singular.ok = TRUE,
+                    contrasts = NULL,
+                    offset,
+                    test="LR",
+                    cor.type= "I",
+                    shrink.param=NULL,
+                    tol=1.0e-5,
+                    ...) {
 ret.x <- x
 ret.y <- y
 ret.qr <- qr
@@ -72,11 +89,13 @@ if(is.null(colnames(abundances))){
 labAbund<-colnames(abundances)
 
 if (!is.null(offset)) {
-    if (length(offset) == 1) 
+    if (length(offset) == 1) {
         offset <- matrix( offset, NROW(abundances), NCOL(abundances))
-    else if (NCOL(offset) != p | NROW(offset)!=N  )
+    }
+    else if (NCOL(offset) != p | NROW(offset)!=N  ) {
         stop(gettextf("dimension of 'offset's is (%s), should equal (%s) (dimension of observations)",
         paste(NROW(offset),"x", NCOL(offset), sep=""), paste(N,"x", p, sep="")), domain = NA)
+}
 }
 
 ################################### BEGIN Estimation ###################################            
@@ -91,8 +110,7 @@ if (is.empty.model(mt)) {
        z$hat.X <- matrix(0, ncol=N, nrow=N) 
    else
        z$hat.X <- matrix(0, ncol=sum( w != 0), nrow=sum( w != 0))    
-} 
-else {
+} else {
    X <- model.matrix(mt, mf, contrasts )    # Obtain the Designmatrix.
    if(any(is.na(X)) & is.null(na.action)) 
       stop("There are NA values in the independent variables. An 'na.action' is necessary.")
@@ -111,11 +129,10 @@ else {
        w   <- rep(1, times=N)
        ok <- w!=0
        wIsNull <- 1
-   } 
-   else {
+    } else {
        if (!is.numeric(w))  stop("'weights' must be a numeric vector")
        if (any(w < 0)) stop("negative 'weights' not allowed")
-       ok <- w!=0
+        ok <- w != 0
        wIsNull <- 0
        if(any(!ok)) {
           abundances  <- abundances[ok,, drop=FALSE]
@@ -123,13 +140,14 @@ else {
        } 
        if (NCOL(w) == 1) { 
           z <- manylm.wfit(x=X, y=abundances, w=w, offset = offset, 
-                           singular.ok = singular.ok, ... ) } 
-       else { 
+                            singular.ok = singular.ok, ... ) 
+        } else { 
           z <- manylm.multiwfit(x=X, y=abundances, w=w, offset = offset, 
-                                singular.ok = singular.ok, ... ) }
+                                    singular.ok = singular.ok, ... )
+        }
    }
    # New codes added for estimating ridge parameter 
-   if (cor.type=="shrink") {
+    if (cor.type == "shrink") {
       if (is.null(shrink.param)) {
          tX <- matrix(1, NROW(abundances), 1)
          shrink.param <- ridgeParamEst(dat=z$residuals, X=tX, weights=w, only.ridge=TRUE, doPlot=FALSE, tol=tol)$ridgeParameter
@@ -139,12 +157,12 @@ else {
       else if(shrink.param == 1) cor.type <- "R"      
       else if (abs(shrink.param)>1)
           stop("the absolute 'shrink.param' should be between 0 and 1")
-   }
-   else if (cor.type == "I") shrink.param <- NULL 
-   else if (cor.type == "R") {
-      if (nrow(abundances)<=ncol(abundances))
+    } else if (cor.type == "I") {
+        shrink.param <- NULL 
+    } else if (cor.type == "R") {
+        if (nrow(abundances) <= ncol(abundances))
           stop("An unstructured correlation matrix should only be used if N>>number of variables.") 
-      if(nrow(abundances) < 2*ncol(abundances)) 
+        if(nrow(abundances) < 2 * ncol(abundances)) 
           warning("the calculated p-values might be unreliable as the number of cases 
                    is not much larger than the number of variables") 
       shrink.param <- NULL
@@ -173,7 +191,6 @@ class(z) <- # c( if(is.matrix(abundances)|is.mvabund(abundances))
 c("manylm", "mlm", "lm" )
 
 return(z)
-
 }
 
 

@@ -1,7 +1,6 @@
 \name{spider}
 \docType{data}
 \alias{spider}
-% \encoding{latin1}
 \title{Spider data}
 \description{
 data from spider2 directory, CANOCO FORTRAN package.
@@ -32,7 +31,7 @@ The data frame \code{abund} has the following variables
     \item{Pardpull}{(numeric) Abundance of the species Pardosa pullata }
     \item{Trocterr}{(numeric) Abundance of the species Trochosa terricola }
     \item{Zoraspin}{(numeric) Abundance of the species Zora spinimana }
-   }           
+   }
 
 The matrix \code{x} has the following variables
    \describe{
