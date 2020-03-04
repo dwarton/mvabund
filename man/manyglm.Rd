@@ -5,11 +5,11 @@
   \code{manyglm} is used to fit generalized linear models to high-dimensional data, such as multivariate abundance data in ecology. This is the base model-fitting function - see \code{plot.manyglm} for assumption checking, and \code{anova.manyglm} or \code{summary.manyglm} for significance testing.
 }
 \usage{
-manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL, 
-    na.action=options("na.action"), theta.method = "PHI", model = FALSE,
-    x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL, 
-    tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10, 
-    show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE, 
+manyglm(formula, family="negative.binomial", composition=FALSE, data=NULL, subset=NULL,
+    na.action=options("na.action"), K=1, theta.method = "PHI", model = FALSE,
+    x = TRUE, y = TRUE, qr = TRUE, cor.type= "I", shrink.param=NULL,
+    tol=sqrt(.Machine$double.eps), maxiter=25, maxiter2=10,
+    show.coef=FALSE, show.fitted=FALSE, show.residuals=FALSE,
     show.warning=FALSE, offset, \dots )
 }
 \arguments{
@@ -21,16 +21,16 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     in the model. The default is negative binomial regression (using a log
     link, with unknown overdispersion parameter), the following family
     functions are also accepted: binomial(), binomial(link="cloglog"),
-    poisson(), which can also be specified using character strings as
-    'binomial', 'cloglog' and 'poisson', respectively. In future we hope
+    poisson(), Gamma(link="log"), which can also be specified using character strings as
+    'binomial', 'cloglog' and 'poisson', 'gamma' respectively. In future we hope
     to include other family functions as described in \code{\link{family}}.
    }
-\item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
    \item{data}{an optional data frame, list or environment (or object
     coercible by \code{\link{as.data.frame}} to a data frame) containing
-    the variables in the model. If not found in \code{data}, the variables 
-    are taken from \code{environment(formula)}, typically the environment 
+    the variables in the model. If not found in \code{data}, the variables
+    are taken from \code{environment(formula)}, typically the environment
     from which \code{glm} is called.}
+  \item{composition}{\code{FALSE} (default) will model abundance, \code{TRUE} will model relative abundance, by adding a row effect to the model, and partition effects of environmental variables into main effects (alpha, total abundance/richness) and interactions with response (beta, relative abundance/turnover). See \code{details}.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used in the fitting process.}
   \item{na.action}{a function which indicates what should happen
@@ -39,42 +39,36 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
     \code{\link{na.fail}} if that is unset.  The \sQuote{factory-fresh}
     default is \code{\link{na.omit}}.  Another possible value is
     \code{NULL}, no action.  Value \code{\link{na.exclude}} can be useful.}
-  \item{theta.method}{the method used for the estimation of the overdisperson 
-  parameter theta, such that the mean-variance relationship is V=m+m^2/theta for 
+\item{K}{number of trials in binomial regression. By default, K=1 for presence-absence data using logistic regression.}
+  \item{theta.method}{the method used for the estimation of the overdisperson
+  parameter theta, such that the mean-variance relationship is V=m+m^2/theta for
   the negative binomial family. Here offers three options \cr
   "PHI" = Maximum likelihood estimation with respect to phi (default)\cr
-  "ML" = Maximum likelihood estimation with respect to theta, as in Lawless(1987), \cr
+  "ML" = Maximum likelihood estimation with respect to theta, as in Lawless(1987), the default for the gamma family. \cr
   "Chi2" = Moment estimation using chi-square dampening on the log scale, as
   in Hilbe(2008).
+  "MM" = Moment estimation for gamma family.
   %"MLFisher" (= ML with Fisher scoring, only available for the negative.binomial
   %family, the most efficient of the ML methods) and
   % "MLLawless" (ML using iterative estimation as in Lawless (1987),
   % only available for negative.binomial family).
   }
-  \item{model, x, y, qr}{logicals. If \code{TRUE} the corresponding 
+  \item{model, x, y, qr}{logicals. If \code{TRUE} the corresponding
   components of the fit (the model frame, the model matrix, the model
   matrix, the response, the QR decomposition of the model matrix) are
-  returned. 
+  returned.
   }
-%  \item{test}{the test statistic to be used in subsequent functions for
-%  inference. It is merely stored in \code{manyglm} as an attribute. 
-%  Possible options are\cr
-%  "LR" = Log-likelihood ratio test (default),\cr
-%  "F" = Lawley-Hotelling trace statistic for 'gaussian' only,\cr
-%  "wald" = Wald statistic (not available for 'gaussian' yet), \cr
-%  "score" = Score statistic (not available for 'gaussian' yet).
-%  }
-  \item{cor.type}{the structure imposed on the estimated correlation 
-  matrix under the fitted model. Can be "I"(default), "shrink", or "R". 
-  See Details. This parameter is merely stored in \code{manyglm}, and 
-  will be used as the default value for \code{cor.type} in subsequent 
+  \item{cor.type}{the structure imposed on the estimated correlation
+  matrix under the fitted model. Can be "I"(default), "shrink", or "R".
+  See Details. This parameter is merely stored in \code{manyglm}, and
+  will be used as the default value for \code{cor.type} in subsequent
   functions for inference.
   }
   \item{shrink.param}{
-  shrinkage parameter to be used if \code{cor.type="shrink"}. If a numerical 
-  value is not supplied, it will be estimated from the data by cross 
-  validation-penalised normal likelihood as in Warton (2008). The parameter 
-  value is stored as an attribute of the \code{manyglm} object, and will be 
+  shrinkage parameter to be used if \code{cor.type="shrink"}. If a numerical
+  value is not supplied, it will be estimated from the data by cross
+  validation-penalised normal likelihood as in Warton (2008). The parameter
+  value is stored as an attribute of the \code{manyglm} object, and will be
   used in subsequent functions for inference.
   }
   \item{tol}{the tolerance used in estimation.}
@@ -89,6 +83,8 @@ manyglm(formula, family="negative.binomial", K=1, data=NULL, subset=NULL,
 \code{manyglm} is used to calculate the parameter estimates of generalised linear models fitted to each of many variables simultaneously as in Warton et. al. (2012) and Wang et.al.(2012). Models for \code{manyglm} are specified symbolically. For details on how to specify a formula see the details section of \code{\link{lm}} and \code{\link{formula}}.
 
 Generalised linear models are designed for non-normal data for which a distribution can be specified that offers a reasonable model for data, as specified using the argument \code{family}. The \code{manyglm} function currently handles count and binary data, and accepts either a character argument or a family argument for common choices of family. For binary (presence/absence) data, \code{family=binomial()} can be used for logistic regression (logit link, "logistic regression"), or the complementary log-log link can be used \code{family=binomial("cloglog")}, arguably a better  choice for presence-absence data. Poisson regression \code{family=poisson()} can be used for counts that are not "overdispersed" (that is, if the variance is not larger than the mean), although for multivariate abundance data it has been shown that the negative binomial distribution (\code{family="negative.binomial"}) is usually a better choice (Warton 2005). In both cases, a log-link is used. If another link function or family is desired, this can be specified using the \code{\link{manyany}} function, which accepts regular \code{\link{family}} arguments.
+
+\code{composition=TRUE} allows relative abundance to be modelled rather than absolute abundance, which is useful for partitioning effects of environmental variables on alpha vs beta diversity, and is needed if there is variation in sampling intensity due to variables that haven't been measured. Data are manipulated into "long format", with column factor called \code{cols} and row variable called \code{rows}, then a model is fitted using main effects for predictors as in the provided formula, plus \code{rows}, \code{cols} and the interaction of predictors with \code{cols}. Inclusion of \code{rows} in the model accounts for variation in sampling intensity across rows, main effects for environmental variables capture their effects on total abundance/richness (alpha diversity), and their interaction with \code{cols} captures changes in relative abundance/turnover (beta diversity). Unfortunately, data are not efficiently stored in long format, so models are slower to fit using \code{composition=TRUE}.
 
 In negative binomial regression, the overdispersion parameter (\code{theta}) is estimated separately for each variable from the data, as controlled by \code{theta.method} for negative binomial distributions. We iterate between updates of \code{theta} and generalised linear model updates for regression parameters, as many as \code{maxiter2} times.
 
@@ -134,10 +130,10 @@ If \code{cor.type=="shrink"}, a numerical value will be assigned to \code{shrink
   \code{"manylm"} and "mglm".
 
   The function \code{summary} (i.e. \code{\link[mvabund:anova.manyglm]{summary.manyglm}}) can be used to obtain or print a summary of the results and the function
-  \code{anova} (i.e. \code{\link[mvabund:anova.manyglm]{anova.manyglm}}) to produce an 
+  \code{anova} (i.e. \code{\link[mvabund:anova.manyglm]{anova.manyglm}}) to produce an
   analysis of variance table, although note that these functions use resampling so they can take a while to fit.
 
-  The generic accessor functions \code{\link{coefficients}}, 
+  The generic accessor functions \code{\link{coefficients}},
   \code{fitted.values} and \code{residuals} can be used to
   extract various useful features of the value returned by \code{manyglm}.
 
@@ -165,7 +161,7 @@ If \code{cor.type=="shrink"}, a numerical value will be assigned to \code{shrink
   \item{tol}{the tolerance used in estimations.}
   \item{maxiter,maxiter2,family,theta.method,cor.type,formula}{arguments supplied in the \code{manyglm} call.}
   \item{aic}{a vector returning Akaike's \emph{An Information Criterion} for each response variable - minus twice the
-    maximized log-likelihood plus twice the number of coefficients.} 
+    maximized log-likelihood plus twice the number of coefficients.}
   \item{AICsum}{the sum of the AIC's over all variables.}
   \item{shrink.param}{the shrink parameter to be used in subsequent inference.}
   \item{call}{the matched call.}
@@ -176,7 +172,7 @@ If \code{cor.type=="shrink"}, a numerical value will be assigned to \code{shrink
   \item{x}{if the argument \code{x} is \code{TRUE}, this is the design matrix used.}
   \item{y}{if the argument \code{y} is \code{TRUE}, this is the response variables used.}
   \item{model}{if the argument \code{model} is \code{TRUE}, this is the \code{model.frame}.}
-  \item{qr}{if the argument \code{qr} is \code{TRUE}, this is the QR decomposition of the design matrix.}  
+  \item{qr}{if the argument \code{qr} is \code{TRUE}, this is the QR decomposition of the design matrix.}
   \item{show.coef,show.fitted,show.residuals}{arguments supplied in the \code{manyglm} call concerning what it presented in output.}
   \item{offset}{the \code{offset} data used (where applicable).}
 
@@ -222,7 +218,7 @@ Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 \seealso{
 %\code{\link{negative.binomial}}, \code{\link{quasipoisson}},
 %\code{\link{binomialMany}}, \code{\link{quasibinomialMany}},
-%\code{\link{binstruc}}, 
+%\code{\link{binstruc}},
 \code{\link[mvabund:anova.manyglm]{anova.manyglm}}, \code{\link[mvabund:summary.manyglm]{summary.manyglm}}, \code{\link[mvabund:residuals.manyglm]{residuals.manyglm}}, \code{\link[mvabund:plot.manyglm]{plot.manyglm}}
 }
 \examples{
@@ -232,7 +228,7 @@ X <- spider$x
 
 #To fit a log-linear model assuming counts are poisson:
 glm.spid <- manyglm(spiddat~X, family="poisson")
-glm.spid 
+glm.spid
 
 summary(glm.spid, resamp="residual")
 

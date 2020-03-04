@@ -1,3 +1,4 @@
 ## This assumes that the LIB_GSL variable points to working GSL libraries
-PKG_CPPFLAGS=-std=c++0x -Wall -pedantic -I$(LIB_GSL)/include -I. -I../inst/include
+CXX_STD = CXX11
+PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include
 PKG_LIBS=-L$(LIB_GSL)/lib -lgsl -lgslcblas 

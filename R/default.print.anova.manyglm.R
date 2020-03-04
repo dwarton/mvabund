@@ -2,14 +2,17 @@
 # Author: Yi Wang 
 # 05-Jan-2010
 
-# last modifed: David Warton, 06-May-2015
+# last modifed: David Warton, 10-Apr-2019
 
-default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3, 3), signif.stars = getOption("show.signif.stars"),  dig.tst = max(1, min(5, digits - 1)), eps.Pvalue = .Machine$double.eps, ...) 
-{
+default.print.anova.manyglm <- function(x,
+        digits = max(getOption("digits") - 3, 3),
+        signif.stars = getOption("show.signif.stars"),
+        dig.tst = max(1, min(5, digits - 1)),
+        eps.Pvalue = .Machine$double.eps, ...) {
    allargs <- match.call(expand.dots=FALSE)
    dots <- allargs$...
         
-    anova   <- x
+   anova   <- x
     x       <- anova$table
     if (!is.logical(signif.stars) || is.na(signif.stars)) {
         warning("option \"show.signif.stars\" is invalid: assuming TRUE")
@@ -46,7 +49,6 @@ default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3
         cat(heading, sep = "\n")
     if (!is.null(title <- attr(x, "title")))    
         cat(title)   else cat("\n")
-
     nc <- dim(x)[2]
     if (is.null(cn <- colnames(x))) 
         stop("anova table must have colnames")
@@ -67,19 +69,27 @@ default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3
     # "no p-values calculated as 'resample=none'
     printCoefmat(round(x, digits=dig.tst), digits = digits, signif.stars = signif.stars, has.Pvalue = has.P, P.values = has.P, cs.ind = NULL, zap.ind = zap.i, tst.ind = tst.i, na.print = "", ...)
     
+    if (!is.null(anova$pairwise.comp)) {
+        cat("\n")
+        cat("Pairwise comparison results: \n")
+        printCoefmat(round(anova$pairwise.comp.table, digits=dig.tst),
+            digits = digits, signif.stars = signif.stars, has.Pvalue = TRUE, P.values = TRUE, cs.ind = NULL, na.print = "", ...)
+        cat("\n")
+        
+    }
     if(!is.null(test) & substr(anova$resamp,1,1)!="n"){
        if(substr(anova$p.uni,1,1)=="n") {
          if(dim(anova$uni.p)[2]>1)
          {   
            cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-               "\n P-value calculated using", n.bootsdone, "resampling iterations via",       paste(anova$resamp,block.text,sep=""), "resampling (to account for correlation in testing).\n")
+               "\n P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
          }
          if(dim(anova$uni.p)[2]==1)
          {   
-           cat("Arguments: P-value calculated using", n.bootsdone, "resampling iterations via",       paste(anova$resamp,block.text,sep=""), "resampling (to account for correlation in testing).\n")
+           cat("Arguments: P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
          }
 #         cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-#              "\n P-value calculated using", n.bootsdone, "resampling iterations via",       paste(anova$resamp,block.text,sep=""), "resampling (to account for correlation in testing).\n")
+#              "\n P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
                 if(sum(anova$nBoot - anova$n.bootsdone)>1){
                     cat("\nNumber of iterations with skipped test statistic as the respective variable/variable-group to test became linear dependent during the case resampling step\n")
                     print.default(anova$nBoot - anova$n.bootsdone - 1, quote = FALSE, right = TRUE, na.print = "", ...) 
@@ -144,7 +154,7 @@ default.print.anova.manyglm <- function( x, digits = max(getOption("digits") - 3
 
         if( substr(anova$resamp,1,1)!="n"){
               cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-              "\nP-value calculated using", n.bootsdone, "resampling iterations via",       paste(anova$resamp,block.text,sep=""), "resampling (to account for correlation in testing.\n")
+              "\nP-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
            if(sum(anova$nBoot - anova$n.bootsdone)>1){
               cat("\nNumber of iterations with skipped test statistic as the respective              variable/variable-group to test became linear dependent during the case resampling step\n")
               print.default(anova$nBoot - anova$n.bootsdone - 1, quote = FALSE, right = TRUE, na.print = "", ...)

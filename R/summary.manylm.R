@@ -4,12 +4,24 @@
 # 05-Jan-2010
 ###############################################################################
 
-summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.type=object$cor.type, shrink.param=NULL, p.uni="none", studentize=TRUE, R2="h", show.cor = FALSE, show.est=FALSE, show.residuals=FALSE, symbolic.cor = FALSE, tol=1.0e-6, ... ) 
-{
+summary.manylm <- function(object,
+                    nBoot=1000,resamp="residual",
+                    test="F",
+                    cor.type=object$cor.type,
+                    block=NULL,
+                    shrink.param=NULL,
+                    p.uni="none",
+                    studentize=TRUE,
+                    R2="h",
+                    show.cor = FALSE,
+                    show.est = FALSE,
+                    show.residuals = FALSE,
+                    symbolic.cor = FALSE,
+                    rep.seed = FALSE,
+                    tol=1.0e-6,
+                    ... ) {
     allargs <- match.call(expand.dots = FALSE)
     dots <- allargs$...
-    if ("rep.seed" %in% names(dots)) rep.seed <- eval(parse(text=dots$rep.seed))
-    else rep.seed <- FALSE
     if ("ld.perm" %in% names(dots)) ld.perm <- eval(parse(text=dots$ld.perm))
     else ld.perm <- FALSE
     if ("bootID" %in% names(dots)) bootID <- eval(parse(text=dots$bootID))
@@ -114,8 +126,9 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
           }
        }
     }
-
-
+    if (is.null(block) == FALSE) {
+      bootID <- block_to_bootID(block, bootID, nRows, nBoot, resamp)
+    }
     if (studentize) st <- 1
     else st <- 0
     if (substr(R2,1,1) == "h") {
@@ -242,6 +255,7 @@ summary.manylm <- function(object, nBoot=1000,resamp="residual", test="F", cor.t
     smry$r.squared <- c(val$R2)
     smry$statistic <- overaltest
     smry$statistic.j <- unit_overaltest
+    smry$block <- block
 
     class(smry) <- "summary.manylm"
     return(smry)

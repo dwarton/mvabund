@@ -31,6 +31,11 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
 	
     if(x$resamp == "perm.resid")
        x$resamp <- "residual (without replacement)"
+
+    if(is.null(x$block))
+      block.text=""
+    else
+     block.text= " block"
 	
     # print significance tests
     if (length(x$aliased) == 0) 
@@ -103,11 +108,11 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
                  if(dim(x$residuals)[2]>1)
                  {   
                    cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-                       "\n P-value calculated using", n.bootsdone, "resampling iterations via",       x$resamp, "resampling (to account for correlation in testing).\n")
+                       "\n P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling (to account for correlation in testing).\n")
                  }
                   if(dim(x$residuals)[2]==1)
                   {   
-                     cat("Arguments: P-value calculated using", n.bootsdone, "resampling iterations via",       x$resamp, "resampling.\n")
+                     cat("Arguments: P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling.\n")
                   }
             }
 
@@ -188,11 +193,11 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
             if(dim(x$residuals)[2]>1)
             {   
               cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-                  "\n P-value calculated using", n.bootsdone, "resampling iterations via",       x$resamp, "resampling (to account for correlation in testing).\n")
+                  "\n P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling (to account for correlation in testing).\n")
             }
             if(dim(x$residuals)[2]==1)
             {   
-              cat("Arguments: P-value calculated using", n.bootsdone, "resampling iterations via",       x$resamp, "resampling.\n")
+              cat("Arguments: P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling.\n")
             }
        } 
        else cat(statname, paste(formatC(x$statistic[1], digits = digits),"\n",sep=""))
@@ -209,7 +214,7 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
           if(x$resamp!="none"){
              print.default(t(x$statistic.j), quote =FALSE, right = TRUE, na.print = "NA",...)
              cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-                 "\n P-value calculated using", n.bootsdone, "resampling iterations via",       x$resamp, "resampling (to account for correlation in testing).\n")
+                 "\n P-value calculated using", n.bootsdone, "resampling iterations via", paste0(x$resamp,block.text), "resampling (to account for correlation in testing).\n")
 #             cat("\nArguments: with", n.bootsdone, "resampling iterations using", x$resamp, "resampling and",corname, "\n")
           } else {
              uni.stat <- x$statistic.j[,-zap.ij, drop=FALSE]

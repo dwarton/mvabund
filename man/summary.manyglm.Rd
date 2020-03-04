@@ -5,9 +5,11 @@
 \description{\code{summary} method for class "manyglm". }
 \usage{
 \method{summary}{manyglm}(object, resamp="pit.trap", test="wald", 
-        p.uni="none", nBoot=1000, cor.type=object$cor.type, 
-	show.cor = FALSE, show.est=FALSE, show.residuals=FALSE, 
-	symbolic.cor = FALSE, show.time=FALSE, show.warning=FALSE,\dots) 
+        p.uni="none", nBoot=1000, cor.type=object$cor.type, block=NULL,
+        show.cor = FALSE, show.est=FALSE, show.residuals=FALSE,
+        symbolic.cor = FALSE,
+        rep.seed = FALSE, 
+        show.time=FALSE, show.warning=FALSE,\dots) 
 \method{print}{summary.manyglm}(x, \dots) } \arguments{ \item{object}{an 
 object of class \code{manyglm}, typically the result of a call to 
 \code{\link{manyglm}}. } \item{resamp}{the method of resampling used. Can be 
@@ -26,16 +28,21 @@ adjusted for multiple testing, using a step-down resampling procedure. }
 \item{nBoot}{the number of Bootstrap iterations, default is 
 \code{nBoot=999}.}
 \item{cor.type}{structure imposed on the estimated correlation matrix under the fitted model. Can be "I"(default), "shrink", or "R". See Details.}
+\item{block}{A factor specifying the sampling level to be resampled. Default is resampling rows.}
 \item{show.cor, show.est, show.residuals}{logical, if \code{TRUE}, 
 the correlation matrix of the estimated parameters, or the estimated model 
-parameters, or the residual summary is shown.} \item{symbolic.cor}{logical. 
-If \code{TRUE}, the correlation is printed in a symbolic form (see 
+parameters, or the residual summary is shown.}
+
+\item{symbolic.cor}{logical. If \code{TRUE}, the correlation is printed in a symbolic form (see 
 \code{\link{symnum}} ) rather than in numerical format. } 
+\item{rep.seed}{logical. Whether to fix random seed in resampling data. Useful for simulation or diagnostic purposes.}
+
 \item{show.time}{Whether to display timing information for the resampling 
 procedure: "none" shows none, "all" shows all timing information and "total" 
 shows only the overall time taken for the tests. } 
 \item{show.warning}{logical. Whether to display warnings in the operation 
-procedure.} \item{\dots}{for \code{summary.manyglm} method, these are 
+procedure.}
+\item{\dots}{for \code{summary.manyglm} method, these are 
 additional arguments including: \cr \code{rep.seed} - logical. Whether to fix 
 random seed in resampling data. Useful for simulation or diagnostic 
 purposes.\cr \code{bootID} - this matrix should be integer numbers where each 

@@ -175,7 +175,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       if(i.var==1)
       {
         cf = try(coef(manyfit[[i.var]]),silent=TRUE) #don't know if this function is defined
-        if(class(cf)=="try-error")
+        if(inherits(cf, "try-error"))
         {
           do.coef   = FALSE
           coefs     = NULL
@@ -297,7 +297,7 @@ residuals.manyany<- function(object, ...)
 {
   if(object$get.what!="details" & object$get.what!="models")
     stop("To compute residuals, set get.what='details' in your manyany call")
-  tol=1.e-8
+  tol=1.e-6
   params = object$params
   n.rows = length(params[[1]]$q)
   n.vars = length(params)
@@ -318,7 +318,7 @@ residuals.manyany<- function(object, ...)
     else
     {
       param.minus = params[[i.var]]
-      param.minus$q = params[[i.var]]$q - 1.e-6
+      param.minus$q = params[[i.var]]$q - tol
       if(grepl("egative",family[[i.var]]$family) || family[[i.var]]$family == "negbinomial")
         pfn = "pnbinom"
       if(family[[i.var]]$family=="poisson")
@@ -334,12 +334,13 @@ residuals.manyany<- function(object, ...)
         pfn = "ptweedie"
       u = runif(n.rows)
       #to avoid any values identically 1:
-      pMinus = pmin(do.call(pfn, param.minus), 1-tol^3)
+      pMinus = pmin(do.call(pfn, param.minus), 1-tol)
       resids[,i.var] = u*do.call(pfn, params[[i.var]]) + (1-u)*pMinus
     }
   }
   if(object$composition==TRUE) #reshape to original data size if required
     resids = matrix(resids, dim(object$fitted)[1], dim(object$fitted)[2])
+  resids=qnorm(resids)
   return(resids)
 }
 
@@ -350,7 +351,8 @@ plot.manyany=function(x, ...)
   if(object$get.what!="details" & object$get.what!="models")
     stop("To plot your fit, set get.what='details' in your manyany call")
   
-  Dunn.Smyth.Residuals=qnorm(residuals.manyany(object))
+  # DW, 1/3/19: removed qnorm from next call, now done in resids function 
+  Dunn.Smyth.Residuals=residuals.manyany(object)
 
 #  truncation of predictors has been moved up to original manyany function
 #  if( any( grepl(object$family[[1]]$link, c("log","logit","cloglog")) ) )
