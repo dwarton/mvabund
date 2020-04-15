@@ -1,8 +1,8 @@
 #ifndef UTILITY_H_
 #define UTILITY_H_
 #include <iostream>
-#include "gsl/gsl_spmatrix.h"
-#include "gsl/gsl_vector.h"
+#include <gsl/gsl_spmatrix.h>
+#include <gsl/gsl_vector.h>
 #include <gsl/gsl_spmatrix.h>
 #include <gsl/gsl_spblas.h> 
 #include <gsl/gsl_splinalg.h>
