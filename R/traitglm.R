@@ -1,7 +1,7 @@
 traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, method="manyglm", composition=FALSE, col.intercepts = TRUE, ...  )
 {
 
-#subfunctions get.design and get_polys defined below.
+#subfunctions get_design and get_polys defined below.
   
   # extract any arguments that work with cv.glm1path and save separately so they are not passed to glm1path.
   L = as.data.frame(L)
@@ -69,7 +69,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   any.penalty = method=="cv.glm1path" || method=="glm1path"
   # get mega-matrix of design for regression against vectorised l
   marg.penalty = TRUE
-  X.des = get.design( R.des, Q.des, names(L), formula=formula, marg.penalty=marg.penalty, composition = composition, col.intercepts = col.intercepts, any.penalty=any.penalty, get.fourth=get.fourth )
+  X.des = get_design( R.des, Q.des, names(L), formula=formula, marg.penalty=marg.penalty, composition = composition, col.intercepts = col.intercepts, any.penalty=any.penalty, get.fourth=get.fourth )
   # setting marg.penalty=TRUE means that spp are always in the model, and penalised if any.penalty=TRUE 
   X = X.des$X
   l <- as.vector(as.matrix(L))
@@ -145,11 +145,11 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
 
 
 
-################ get.design for getting the design matrix ###################
-get.design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TRUE, composition = FALSE, col.intercepts = TRUE, any.penalty=TRUE, scaling=NULL, get.fourth=TRUE )
+################ get_design for getting the design matrix ###################
+get_design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TRUE, composition = FALSE, col.intercepts = TRUE, any.penalty=TRUE, scaling=NULL, get.fourth=TRUE )
 {
 
-# get.design will take matrices of linear env and trait terms, and orthogonal quadratic terms,
+# get_design will take matrices of linear env and trait terms, and orthogonal quadratic terms,
 # and return a mega-matrix that can be regressed against vectorised abundance.
 # also returns logical for fourth corner terms, and their row and column names
 
