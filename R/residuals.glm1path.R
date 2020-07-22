@@ -32,7 +32,6 @@ residuals.glm1path = function(object, ... )
                     "binomial" = list(q=object$y, size=1, prob=fits ),
                     "gaussian" = list(q=object$y, mean=fits, sd=sqrt(sigma2)),
     )
-recover()
     param.minus = params
     param.minus$q = params$q - 1.e-6 #for discrete cases, (hopefully!) ignorable for continuous cases
 
