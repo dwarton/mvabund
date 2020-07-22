@@ -390,10 +390,12 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     if (inherits(what, 'formula')) {
         if(attr(terms(what) , "response" ) != 0) stop('Formula for pairwise.comp must be onesided without a response. ie: "~ factor1:factor2"')
         # get a new matrix from this dataframe
-        mdf <- model.frame(what)
+        mdf <- try(model.frame(what),silent=TRUE)
+        if(inherits(mdf, "try-error")) #if this didn't work, try looking in object environment
+          mdf <- model.frame(what, data=manyglm_object$data)
         # add the column names, to the levels
         mdf <- lapply(colnames(mdf), function(x) paste(x, mdf[[x]], sep=':'))
-        # collapse all interactiions into one factor level
+        # collapse all interactions into one factor level
         what <- as.factor(Reduce(paste, mdf))
     }
     if (!is.factor(what)) what <- as.factor(what)
