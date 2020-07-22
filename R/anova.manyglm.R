@@ -450,8 +450,12 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
         }
     }
 
+    # correct for NaN values:
+    observed_stats[is.na(observed_stats)] <- 0
+    resampled_stats[is.na(resampled_stats)] <- 1
+    
     # now we can start the step down procedure
-    # sort observed in decreasing order saving the indicies
+    # sort observed in decreasing order saving the indices
     # these indicies are our r_i (pg66 resamplng based multiple testing)
     # decreasing because we are using the test statistics and not the 
     observed_stats <- sort(observed_stats, index.return = T, decreasing = T)
@@ -492,3 +496,4 @@ do_pairwise_comp <- function (what, anova_obj, manyglm_object, verbose = FALSE, 
     rownames(pmat) <- comparison
     pmat
 }
+

@@ -103,7 +103,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
     fam.i$family = "ordinal"
     fam = vector(mode="list",length=n.vars)
     family=fam
-    yMat = data.frame(yMat) #converting to data frame so factor input is read as factors
+    yMat = data.frame(yMat, stringsAsFactors=TRUE) #converting to data frame so factor input is read as factors
   }
   
   for(i.var in 1:n.vars)
