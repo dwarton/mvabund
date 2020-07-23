@@ -1,7 +1,7 @@
 traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, method="manyglm", composition=FALSE, col.intercepts = TRUE, ...  )
 {
 
-#subfunctions get.design and get.polys defined below.
+#subfunctions get_design and get_polys defined below.
   
   # extract any arguments that work with cv.glm1path and save separately so they are not passed to glm1path.
   L = as.data.frame(L)
@@ -49,7 +49,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
 
   # get standardised R, Q, orthogonal polys, and poly coeffs
   if(is.null(formula))
-    R.des = get.polys(R)
+    R.des = get_polys(R)
   else
     R.des = list(X=R)
     
@@ -61,7 +61,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   else
   {
     if(is.null(formula))
-      Q.des = get.polys(Q)
+      Q.des = get_polys(Q)
     else
       Q.des = list(X=Q)
   }  
@@ -69,7 +69,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   any.penalty = method=="cv.glm1path" || method=="glm1path"
   # get mega-matrix of design for regression against vectorised l
   marg.penalty = TRUE
-  X.des = get.design( R.des, Q.des, names(L), formula=formula, marg.penalty=marg.penalty, composition = composition, col.intercepts = col.intercepts, any.penalty=any.penalty, get.fourth=get.fourth )
+  X.des = get_design( R.des, Q.des, names(L), formula=formula, marg.penalty=marg.penalty, composition = composition, col.intercepts = col.intercepts, any.penalty=any.penalty, get.fourth=get.fourth )
   # setting marg.penalty=TRUE means that spp are always in the model, and penalised if any.penalty=TRUE 
   X = X.des$X
   l <- as.vector(as.matrix(L))
@@ -143,98 +143,13 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
 
 
 
-################ get.polys for getting orthogonal polynomials ###################
-     
-get.polys = function( X, X.des.train=NULL)
-{
-# get.polys will take a matrix of env vars (or trait vars), and standardise the quant ones
-# as well as return orthogonal poly's. Importantly, if training matrices are given as input,
-# these will be used in matrix construction.
-
-    
-    if(is.null(dim(X)))
-      X = data.frame(X)
-    n.sites = dim(X)[1]
-    n.params  = dim(X)[2]
-    if(is.null(X.des.train))
-        n.train.sites = n.sites
-    else
-        n.train.sites <- dim(X.des.train$X)[1]
-    if(is.null(X.des.train$var.type))
-        var.type = rep("quantitative",n.params)
-    else
-        var.type = X.des.train$var.type
-    for (i in 1:n.params)
-    {
-
-        # test if binary quantitative, if so, change to a factor to avoid poly error.  But only if training data
-        if(is.null(X.des.train$var.type) & is.factor(X[,i])==FALSE)
-        {
-          testBinary = try(duplicated(X[,i],nmax=2), silent=TRUE)
-          if(class(testBinary)=="logical")
-          {
-            X[,i] = factor(X[,i])
-            warning(paste0("Binary variable '", names(X)[i], "' found and changed to a factor"))
-          }
-        }
-        
-        if(is.factor(X[,i]))
-        {
-            n.levels    = length(levels(X[,i]))
-            if(n.levels==2)
-            {
-                var.type[i]="binary" #treat as quantitative but don't find its square
-                #change variable name to indicate what it is doing
-                dimnames(X)[[2]][i]=paste(names(X)[i],levels(X[,i])[2],sep="")
-                #change entry in X to numerical
-                X[,i]  = as.numeric(as.factor(X[,i]))*2-3
-            }
-            else
-            {
-                var.type[i]="factor"
-                contrasts(X[,i])[contrasts(X[,i])==0] = -1
-            }
-        }
-    }
-
-    # to return standardised values of quant vars, with coeff, where needed:
-    is.quant = which(var.type=="quantitative")
-    n.quant = length(is.quant)
-    if( n.quant>0 )
-    {
-        X.squ = X[,0]
-        degs = c()
-        names.X.squ = c()
-        poly.coefs = as.list( rep( NA, n.quant ) )
-        for(i.quant in is.quant)
-        {
-            poly.i = poly( X[,i.quant], degree=2, coefs=X.des.train$coefs[[i.quant]] )
-            X.squ = cbind( X.squ, poly.i )
-            degs  = c( degs, attr(poly.i, "degree") )
-            poly.coefs[[ i.quant ]] = attr(poly.i, "coefs")   
-            names.X.squ = c( names.X.squ, dimnames(X)[[2]][i.quant], paste( dimnames(X)[[2]][i.quant], ".squ", sep="") )
-        }
-        X.squ = X.squ * sqrt(n.train.sites)
-        dimnames(X.squ)[[2]] = names.X.squ
-        X[,var.type=="quantitative"] = X.squ[,degs==1]
-        #get rid of the linear terms:
-        X.squ = data.frame(X.squ[,degs==2])
-    }
-    else
-    {
-        X.squ=NULL
-        poly.coefs=NULL
-    }
-    # to return orthogonal poly values of quant vars (with coeff):
-    return( list( X=X, X.squ=X.squ, var.type=var.type, coefs=poly.coefs ) )
-}
 
 
-################ get.design for getting the design matrix ###################
-get.design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TRUE, composition = FALSE, col.intercepts = TRUE, any.penalty=TRUE, scaling=NULL, get.fourth=TRUE )
+################ get_design for getting the design matrix ###################
+get_design = function( R.des, Q.des, L.names, formula = formula, marg.penalty=TRUE, composition = FALSE, col.intercepts = TRUE, any.penalty=TRUE, scaling=NULL, get.fourth=TRUE )
 {
 
-# get.design will take matrices of linear env and trait terms, and orthogonal quadratic terms,
+# get_design will take matrices of linear env and trait terms, and orthogonal quadratic terms,
 # and return a mega-matrix that can be regressed against vectorised abundance.
 # also returns logical for fourth corner terms, and their row and column names
 
