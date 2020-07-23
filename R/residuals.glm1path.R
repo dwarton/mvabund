@@ -2,7 +2,7 @@ residuals.glm1path = function(object, ... )
 {
     tol = 1.e-8
     n.rows = length(object$y)
-    fits    = object$glm1.best$fitted
+    fits    = object$glm1.best$fitted.values
     
     if(is.character(object$family))
       familyString = object$family
@@ -15,7 +15,7 @@ residuals.glm1path = function(object, ... )
     if(familyString=="gaussian") #work out residual variance if gaussian
     {
       df.residual = n.rows - min(object$df[object$lambdas==object$lambda])
-      sigma2 = (object$y-fits)^2 / df.residual
+      sigma2 = sum((object$y-fits)^2) / df.residual
     }
     
     pfn = switch(familyString, #set the function to use for cdf calculation
@@ -30,14 +30,16 @@ residuals.glm1path = function(object, ... )
                     "negative.binomial" = list(q=object$y, mu=fits, size=1/object$glm1$phi),
                     "poisson" = list(q=object$y, lambda=fits),
                     "binomial" = list(q=object$y, size=1, prob=fits ),
-                    "gaussian" = list(q=object$y, mu=fits, sd=sqrt(sigma2))
-                    )
-
+                    "gaussian" = list(q=object$y, mean=fits, sd=sqrt(sigma2)),
+    )
     param.minus = params
     param.minus$q = params$q - 1.e-6 #for discrete cases, (hopefully!) ignorable for continuous cases
 
     
-    u = runif(n.rows)
+    if(familyString=="gaussian") #jitter residuls if family is discrete
+      u=1
+    else
+      u = runif(n.rows)
       
     qupper = do.call(pfn, params)
     qlower = do.call(pfn, param.minus)

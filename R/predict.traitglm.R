@@ -16,7 +16,7 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
   else
   {
     if(is.null(object$formula))
-      R.des.test = get.polys(newR, object$R.des)
+      R.des.test = get_polys(newR, object$R.des)
     else
       R.des.test = list(X=newR)
   }
@@ -26,7 +26,7 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
   else
   {
     if(is.null(object$formula))
-      Q.des.test = get.polys(newQ, object$Q.des)
+      Q.des.test = get_polys(newQ, object$Q.des)
     else
       Q.des.test = list(X=newQ)
   }
@@ -43,7 +43,7 @@ predict.traitglm = function(object, newR=NULL, newQ=NULL, newL=NULL, type="respo
     object$call$col.intercepts = TRUE
     
   # get new design matrix values for L
-  X.des.test = get.design( R.des=R.des.test, Q.des=Q.des.test, L.names=rownames(Q.des.test$X), formula = object$formula, marg.penalty=TRUE, composition =  object$call$composition, col.intercepts = object$call$col.intercepts, any.penalty=object$any.penalty, scaling=object$scaling )
+  X.des.test = get_design( R.des=R.des.test, Q.des=Q.des.test, L.names=rownames(Q.des.test$X), formula = object$formula, marg.penalty=TRUE, composition =  object$call$composition, col.intercepts = object$call$col.intercepts, any.penalty=object$any.penalty, scaling=object$scaling )
     
   #    recover()
   # get predicted eta and store in out

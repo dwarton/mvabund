@@ -18,7 +18,7 @@ summary.manyglm <- function(object,
                             rep.seed = FALSE,
                             show.time=FALSE,
                             show.warning=FALSE, ...) {
-    tol = object$tol
+  tol = object$tol
     allargs <- match.call(expand.dots = FALSE)
     dots <- allargs$...
     if ("ld.perm" %in% names(dots)) ld.perm <- eval(parse(text=dots$ld.perm))
@@ -50,7 +50,12 @@ summary.manyglm <- function(object,
     nRows = nrow(object$y)
     nVars = ncol(object$y)
     nParam = ncol(object$x)
-
+    
+    # cut it here if there is only one X variable, this breaks the C code
+    if(nParam==1)
+      stop(cat("Sorry, no can do... this function was designed for models with multiple parameters.
+But this model seems to only have one parameter in it (probably an intercept term)."))
+    
     # warn when not integer TODO
     Y <- matrix(object$y, nrow=nRows, ncol=nVars)
     X <- as.matrix(object$x, "numeric")
@@ -218,12 +223,12 @@ summary.manyglm <- function(object,
     genVar <- det(resvar)
 
     if (is.null(object$terms))
-        stop("invalid 'lm' object:  no 'terms'")
+        stop("invalid 'glm' object:  no 'terms'")
     Qr <- object$qr
     if (is.null(Qr)) Qr <- qr(object$x)
 
     p1 <- 1:rankX
-    R  <- chol2inv(Qr$qr[p1, p1, drop = FALSE])   # = inv X'X   pxp matrix
+        R  <- chol2inv(Qr$qr[p1, p1, drop = FALSE])   # = inv X'X   pxp matrix
     genVarB <- genVar*(c(R)[1+0:(rankX-1)*(rankX+1)])
     est <- object$coefficients[Qr$pivot[p1], , drop=FALSE]
     est <- cbind(genVarB, est)
