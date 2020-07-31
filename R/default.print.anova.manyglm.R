@@ -77,13 +77,7 @@ default.print.anova.manyglm <- function(x,
         cat("\n")
         
     }
-    if(!is.null(test) & anova$resamp=="cord") {
-      cat("Arguments:\n", "Test statistics calculated assuming", corname, 
-          "\nP-value calculated using", n.bootsdone, "Monte Carlo samples from a factor analytic Gaussian copula",
-          "\nEffect sizes taken from user-entered coefficient matrix, for details apply coef function to this object")
-
-    
-    if(!is.null(test) & substr(anova$resamp,1,1)!="n" & anova$resamp!="cord"){
+    if(!is.null(test) & substr(anova$resamp,1,1)!="n"){
        if(substr(anova$p.uni,1,1)=="n") {
          if(dim(anova$uni.p)[2]>1)
          {   
