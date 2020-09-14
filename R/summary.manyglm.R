@@ -249,7 +249,7 @@ But this model seems to only have one parameter in it (probably an intercept ter
     }
     else correlation <- NULL
 
-    dimnames(R) <- dimnames(X)[c(2,2)]
+    dimnames(R) <- dimnames(est)[c(1,1)] #DW, 14/9/20 fix to deal with low rank fits
 
     # test statistics
     if (!is.null(test)) {

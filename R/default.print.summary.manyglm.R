@@ -45,9 +45,9 @@ default.print.summary.manyglm <- function (x, digits = max(getOption("digits") -
            cat("\nCoefficients: (", nsingular, " not defined because of singularities)\n", sep="")
         else if (!is.null(test)) {	
 	   cat("\nTest statistics:\n")
-	   coefs <- x$coefficients
 	}
-	est <- x$est
+      coefs <- x$coefficients
+      est <- x$est
         est.stderr <- x$est.stderr
 		
         if (!is.null(aliased <- x$aliased) && any(aliased)) {
