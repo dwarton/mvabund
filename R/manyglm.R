@@ -121,8 +121,8 @@ if (any(!is.wholenumber(Y)) & familynum != 4)
 if(composition==TRUE)
 {
   # put in long format
-  dat = data.frame(c(Y), data[rep(1:N,p),])
-  names(dat)=c(names(mf)[1],names(data)) #match name to original object
+  dat = data.frame(c(Y), data[rep(1:N,p),-1]) #the minus bit so response isn't in twice
+  names(dat)=c(names(mf)[1],names(data)[-1]) #match name to original object
   # make rows (row labels) and cols
   dat$rows = factor(rep(rownames(Y),p))
   dat$cols = factor(rep(colnames(Y),each=N))
