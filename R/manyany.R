@@ -132,7 +132,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       }  
     }
     if(fn=="clm")
-      fam[[i.var]] = fam.i
+      fam[[i.var]] = family[[i.var]] = fam.i
     if(fam[[i.var]]$family=="binomial")
       warning("The binomial option of manyany currently assumes you have binary (presence/absence) response")
   }

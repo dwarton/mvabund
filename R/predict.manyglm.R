@@ -63,10 +63,14 @@ predict.manyglm <- function(
       dat.i$K=K
       form <- as.formula(paste("object$y[ ,", iVar, "]/K ~ ", fm[3]))
       object.i = glm(form, family=fam, data=dat.i, weights=K, start=as.vector(object$coef[,iVar]))
+      object.i$coefficients = coef(object)[,iVar]
+      #DW, 25/09/20:  overwriting with original coefficients in case they are user-specified 
     } else {
       form <- as.formula(paste("object$y[ ,", iVar, "] ~ ", fm[3]))
       object.i = glm(form, family=fam, data=dat.i, start=as.vector(object$coef[,iVar]))
+      object.i$coefficients = coef(object)[,iVar]
       #DW, 18/11/14:  starting value included in predict to avoid errors with sparse data
+      #DW, 25/09/20:  overwriting with original coefficients in case they are user-specified 
     }
     ft.i <- predict.glm(object.i, newdata=newdata, se.fit=se.fit,
                             type=type, terms = terms, na.action = na.action)
