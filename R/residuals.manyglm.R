@@ -54,6 +54,7 @@ residuals.manyglm<- function(object, ...){
     qupper = do.call(pfn, params[[i.var]])
     qlower = do.call(pfn, param.minus)
     resids[,i.var] = u * pmax( tol^3, qupper ) + (1-u) * pmin( 1-tol^3, qlower )
+    dimnames(resids)=dimnames(object$y)
     #pmax and pmin used to avoid any values identically 0 or 1
   }
   return( qnorm(resids) )
