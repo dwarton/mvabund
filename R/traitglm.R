@@ -56,7 +56,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
   if(is.null(Q))
   {
       cat(paste("No traits matrix entered, so will fit SDMs with different env response for each spp","\n"))
-      Q.des = list(X=data.frame(names(L)),X.squ=NULL,var.type="factor")
+      Q.des = list(X=data.frame(as.factor(names(L))),X.squ=NULL,var.type="factor")
   }
   else
   {
