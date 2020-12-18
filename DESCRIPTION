@@ -1,7 +1,7 @@
 Package: mvabund
 Title: Statistical Methods for Analysing Multivariate Abundance Data
-Version: 4.1.5
-Date: 2020-09-14
+Version: 4.1.6
+Date: 2020-12-18
 Authors@R: c(person("Yi", "Wang", role = "aut"),
             person("Ulrike", "Naumann", role = "aut"),
             person("Dirk", "Eddelbuettel", role = "aut"),
