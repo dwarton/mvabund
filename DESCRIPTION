@@ -25,7 +25,6 @@ Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
 LinkingTo: Rcpp, RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-Packaged: 2019-04-21; David
 RoxygenNote: 6.0.1
 Suggests:
     testthat
