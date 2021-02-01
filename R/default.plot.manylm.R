@@ -176,7 +176,9 @@ default.plot.manylm  <- function(x,
         	} else sum.y <- t(y) %*% matrix(1,ncol=1,nrow=n)
         
 		# Find abundance ranks OF MVABUND.OBJECT.1.
-        	var.subset <- order(sum.y, decreasing = TRUE)
+#                var.subset <- order(sum.y, decreasing = TRUE)
+                #DW, 1/2/21, trying to beat latest weird change in r-devel:
+                var.subset <- sort(sum.y, decreasing = TRUE, index.return=TRUE)$ix
         
         	# Ensure no more than n.vars in var.subset.
         	if (n.vars<length(var.subset)) var.subset<-var.subset[1:n.vars]               	
@@ -417,14 +419,17 @@ default.plot.manylm  <- function(x,
         	if (overlay) {
                    show.r <- matrix(ncol=n.vars, nrow=id.n) 
                    for (i in 1:n.vars) {
-              	      show.r[,i] <- (order(abs(r[,i]), decreasing = TRUE))[iid] +(i-1)*n
-            	   }
+#              	      show.r[,i] <- (order(abs(r[,i]), decreasing = TRUE))[iid] +(i-1)*n
+              	   #DW, 1/2/21, trying to beat latest weird change in r-devel:
+              	      show.r[,i] <- (sort(abs(r[,i]), decreasing = TRUE, index.return=TRUE)$ix)[iid] +(i-1)*n
+                   }
             	   show.r <- c(show.r) 
         	} else {
             	   show.r <- matrix(ncol=n.vars, nrow=n) 
             	   for (i in 1:n.vars) {
-			show.r[,i] <- (order(abs(r[,i]), decreasing = TRUE))
-		   }
+#			show.r[,i] <- (order(abs(r[,i]), decreasing = TRUE))
+			show.r[,i] <- (sort(abs(r[,i]), decreasing = TRUE, index.return=TRUE)$ix)
+            	   }
             	   show.r <- show.r[iid,]
         	}
 
@@ -432,13 +437,15 @@ default.plot.manylm  <- function(x,
             	   if (overlay) {
                 	show.rs <- matrix(ncol=n.vars, nrow=id.n)
                 	for (i in 1:n.vars) {
-                	show.rs[,i]<-(order(abs(rs[,i]),decreasing = TRUE))[iid] +(i-1)*n
+#                	show.rs[,i]<-(order(abs(rs[,i]),decreasing = TRUE))[iid] +(i-1)*n
+                	show.rs[,i]<-(sort(abs(rs[,i]),decreasing = TRUE,index.return=TRUE)$ix)[iid] +(i-1)*n
                 	}
                 	show.rs <- c(show.rs)
                    } else {
                         show.rs <- matrix(ncol=n.vars, nrow=n) 
                         for (i in 1:n.vars) {
-			    show.rs[,i] <- (order(abs(rs[,i]), decreasing = TRUE))
+#			    show.rs[,i] <- (order(abs(rs[,i]), decreasing = TRUE))
+			    show.rs[,i] <- (sort(abs(rs[,i]), decreasing = TRUE, index.return=TRUE)$ix)
                         }
                         show.rs <- show.rs[iid,]
             	   }
@@ -591,8 +598,9 @@ default.plot.manylm  <- function(x,
                 		show.r <- matrix(ncol=n.vars, nrow=id.n) 
                 
 				for (i in 1:n.vars) {
-                    		show.r[,i] <- (order(-cook[,i]))[iid] +(i-1)*n
-                		}
+#                    		show.r[,i] <- (order(-cook[,i]))[iid] +(i-1)*n
+                    		show.r[,i] <- (sort(-cook[,i],index.return=TRUE)$ix)[iid] +(i-1)*n
+				}
                 
 				show.r <- c(show.r) 
                 		ymx <- ymx * 1.075
@@ -767,7 +775,8 @@ default.plot.manylm  <- function(x,
         
 			if (show[4]) {
             		if (id.n > 0) {
-                			show.r4 <- order(-cook[,i])[iid]
+#            		  show.r4 <- order(-cook[,i])[iid]
+            		  show.r4 <- sort(-cook[,i], index.return=TRUE)$ix[iid]
                 			ymx <- cook[show.r4[1],i] * 1.075
             		} else ymx <- max(cook[,i], na.rm = TRUE)
 
