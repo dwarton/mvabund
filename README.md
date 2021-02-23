@@ -15,7 +15,7 @@ LGPL (>= 2.1)
 
 `mvabund` is [available on CRAN](https://CRAN.R-project.org/package=mvabund).
 
-This is the development version, with the latest bells and whistles. It can be installed from GitHub using the `devtools` package:
+The development version, with the latest bells and whistles, can be installed from GitHub using the `devtools` package:
 
 ``` r
 devtools::install_github('aliceyiwang/mvabund')
