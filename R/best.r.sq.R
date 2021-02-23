@@ -119,8 +119,10 @@ best.r.sq <- function (formula, data = parent.frame(), subset, var.subset,
 	r.sq.mat[-use.k,xchoose] = NA
   
   order.r.sq[xchoose] <-
-      order(r.squared, decreasing=TRUE, na.last = TRUE)[1]
-   r.sq.step[xchoose] = max(r.squared)
+#      order(r.squared, decreasing=TRUE, na.last = TRUE)[1]
+#DW, 1/2/21, trying to beat latest weird change in r-devel:
+          sort(r.squared, decreasing=TRUE, na.last = TRUE, index.return=TRUE)$ix[1]
+  r.sq.step[xchoose] = max(r.squared)
   
    use.xn <- xn[ -(order.r.sq[1:(xchoose)]) ]
 

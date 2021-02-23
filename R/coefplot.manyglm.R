@@ -69,8 +69,8 @@ coefplot.manyglm <- function(
 
   # For each X covariate, order the Ys from lowest to highest coefficients
   for (i in 1:numXvars) {
-    plotCoeff <- sort(coeffs[i,])
-    plotCoefIndex <- order(coeffs[i,])
+    plotCoeff <- sort(as.numeric(coeffs[i,]))
+    plotCoefIndex <- order(as.numeric(coeffs[i,]))
     plotSD <- as.data.frame(object$stderr.coefficients)[which.Xcoef,which.Ys]
     plotSD <- plotSD[i,][plotCoefIndex]
 

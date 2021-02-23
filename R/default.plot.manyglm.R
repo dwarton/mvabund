@@ -139,7 +139,9 @@ default.plot.manyglm  <- function(x,
        else sum.y <- t(y) %*% matrix(1,ncol=1,nrow=n)
 
        # Find abundance ranks OF MVABUND.OBJECT.1.
-       var.subset <- order(sum.y, decreasing = TRUE)
+#       var.subset <- order(sum.y, decreasing = TRUE)
+       #DW, 1/2/21, trying to beat latest weird change in r-devel:
+       var.subset <- sort(sum.y, decreasing = TRUE, index.return=TRUE)$ix
        typeofvarsubset <- " \n(the variables with highest total abundance)"
     }
     else {  # if var.subset is specified
@@ -347,22 +349,22 @@ default.plot.manyglm  <- function(x,
     # Obtain vector of positions of the abs. highest values, use with a vector.
            if (overlay) {
               show.r <- matrix(ncol=n.vars, nrow=id.n)
-              for (i in 1:n.vars) show.r[,i] <- (order(abs(r[,i]),decreasing=TRUE))[iid] +(i-1)*n
+              for (i in 1:n.vars) show.r[,i] <- (sort(abs(r[,i]),decreasing=TRUE, index.return=TRUE)$ix)[iid] +(i-1)*n
               show.r <- c(show.r)
            } else {
           show.r <- matrix(ncol=n.vars, nrow=n)
-          for (i in 1:n.vars) show.r[,i] <- (order(abs(r[,i]), decreasing = TRUE))
+          for (i in 1:n.vars) show.r[,i] <- (sort(abs(r[,i]), decreasing = TRUE, index.return=TRUE)$ix)
           show.r <- show.r[iid,]
        }
 
            if (any(show[2:3])) {
           if (overlay) {
              show.rs <- matrix(ncol=n.vars, nrow=id.n)
-         for (i in 1:n.vars) show.rs[,i] <-(order(abs(rs[,i]), decreasing = TRUE))[iid] +(i-1)*n
+         for (i in 1:n.vars) show.rs[,i] <-(sort(abs(rs[,i]), decreasing = TRUE, index.return=TRUE)$ix)[iid] +(i-1)*n
          show.rs <- c(show.rs)
               } else {
              show.rs <- matrix(ncol=n.vars, nrow=n)
-         for (i in 1:n.vars) show.rs[,i] <- (order(abs(rs[,i]), decreasing = TRUE))
+         for (i in 1:n.vars) show.rs[,i] <- (sort(abs(rs[,i]), decreasing = TRUE, index.return=TRUE)$ix)
          show.rs <- show.rs[iid,]
               }
           }
