@@ -120,14 +120,27 @@ if (any(!is.wholenumber(Y)) & familynum != 4)
 # if composition=TRUE, put in long format and send back to manyglm
 if(composition==TRUE)
 {
+  # DW edits, 22/3/21, fixing issue #92
   # put in long format
-  dat = data.frame(c(Y), data[rep(1:N,p),-1]) #the minus bit so response isn't in twice
-  names(dat)=c(names(mf)[1],names(data)[-1]) #match name to original object
+  if(names(mf[1])%in%names(data)) #if response is in data frame
+  {
+    dat = data[rep(1:N,p),]
+    whichResponse=which(names(data)==names(mf[1]))
+    dat[whichResponse]=c(Y)
+  }
+  else
+  {
+      dat = data.frame(c(Y), data[rep(1:N,p),])
+      names(dat)[1] = names(mf)[1]  #match name to original object
+      whichResponse=1
+  }
   # make rows (row labels) and cols
   dat$rows = factor(rep(rownames(Y),p))
   dat$cols = factor(rep(colnames(Y),each=N))
   offset = rep(as.vector(model.offset(mf)),p) 
-
+  #check no dollar signs in formula or database, these screw everything up
+  names(dat)=gsub("$",".",names(dat),fixed=TRUE)
+  
   # get formula for long format with composition
   if(length(mf)==1) #if no predictors, write formula with no cols interaction:
   {
@@ -139,10 +152,11 @@ if(composition==TRUE)
   else
   {
     if(formula[[3]]==".") #if ~., expand to variable names
-      formula[[3]]=paste(names(mf[-1]),collapse="+")
+      formula[[3]]=paste(names(mf[-whichResponse]),collapse="+")
     formLong=formula
     # now add cols, rows and cols:[prev formula]:
     formLong[3] = paste0("cols+",as.character(formula[3]),"+rows+cols:(",as.character(formula[3]),")")
+    formLong[3] = gsub("$",".",formLong[3],fixed=TRUE)
     formLong=as.formula(paste0(formLong[2],formLong[1],formLong[3]))
   }
   z=manyglm(formLong, data=dat, block=dat$rows, composition=FALSE,
@@ -152,12 +166,10 @@ if(composition==TRUE)
                  maxiter2=maxiter2, show.coef=show.coef, show.fitted=show.fitted,
                  show.residuals=show.residuals, show.warning=show.warning, 
                  offset=offset,... )
-  return(z)
+    return(z)
   } #end David edits, 10/4/19
 else{
   
-
-
   offset <- as.vector(model.offset(mf))
   
 # HELP this doesn't make sense, was there previously a familynum == 4 that was meaningful
