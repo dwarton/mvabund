@@ -208,7 +208,7 @@ int AnovaTest::resampTest(void) {
       for (p = 1; p < nModels; p++) {
         if (mmRef->reprand != TRUE) {
           GetRNGstate();
-          printf("reprand==FALSE\n");
+          // printf("reprand==FALSE\n");
         }
         for (j = 0; j < nRows; j++) {
           // resampling index
