@@ -22,7 +22,7 @@ test_that("spider coefs", {
 
   spider_coefs <- coef(glm.spid[1])
   expect_equal_to_reference(spider_coefs, 'spider_coefs.rds')
-  expect_equal_to_reference(summary(glm.spid), 'poisson_spider_summary.rds')
+  expect_equal_to_reference(summary(glm.spid,nBoot=1000), 'poisson_spider_summary.rds')
 })
 
 test_that('theta estimation method warnings', {

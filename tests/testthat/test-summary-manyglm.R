@@ -14,7 +14,7 @@ test_that("gamma summary", {
   tests <- c('wald', 'score', 'LR')
   # resamp = c('case', 'perm.resid', 'montecarlo', 'pit.trap')
   summaries <- lapply(tests, function(t)
-    summary(mglmg,
+    summary(mglmg,nBoot=1000,
       test=t,
       rep.seed = TRUE))
   expect_equal_to_reference(summaries, 'gamma_summaries.rds')
