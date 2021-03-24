@@ -5,7 +5,7 @@
 \description{\code{summary} method for class "manyglm". }
 \usage{
 \method{summary}{manyglm}(object, resamp="pit.trap", test="wald", 
-        p.uni="none", nBoot=1000, cor.type=object$cor.type, block=NULL,
+        p.uni="none", nBoot=999, cor.type=object$cor.type, block=NULL,
         show.cor = FALSE, show.est=FALSE, show.residuals=FALSE,
         symbolic.cor = FALSE,
         rep.seed = FALSE, 

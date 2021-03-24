@@ -8,7 +8,7 @@ in a linear model fitted to high-dimensional data, such as multivariate
 abundance data in ecology.}
 
 \usage{
-\method{summary}{manylm}(object, nBoot=1000, resamp="residual", 
+\method{summary}{manylm}(object, nBoot=999, resamp="residual", 
    test="F", cor.type=object$cor.type, block=NULL, shrink.param=NULL, 
    p.uni="none", studentize=TRUE, R2="h", show.cor = FALSE, 
    show.est=FALSE, show.residuals=FALSE, symbolic.cor=FALSE, 
@@ -24,7 +24,7 @@ abundance data in ecology.}
 \arguments{
 \item{object}{an object of class "manylm", usually, a result of a call to
 \code{\link{manylm}}.}
-\item{nBoot}{the number of Bootstrap iterations, default is \code{nBoot=1000}.}
+\item{nBoot}{the number of Bootstrap iterations, default is \code{nBoot=999}.}
 \item{resamp}{the method of resampling used. Can be one of "case" (not yet available),"residual" (default), "perm.resid", "score" or "none". See Details.}
 \item{test}{ the test to be used. Possible values are: "LR" = likelihood ratio statistic (default) and "F" = Lawley-Hotelling trace statistic.\cr
 Note that if all variables are assumed independent (\code{cor.shrink="I"}) then "LR" is equivalent to LR-IND and "F" is the sum-of-F statistics from Warton & Hudson (2004).}
