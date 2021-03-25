@@ -18,10 +18,10 @@ print.anova.manylm <- function( x, digits = max(getOption("digits") - 3, 3), sig
     if(anova$resamp == "perm.resid")
       anova$resamp <- "residual (without replacement)"
 
-    if (anova$cor.type=="R")  corname <- "unconstrained correlation"
-    else if (anova$cor.type=="I")  corname <- "response assumed to be uncorrelated"
+    if (anova$cor.type=="R")  corname <- "unconstrained correlation response"
+    else if (anova$cor.type=="I")  corname <- "uncorrelated response (for faster computation)"
     else if (anova$cor.type=="shrink")
-        corname <- paste("correlation matrix shrunk by parameter",
+        corname <- paste("correlated response via ridge regularization with ridge parameter",
           round(anova$shrink.param, digits = dig.tst))
     else if (anova$cor.type=="blockdiag")
       corname <- paste("blockdiagonal correlation matrix with", anova$shrink.param,
@@ -70,8 +70,17 @@ print.anova.manylm <- function( x, digits = max(getOption("digits") - 3, 3), sig
             if(inherits(anova, "anova.manyglm") )
                 cat("Arguments: with", n.bootsdone, "resampling iterations using",       paste(anova$resamp,block.text,sep=""), "resampling,", anova$teststat, "and",corname, "\n")
             else
-                cat("Arguments: with", n.bootsdone, "resampling iterations using",        paste(anova$resamp,block.text,sep=""), "resampling and",corname, "\n") 
-            if(anova$resamp=="case" & sum(anova$n.iter.sing)>0) {
+#                cat("Arguments: with", n.bootsdone, "resampling iterations using",        paste(anova$resamp,block.text,sep=""), "resampling and",corname, "\n") 
+              if(dim(anova$uni.p)[2]>1)
+              {   
+                cat("Arguments:\n", "Test statistics calculated assuming", corname, 
+                    "\n P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
+              }
+              if(dim(anova$uni.p)[2]==1)
+              {   
+                cat("Arguments: P-value calculated using", n.bootsdone, "iterations via",       paste(anova$resamp,block.text,sep=""), "resampling.\n")
+              }
+          if(anova$resamp=="case" & sum(anova$n.iter.sing)>0) {
                 cat("\nNumber of iterations with adjusted tests (including skipped tests)      because of singularities in X due to the case resampling\n")
                 print.default(anova$n.iter.sing, quote = FALSE, right = TRUE, na.print = "", ...)
                 if(sum(anova$nBoot - anova$n.bootsdone)>0){
