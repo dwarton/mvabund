@@ -5,7 +5,7 @@
 ###############################################################################
 
 summary.manylm <- function(object,
-                    nBoot=1000,resamp="residual",
+                    nBoot=999,resamp="residual",
                     test="F",
                     cor.type=object$cor.type,
                     block=NULL,

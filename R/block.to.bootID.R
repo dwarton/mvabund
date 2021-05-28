@@ -22,7 +22,13 @@ block_to_bootID <- function (block, bootID, nRows, nBoot, resamp) {
   bootID <-  matrix(NA,nBoot,nRows)
   for(iBoot in 1:nBoot) {
     # unlistIDs is needed to make sure each unlisted blockID ends up in the right place
-    bootID[iBoot, unlistIDs] = unlist(blockIDs[samp[iBoot,]])
+    IDsboot = unlist(blockIDs[samp[iBoot, ]])
+    if(length(IDsboot)<nRows) #redo it but this time ensure enough blocks
+    {
+      nIDs = sample(nLevels,nRows,replace=TRUE)
+      IDsboot = unlist(blockIDs[nIDs])
+    }
+    bootID[iBoot, unlistIDs] = unlist(IDsboot[1:nRows])
   }
   bootID = bootID - 1 #to fit the format in C, 0 to nRows.
   if(interactive()) cat(paste("Using block resampling...","\n"))

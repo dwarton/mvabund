@@ -21,8 +21,15 @@ test_that("spider coefs", {
   expect_is(glm.spid, "manyglm")
 
   spider_coefs <- coef(glm.spid[1])
-  expect_equal_to_reference(spider_coefs, 'spider_coefs.rds')
-  expect_equal_to_reference(summary(glm.spid), 'poisson_spider_summary.rds')
+  spider_coefsREF <- readRDS("spider_coefs.rds")
+  delta <- spider_coefs - spider_coefsREF
+  expect_lte(sum(delta^2), 1.e-7)
+  spider_summ <- summary(glm.spid,nBoot=1000)
+  spider_summREF <- readRDS("poisson_spider_summary.rds")
+  deltaWald = spider_summ$coefficients[,1] - spider_summREF$coefficients[,1]
+  expect_lte(sum(deltaWald^2), 1.e-7)
+  deltaP = spider_summ$coefficients[,2] - spider_summREF$coefficients[,2]
+  expect_lte(sum(deltaP^2), 0.003) # note Monte Carlo error possible here
 })
 
 test_that('theta estimation method warnings', {
@@ -38,7 +45,10 @@ test_that("gamma family shape parameter", {
   n <- 1000; shapes <- 1:4; rate <- 1
   Y <- mvabund(sapply(shapes, function(shape) rgamma(n, shape, rate)))
   gamma_glm <- manyglm(Y ~ 1, family="gamma", show.warning = T)
-  expect_true(all(signif(gamma_glm$theta, 5) == c(1.0034,2.0542,2.9994,4.0487)))
+  thetas <- signif(gamma_glm$theta, 5)
+  thetasREF <- c(1.0034,2.0542,2.9994,4.0487)
+  deltaThetas=thetas-thetasREF
+  expect_lte(sum(deltaThetas^2), 1.e-7)
 })
 
 
