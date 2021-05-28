@@ -29,7 +29,7 @@ test_that("spider coefs", {
   deltaWald = spider_summ$coefficients[,1] - spider_summREF$coefficients[,1]
   expect_lte(sum(deltaWald^2), 1.e-7)
   deltaP = spider_summ$coefficients[,2] - spider_summREF$coefficients[,2]
-  expect_lte(sum(deltaP^2)<0.003) # note Monte Carlo error possible here
+  expect_lte(sum(deltaP^2), 0.003) # note Monte Carlo error possible here
 })
 
 test_that('theta estimation method warnings', {
