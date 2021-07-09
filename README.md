@@ -21,6 +21,6 @@ LGPL (>= 2.1)
 The development version, with the latest bells and whistles, can be installed from GitHub using the `devtools` package:
 
 ``` r
-devtools::install_github('aliceyiwang/mvabund')
+devtools::install_github('aliceyiwang/mvabund', ref='main')
 library(mvabund)
 ```
