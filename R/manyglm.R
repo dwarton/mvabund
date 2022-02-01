@@ -124,12 +124,19 @@ if(composition==TRUE)
   # put in long format
   if(names(mf[1])%in%names(data)) #if response is in data frame
   {
-    dat = data[rep(1:N,p),]
+    #DW edits, 1/2/22, so works when data is a list (like Code Box 14.6 of Eco-Stats text)
     whichResponse=which(names(data)==names(mf[1]))
-    dat[whichResponse]=c(Y)
+    if(inherits(data,"data.frame")==FALSE)
+      data2 = as.data.frame(data[-whichResponse])
+    dat = data.frame(c(Y), data2[rep(1:N,p),])
+    names(dat)[1] = names(mf)[1]  #match name to original object
+    whichResponse=1
+    # end DW edits
   }
   else
   {
+      if(inherits(data,"data.frame")==FALSE)
+        data = as.data.frame(data)
       dat = data.frame(c(Y), data[rep(1:N,p),])
       names(dat)[1] = names(mf)[1]  #match name to original object
       whichResponse=1
