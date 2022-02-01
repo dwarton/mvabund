@@ -3,7 +3,7 @@
 \alias{spider}
 \title{Spider data}
 \description{
-data from spider2 directory, CANOCO FORTRAN package.
+data from spider2 directory, CANOCO FORTRAN package, with trait variables added.
 }
 \usage{
 data(spider)
@@ -43,9 +43,16 @@ The matrix \code{x} has the following variables
     \item{reflection}{(numeric) Reflection of the soil surface with a cloudless sky}
    }
    These variables have already been log(x+1)-transformed.
+
+The data frame \code{trait} was constructed by Googling each species and recording variables from species descriptions and images of specimens:
+   \describe{
+    \item{length}{(numeric) Length (log-transformed), averaged across typical lengths (in centimetres) for male and females}
+    \item{colour}{(factor) Predominant colour, "yellow" or "dark"}
+    \item{marks}{(factor) Whether the spider typically has markings on it: "none", "spots" or "stripes"}
+   }
 }
 
-\source{Data attributed to van der Aart & Smeenk-Enserink (1975), obtained from the spider2 directory, CANOCO FORTRAN package.}
+\source{Data attributed to van der Aart & Smeenk-Enserink (1975), obtained from the spider2 directory, CANOCO FORTRAN package. Trait data largely extracted from Wikipedia entries for the species.}
 \references{
 
 ter Braak, C. J. F. and Smilauer, P.  (1998)  CANOCO reference manual and user's guide to CANOCO for Windows: software for canonical community ordination (version 4). Microcomputer Power, New York, New York, USA.
