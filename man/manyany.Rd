@@ -105,17 +105,17 @@ David Warton <David.Warton@unsw.edu.au>.
 }
 \examples{
 data(spider)
-abund <- spider$abund
-X <- as.matrix(spider$x)
+
+spider = list(abund=spider$abund, x = spider$x)
 
 ## To fit a log-linear model assuming counts are negative binomial, via manyglm:
-spidNB <- manyany(abund~X,"manyglm",data=X,family="negative.binomial")
+spidNB <- manyany(abund~x,"manyglm",data=spider,family="negative.binomial")
 
 logLik(spidNB) # a number of generic functions are applible to manyany objects
 
 ## To fit a glm with complementary log-log link to presence/absence data:
-PAdat = pmin(as.matrix(abund),1) #constructing presence/absence dataset
-spidPA <- manyany(PAdat~X,"glm",data=X,family=binomial("cloglog"))
+PAdat = pmin(as.matrix(spider$abund),1) #constructing presence/absence dataset
+spidPA <- manyany(PAdat~x,"glm",data=spider,family=binomial("cloglog"))
 plot(spidPA)
 # There are some wild values in there for the Pardmont variable (residuals >5 or <-8).
 #The Pardmont model didn't converge, coefficients are a bit crazy:
@@ -123,20 +123,20 @@ coef(spidPA)
 
 # could try again using the glm2 package to fit the models, this fixes things up:
 \dontrun{library(glm2)}
-\dontrun{spidPA2 <- manyany(PAdat~X,"glm",data=X,family=binomial("cloglog"),method="glm.fit2")}
+\dontrun{spidPA2<-manyany(PAdat~x,"glm",data=spider,family=binomial("cloglog"),method="glm.fit2")}
 \dontrun{plot(spidPA2)} #looks much better.
 
 ## To simultaneously fit models to ordinal data using the ordinal package:
 \dontrun{library(ordinal)}
 ## First construct an ordinal dataset:
-\dontrun{spidOrd = abund}
-\dontrun{spidOrd[abund>1 & abund<=10]=2}
-\dontrun{spidOrd[abund>10]=3}
+\dontrun{spidOrd = spider$abund}
+\dontrun{spidOrd[spider$abund>1 & spider$abund<=10]=2}
+\dontrun{spidOrd[spider$abund>10]=3}
 \dontrun{for(iVar in 1:dim(spidOrd)[2]) spidOrd[,iVar]=factor(spidOrd[,iVar]) }
 ##Now fit a model using the clm function:
-\dontrun{manyOrd=manyany(abund~bare.sand+fallen.leaves,"clm",data=X)}
+\dontrun{manyOrd=manyany(spidOrd~bare.sand+fallen.leaves,"clm",data=data.frame(spider$x))}
 \dontrun{plot(manyOrd)}
-
+}
 \keyword{models}
 \keyword{regression}
 \keyword{multivariate}

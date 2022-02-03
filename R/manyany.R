@@ -172,7 +172,7 @@ manyany = function(formula, fn, data, family="negative.binomial", composition = 
 
       etas[,i.var] = switch(fn,
                             "lmer"=manyfit[[i.var]]@eta,
-                            "clm"=predict(manyfit[[i.var]],type="linear.predictor",newdata=mf[,names(mf)!="y"])$eta1[,1],
+                            "clm"=predict(manyfit[[i.var]],type="linear.predictor",newdata=mf)$eta1,
                             predict(manyfit[[i.var]])
                          )
       #need to then truncate as if on logit scale...
