@@ -7,6 +7,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // RtoAnovaCpp
 List RtoAnovaCpp(const List& rparam, RcppGSL::Matrix& Y, RcppGSL::Matrix& X, RcppGSL::Matrix& isXvarIn, Rcpp::Nullable<RcppGSL::Matrix>& bID);
 RcppExport SEXP _mvabund_RtoAnovaCpp(SEXP rparamSEXP, SEXP YSEXP, SEXP XSEXP, SEXP isXvarInSEXP, SEXP bIDSEXP) {

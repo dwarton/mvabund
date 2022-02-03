@@ -131,13 +131,13 @@ coralX <- tikus$x[1:20,]
 require(tweedie)
 require(statmod)
 
-ftTimeRep <- manyany("glm", coral, coral ~ time+rep, data=coralX, 
-family=tweedie(var.power=1.5, link.power=0), var.power=1.5, composition=TRUE)
+ftTimeRep <- manyany(coral ~ time+rep, "glm", data=coralX, 
+  family=tweedie(var.power=1.5, link.power=0), var.power=1.5, composition=TRUE)
 
-ftRep <- manyany("glm",coral, coral ~ rep, data=coralX, 
-family=tweedie(var.power=1.5, link.power=0), var.power=1.5, composition=TRUE)
+ftRep <- manyany(coral ~ rep, "glm", data=coralX, 
+  family=tweedie(var.power=1.5, link.power=0), var.power=1.5, composition=TRUE)
 anova(ftRep,ftTimeRep,nBoot=9) #this takes a few seconds to run even for just 9 resamples
-## This should be rerun for nBoot=999, which would take maybe five minutes...
+## This should be rerun for nBoot=999, which could a few minutes...
 
 }
 \keyword{models}
