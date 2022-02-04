@@ -210,8 +210,9 @@ bootAnova = function(bootRows,...)
 
   require(mvabund)
   yMat = matrix(NA,argList$n.rows,argList$n.vars)
-  if(argList$object1$family[[1]]$family=="ordinal")
-    yMat=data.frame(yMat)
+  #next two lines no longer correct, requires matrix input to use formula
+  #  if(argList$object1$family[[1]]$family=="ordinal") 
+  #    yMat=data.frame(yMat)
   argList$object1$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
   argList$object2$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
 
@@ -261,10 +262,9 @@ bootAnova = function(bootRows,...)
       is.zeroton = apply(yMat,2,sum,na.rm=TRUE)==0
     
     # replace response matrix:
-    mf[whichIsResponse] = yMat[,is.zeroton==FALSE]
-    assign(as.character(argList$object1$call$data), mf) 
-    assign(as.character(argList$object2$call$data), mf) 
-
+    mf[[whichIsResponse]] = yMat[,is.zeroton==FALSE]
+    assign(deparse(argList$object1$call$data), mf) 
+    assign(deparse(argList$object2$call$data), mf) 
     #re-fit manyany functions and calculate test stats using the resampled yMat:
     if(sum(is.zeroton==FALSE)>0)
     {
@@ -290,6 +290,6 @@ qordinal = function(p,mu,muAll)
 {
   rank=apply(muAll<=p,1,sum)
   levels = dimnames(muAll)[[2]] #levels are stored as column labels of muAll
-  y = factor( levels[rank], levels=levels)
+  y = as.numeric(levels[rank])
   return(y)
 }

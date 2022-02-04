@@ -139,6 +139,17 @@ ftRep <- manyany(coral ~ rep, "glm", data=coralX,
 anova(ftRep,ftTimeRep,nBoot=9) #this takes a few seconds to run even for just 9 resamples
 ## This should be rerun for nBoot=999, which could a few minutes...
 
+\dontrun{library(ordinal)}
+## First construct an ordinal dataset:
+\dontrun{spidOrd = spider$abund}
+\dontrun{spidOrd[spider$abund>1 & spider$abund<=10]=2}
+\dontrun{spidOrd[spider$abund>10]=3}
+## Now fit a model using the clm function:
+\dontrun{manyOrd=manyany(spidOrd~bare.sand+fallen.leaves,"clm",data=data.frame(spider$x))}
+## Test to see if fallen.leaves needs to be there:
+\dontrun{manyOrd0=manyany(spidOrd~bare.sand,"clm",data=data.frame(spider$x))}
+\dontrun{anova(manyOrd0,manyOrd,nBoot=19)}
+
 }
 \keyword{models}
 \keyword{regression}

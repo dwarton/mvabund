@@ -147,7 +147,11 @@ manyany = function(formula, fn, family="negative.binomial", data=NULL, compositi
       warning("The binomial option of manyany currently assumes you have binary (presence/absence) response")
   }
 
-  # set up empty objects
+  # find response variable in mf (should be first but better safe than sorry)
+  nameOfResponse  = as.character(formula[[2]])
+  whichIsResponse = which(names(mf)==nameOfResponse)
+
+    # set up empty objects
   manyfit = vector(mode="list",length=n.vars)
   fits = matrix(NA,n.rows,n.vars)
   etas = matrix(NA,n.rows,n.vars)
@@ -216,7 +220,7 @@ manyany = function(formula, fn, family="negative.binomial", data=NULL, compositi
       if(fam[[i.var]]$family=="Tweedie")
         params[[i.var]] = list(q=yMat[,i.var], power=var.power[i.var], mu=fits[,i.var], phi=summary(manyfit[[i.var]])$disp)
       if(fam[[i.var]]$family=="ordinal")
-        params[[i.var]] = list(q=yMat[,i.var], mu=predict(manyfit[[i.var]], type="cum.prob"), muAll=predict(manyfit[[i.var]],type="cum.prob",newdata=mf[,names(mf)!="y"])$cprob2)
+        params[[i.var]] = list(q=yMat[,i.var], mu=predict(manyfit[[i.var]], type="cum.prob"), muAll=predict(manyfit[[i.var]],type="cum.prob",newdata=mf[-whichIsResponse])$cprob2)
       if(grepl("egative",fam[[i.var]]$family) || fam[[i.var]]$family == "negbinomial")
       {
         if(any(names(manyfit[[i.var]])=="theta"))
@@ -388,13 +392,13 @@ plot.manyany=function(x, ...)
   if(mx==0)
     xlab="Linear Predictor"
   else
-    xlab=as.character(args[mx])
+    xlab=deparse(args[mx])
 
   my=match("ylab",names(args),0L)
   if(my==0)
     ylab="Dunn-Smyth Residuals"
   else
-    ylab=as.character(args[my])
+    ylab=deparse(args[my])
   
   title(xlab=xlab,ylab=ylab)
 
