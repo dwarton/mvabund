@@ -1,4 +1,4 @@
-manyany = function(formula, fn, data, family="negative.binomial", composition = FALSE, block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
+manyany = function(formula, fn, family="negative.binomial", data=NULL, composition = FALSE, block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
 {
   #MANYANY - applies a function of your choice to each column of YMAT and computes logLik by taxon.
   # FORMULA is the formula to use in the call to FM.
@@ -34,8 +34,11 @@ manyany = function(formula, fn, data, family="negative.binomial", composition = 
   
   
   tol=1.e-8 #for truncation of linear predictor
-  mf = model.frame(formula,data=data)
-  
+  if(missing(data)) # Only coerce to model frame if not specified by the user.
+    mf =model.frame(formula, parent.frame())
+  else
+    mf = model.frame(formula,data=data)
+
   # get response and its dimensions
   yMat = model.response(mf)
   yMat = as.matrix(yMat)

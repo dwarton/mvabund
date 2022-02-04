@@ -6,7 +6,7 @@
   \code{manyany} is used to fit many univariate models (GLMs, GAMs, otherwise) to high-dimensional data, such as multivariate abundance data in ecology. This is the base model-fitting function - see \code{plot.manyany} for assumption checking, and \code{anova.manyany} for significance testing.
 }
 \usage{
-manyany(formula, fn, data, family="negative.binomial", composition = FALSE, 
+manyany(formula, fn, family="negative.binomial", data, composition = FALSE, 
 block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
 \method{print}{manyany}(x, digits = max(3L, getOption("digits") - 3L), ...) 
 }
@@ -17,14 +17,12 @@ block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
     under Details.}
   \item{fn}{a character string giving the name of the function for the univariate
     model to be applied. e.g. "glm".}
-  \item{data}{a data frame containing predictor variables (a matrix is also acceptable).
-    This is REQUIRED and needs to have more than one variable in it (even if only one
-    is used in the model).}
   \item{family}{a description of the error distribution function to be used 
     in the model, either as a character string, a \code{\link{family}} object, or
     a list of such objects, one for each response variable in the dataset. Such a
     list enables the fitting of models with different distributions for different
     responses. See Details for the families currently supported.}
+  \item{data}{an optional data frame containing predictor variables (a matrix is also acceptable).}
   \item{composition}{logical. FALSE (default) fits a separate model to each species.
     TRUE fits a single model to all variables, including site as a row effect, such
     that all other terms model relative abundance (compositional effects).  }
