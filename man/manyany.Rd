@@ -130,8 +130,7 @@ coef(spidPA)
 \dontrun{spidOrd = spider$abund}
 \dontrun{spidOrd[spider$abund>1 & spider$abund<=10]=2}
 \dontrun{spidOrd[spider$abund>10]=3}
-\dontrun{for(iVar in 1:dim(spidOrd)[2]) spidOrd[,iVar]=factor(spidOrd[,iVar]) }
-##Now fit a model using the clm function:
+## Now fit a model using the clm function:
 \dontrun{manyOrd=manyany(spidOrd~bare.sand+fallen.leaves,"clm",data=data.frame(spider$x))}
 \dontrun{plot(manyOrd)}
 }
