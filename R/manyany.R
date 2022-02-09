@@ -1,9 +1,8 @@
-manyany = function(fn, yMat, formula, data, family="negative.binomial", composition = FALSE, block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
+manyany = function(formula, fn, family="negative.binomial", data=NULL, composition = FALSE, block = NULL, get.what="details", var.power=NA, na.action = "na.exclude", ...)
 {
   #MANYANY - applies a function of your choice to each column of YMAT and computes logLik by taxon.
-  # FN is a character vector giving the name of the function to be applied to each taxon.  e.g. "glm"
-  # YMAT is a matrix contatining the response variable for each taxon.
   # FORMULA is the formula to use in the call to FM.
+  # FN is a character vector giving the name of the function to be applied to each taxon.  e.g. "glm"
   # a FAMILY argument needs to be specified. It can be a list with different families for different variables (with length matching the number of columns in YMAT)
   # COMPOSITION is a logical switch indicating whether or not to do a compositional analysis (i.e., include a
   #  row effect in the model to account for changes in total abundance across samples).
@@ -18,15 +17,15 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
   # 
   # a manygam:
   # library(mgcv)
-  # ft=manyany("gam",abund,y~s(soil.dry),data=X,family="poisson")
+  # ft=manyany(abund~s(soil.dry),"gam",data=X,family="poisson")
   # 
   # a manyglmm:
   # library(lme4)
   # gr = rep(1:2,each=14)
-  # ft=manyany("lmer",abund,y~soil.dry+1|gr,data=X,family="poisson")
+  # ft=manyany(abund~soil.dry+1|gr,"lmer",data=X,family="poisson")
   #
   ## A manyglm:
-  # ft=manyany("glm",abund,y~soil.dry,data=X,family="poisson")
+  # ft=manyany(abund~soil.dry,"glm",data=X,family="poisson")
   ## note this gives the same answer as:  
   # ft=manyglm(mvabund(abund)~X$soil,family="poisson")
   
@@ -35,11 +34,41 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
   
   
   tol=1.e-8 #for truncation of linear predictor
+  if(missing(data)) # Only coerce to model frame if not specified by the user.
+    mf =model.frame(formula, parent.frame())
+  else
+    mf = model.frame(formula,data=data)
+
+  # get response and its dimensions
+  yMat = model.response(mf)
   yMat = as.matrix(yMat)
-  data = as.data.frame(data)
-  yNames = dimnames(yMat)
   n.rows = dim(yMat)[1]
   n.vars = dim(yMat)[2]
+  
+  # for clm, need to change family argument and make each column of response a factor
+  if(fn=="clm")
+  {
+    allargs <- match.call(expand.dots = FALSE)
+    dots <- allargs$...
+    if( "link" %in% names(dots) )
+      link <- dots$link
+    else
+      link="logit"
+    if(link=="loglog")
+      fam.i = binomial("cloglog") #to avoid errors since "loglog" is not defined
+    else
+      fam.i = binomial(link) #although not binomial
+    fam.i$family = "ordinal"
+    fam = vector(mode="list",length=n.vars)
+    family=fam
+    # convert data to a dataframe of factors:
+    yMat = data.frame(yMat, stringsAsFactors=TRUE) #converting to data frame so factor input is read as factors
+    for(iVar in 1:n.vars)
+      yMat[,iVar] = as.factor(yMat[,iVar])
+  }
+
+  # get names for response, or assign if empty
+  yNames = dimnames(yMat)
   if(is.null(yNames[[1]]))
     yNames[[1]] = 1:n.rows
   if(length(yNames)==1)
@@ -48,27 +77,26 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
   
   call=match.call()
   
-  if(composition==FALSE)
-    formula = formula(paste("y~",formula[3],sep=""))
-  else
+  # fix this bit later  
+  if(composition==TRUE)
   {
     yVec    = as.vector(yMat)
-    ref     = factor(rep(1:n.rows,n.vars))
-    spp     = factor(rep(1:n.vars,each=n.rows))
-    data    = data.frame(ref,spp,data[ref,])
-    formula = formula(paste("y~ref+spp+spp:(",formula[3],")",sep=""))
+    rows     = factor(rep(1:n.rows,n.vars))
+    cols     = factor(rep(1:n.vars,each=n.rows))
+    mf    = data.frame(mf[rows,],rows,cols)
+    formula = formula(paste(formula[2],"~rows+cols+cols:(",formula[3],")",sep=""))
     n.rows.orig = n.rows #save for later
     n.vars.orig = n.vars #save for later
     n.rows  = length(yVec)
     n.vars  = 1
-    names(yVec) = paste( yNames[[2]][spp], ".", yNames[[1]][ref], sep="")
+    names(yVec) = paste( yNames[[2]][cols], ".", yNames[[1]][rows], sep="")
     yMat    = as.matrix(yVec)
     if(class(family)!="family" & length(family)>1)
       stop("when using composition=TRUE, family argument must have length one.")
     if(is.null(block))  #to make sure resampling is by row of original data, not of vectorised data.
-       block = ref
+       block = rows
     else
-       block = block[ref]
+       block = block[rows]
   }
 
   #If family is specified once, turn it into a list of n.vars family objects
@@ -86,26 +114,8 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
     var.power=rep(var.power,n.vars)
     
   fam = family
-  # now ensure each family is a proper family function
 
-  if(fn=="clm")
-  {
-    allargs <- match.call(expand.dots = FALSE)
-    dots <- allargs$...
-    if( "link" %in% names(dots) )
-      link <- dots$link
-    else
-      link="logit"
-    if(link=="loglog")
-      fam.i = binomial("cloglog") #to avoid errors since "loglog" is not defined
-    else
-      fam.i = binomial(link) #although not binomial
-    fam.i$family = "ordinal"
-    fam = vector(mode="list",length=n.vars)
-    family=fam
-    yMat = data.frame(yMat, stringsAsFactors=TRUE) #converting to data frame so factor input is read as factors
-  }
-  
+  # now ensure each family is a proper family function
   for(i.var in 1:n.vars)
   {
     if (is.character(family[[i.var]])) 
@@ -137,31 +147,39 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       warning("The binomial option of manyany currently assumes you have binary (presence/absence) response")
   }
 
-  
+  # find response variable in mf (should be first but better safe than sorry)
+  nameOfResponse  = as.character(formula[[2]])
+  whichIsResponse = which(names(mf)==nameOfResponse)
+
+    # set up empty objects
   manyfit = vector(mode="list",length=n.vars)
   fits = matrix(NA,n.rows,n.vars)
   etas = matrix(NA,n.rows,n.vars)
   params = manyfit
   logL = rep(NA,n.vars)
+  
+  # fit model sequentially for each variable
   for(i.var in 1:n.vars)
   {
-    data$y = yMat[,i.var]
-    manyfit[[i.var]] = do.call(fn, list(formula=formula, family=family[[i.var]], data=data, na.action=na.action, ...)) #note use of family argument as originally specified
+    # change response to just column iVar
+    mf[[1]] = yMat[,i.var]
+    
+    # refit model via do.call
+    manyfit[[i.var]] = do.call(fn, list(formula=formula, family=family[[i.var]], data=mf, na.action=na.action, ...)) #note use of family argument as originally specified
+    
+    # store logL, or get from dviance if undefined
     logL[i.var]  = logLik(manyfit[[i.var]])
     if(is.na(logL[i.var]))
       logL[i.var] = -0.5*deviance(manyfit[[i.var]]) #just in case logL function is undefined, e.g. tweedie 
 
+    # only get extra stuff if get.what says to... this is skipped by anova.manyany
     if(get.what=="details"||get.what=="models")
     {
             fits[,i.var] = fitted(manyfit[[i.var]])
 
-          # if(fn=="lmer")
-      #   etas[,i.var] = manyfit[[i.var]]@eta
-      # else
-      #   etas[,i.var] = predict(manyfit[[i.var]])
       etas[,i.var] = switch(fn,
                             "lmer"=manyfit[[i.var]]@eta,
-                            "clm"=predict(manyfit[[i.var]],type="linear.predictor",newdata=data[,names(data)!="y"])$eta1[,1],
+                            "clm"=predict(manyfit[[i.var]],type="linear.predictor",newdata=mf)$eta1,
                             predict(manyfit[[i.var]])
                          )
       #need to then truncate as if on logit scale...
@@ -202,7 +220,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
       if(fam[[i.var]]$family=="Tweedie")
         params[[i.var]] = list(q=yMat[,i.var], power=var.power[i.var], mu=fits[,i.var], phi=summary(manyfit[[i.var]])$disp)
       if(fam[[i.var]]$family=="ordinal")
-        params[[i.var]] = list(q=yMat[,i.var], mu=predict(manyfit[[i.var]], type="cum.prob"), muAll=predict(manyfit[[i.var]],type="cum.prob",newdata=data[,names(data)!="y"])$cprob2)
+        params[[i.var]] = list(q=yMat[,i.var], mu=predict(manyfit[[i.var]], type="cum.prob"), muAll=predict(manyfit[[i.var]],type="cum.prob",newdata=mf[-whichIsResponse])$cprob2)
       if(grepl("egative",fam[[i.var]]$family) || fam[[i.var]]$family == "negbinomial")
       {
         if(any(names(manyfit[[i.var]])=="theta"))
@@ -252,7 +270,7 @@ manyany = function(fn, yMat, formula, data, family="negative.binomial", composit
     dimnames(resids) = yNames
     dimnames(fits)   = yNames
     dimnames(etas)   = yNames
-    mf = if(any(names(manyfit[[i.var]])=="data")) manyfit[[i.var]]$data else model.frame(manyfit[[i.var]])
+    mf[[1]] = yMat #DW, 3/2/22 change: return full response
     object=list(logL=logL,fitted.values=fits,residuals=resids,linear.predictor=etas,family=fam, coefficients = coefs, call=call,params=params,model=mf, terms = terms(manyfit[[i.var]]), formula=formula, block=block, composition=composition, get.what=get.what)
 #    object=list(logL=logL,fitted.values=fits,residuals=resids,linear.predictor=etas,family=fam, coefficients = coefs, call=call,params=params,model=model.frame(manyfit[[i.var]]), terms = terms(manyfit[[i.var]]), formula=formula, block=block, composition=composition, get.what=get.what)
   }
@@ -354,13 +372,6 @@ plot.manyany=function(x, ...)
   # DW, 1/3/19: removed qnorm from next call, now done in resids function 
   Dunn.Smyth.Residuals=residuals.manyany(object)
 
-#  truncation of predictors has been moved up to original manyany function
-#  if( any( grepl(object$family[[1]]$link, c("log","logit","cloglog")) ) )
-#  {
-#    minFit = min(object$linear[object$linear>log(tol)/2])  
-#    Fitted.values = pmax(object$linear,minFit-1)
-#  }
-#  else
   Fitted.values = object$linear
   
   # add colours if not already there, rainbow sorted by total abundance...
@@ -381,13 +392,13 @@ plot.manyany=function(x, ...)
   if(mx==0)
     xlab="Linear Predictor"
   else
-    xlab=as.character(args[mx])
+    xlab=deparse(args[mx])
 
   my=match("ylab",names(args),0L)
   if(my==0)
     ylab="Dunn-Smyth Residuals"
   else
-    ylab=as.character(args[my])
+    ylab=deparse(args[my])
   
   title(xlab=xlab,ylab=ylab)
 
