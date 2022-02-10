@@ -104,7 +104,7 @@ David Warton <David.Warton@unsw.edu.au>.
 \examples{
 data(spider)
 
-spider = list(abund=spider$abund, x = spider$x)
+spider = list(abund=spider$abund, x = as.matrix(spider$x))
 
 ## To fit a log-linear model assuming counts are negative binomial, via manyglm:
 spidNB <- manyany(abund~x,"manyglm",data=spider,family="negative.binomial")

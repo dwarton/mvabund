@@ -78,7 +78,7 @@ David I. Warton <David.Warton@unsw.edu.au>, Ian W. Renner and Luke Wilson.
 \examples{
 data(spider)
 Alopacce <- spider$abund[,1]
-X <- cbind(1,spider$x)
+X <- model.matrix(~.,data=spider$x) # to get design matrix with intercept term
 #fit a LASSO-penalised negative binomial GLM, with penalty parameter 10:
 ft = glm1(Alopacce,X,lambda=10)
 

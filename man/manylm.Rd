@@ -146,10 +146,7 @@ Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 \examples{
 data(spider)
 spiddat <- log(spider$abund+1)
-spiddat <- mvabund(spiddat)
-X <- spider$x
-
-lm.spider <- manylm(spiddat~X)
+lm.spider <- manylm(spiddat~.,data=spider$x)
 lm.spider
 
 #Then use the plot function for diagnostic plots, and use anova or summary to

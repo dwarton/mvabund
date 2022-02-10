@@ -145,9 +145,9 @@ anova(ftRep,ftTimeRep,nBoot=9) #this takes a few seconds to run even for just 9 
 \dontrun{spidOrd[spider$abund>1 & spider$abund<=10]=2}
 \dontrun{spidOrd[spider$abund>10]=3}
 ## Now fit a model using the clm function:
-\dontrun{manyOrd=manyany(spidOrd~bare.sand+fallen.leaves,"clm",data=data.frame(spider$x))}
+\dontrun{manyOrd=manyany(spidOrd~bare.sand+fallen.leaves,"clm",data=spider$x)}
 ## Test to see if fallen.leaves needs to be there:
-\dontrun{manyOrd0=manyany(spidOrd~bare.sand,"clm",data=data.frame(spider$x))}
+\dontrun{manyOrd0=manyany(spidOrd~bare.sand,"clm",data=spider$x)}
 \dontrun{anova(manyOrd0,manyOrd,nBoot=19)}
 
 }

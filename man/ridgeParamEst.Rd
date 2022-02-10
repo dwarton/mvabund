@@ -56,7 +56,7 @@ David Warton <David.Warton@unsw.edu.au> and Ulrike Naumann.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 ridgeParamEst(dat = spiddat, X = model.matrix(spiddat~X))
 }

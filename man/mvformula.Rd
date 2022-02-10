@@ -43,8 +43,8 @@ require(graphics)
 
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
- 
+X=as.matrix(spider$x)
+
 ## Create a formula for multivariate abundance data:
 foo <- mvformula( spiddat~X )
 

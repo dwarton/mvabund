@@ -31,9 +31,7 @@ log-likelihood are included.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
-
-lm.spider <- manylm(spiddat~X)
+lm.spider <- manylm(spiddat~., data=spider$x)
 logLik(lm.spider)
 }
 \keyword{models}

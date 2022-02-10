@@ -167,11 +167,9 @@ Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 \examples{
 data(spider)
 spiddat <- log(spider$abund+1)
-spiddat <- mvabund(spiddat)
-spidx <- spider$x
 
 ## Estimate the coefficients of a multivariate linear model:
-fit <- manylm(spiddat~spidx)
+fit <- manylm(spiddat~., data=spider$x)
 
 ## To summarise this multivariate fit, using score resampling to
 ## and F Test statistic to estimate significance:

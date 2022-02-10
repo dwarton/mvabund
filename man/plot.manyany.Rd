@@ -49,7 +49,7 @@ require(graphics)
 
 data(spider)
 abund <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 ## Plot the diagnostics for a log-linear model assuming counts are poisson:
 spidPois <- manyany(abund ~ X, "glm", family=poisson())

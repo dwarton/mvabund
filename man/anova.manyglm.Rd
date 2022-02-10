@@ -168,11 +168,9 @@ anova(tasm.cop.nb, nBoot=199, test="wald")
 ## Performing the Pairwise comparison:
 \dontrun{
 data(solberg)
-abund <- mvabund(solberg$abund)
-treatment <- as.character(solberg$x)
-## pairwise comparison 
-manyglm(abund ~ treatment) -> msolglm
-anova(msolglm, pairwise.comp = treatment, nBoot = 199)
+manyglm(abund ~ x, data=solberg) -> msolglm
+## pairwise comparison on solberg$x
+anova(msolglm, pairwise.comp = solberg$x, nBoot = 199)
 # Could also run: anova(msolglm, pairwise.comp = ~treatment, nBoot = 199)
 }
 }
