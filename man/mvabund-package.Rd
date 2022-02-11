@@ -107,7 +107,7 @@ data(spider)
 
 ## Create the mvabund object spiddat:
 spiddat <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 ## Draw a plot of the spider data:
 plot(spiddat, col="gray1", n.vars=8, transformation="sqrt", 

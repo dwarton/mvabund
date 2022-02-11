@@ -108,19 +108,18 @@ require(graphics)
 
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
 
 ## plot the diagnostics for the linear fit of the spider data
-spidlm <- manylm(spiddat~X)
+spidlm <- manylm(spiddat~., data=spider$x)
 plot(spidlm,which=1:2,col.main="red",cex=3,overlay=FALSE)
 
 plot(spidlm,which=1:4,col.main="red",cex=3,overlay=TRUE)
 
 ## plot the diagnostics for Poisson and negative binomial regression of the spider data
-glmP.spid <- manyglm(spiddat~X, family="poisson")
+glmP.spid <- manyglm(spiddat~., family="poisson", data=spider$x)
 plot(glmP.spid, which=1) #note the marked fan-shape on the plot
 
-glmNB.spid <- manyglm(spiddat~X, family="negative.binomial")
+glmNB.spid <- manyglm(spiddat~., data=spider$x, family="negative.binomial")
 plot(glmNB.spid, which=1) #no fan-shape
 plot(glmNB.spid, which=1) #note the residuals change on re-plotting, but no consistent trend
 

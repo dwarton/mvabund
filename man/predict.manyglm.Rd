@@ -65,11 +65,11 @@ If \code{newdata} is omitted the predictions are based on the data
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-Y <- spiddat[1:20, ]
-X <- data.frame(spider$x[1:20, ])
+Y <- spiddat[1:20,]
+X <- spider$x[1:20,]
 glm.spid.poiss <- manyglm(Y~soil.dry+bare.sand, family="poisson", data=X)
 glm.spid.poiss$data = X
-newdata <- data.frame(spider$x[21:28,])
+newdata <- spider$x[21:28,]
 predict(glm.spid.poiss, newdata)
 pred.w.plim <- predict(glm.spid.poiss, newdata, interval="prediction")
 pred.w.clim <- predict(glm.spid.poiss, newdata, interval="confidence")

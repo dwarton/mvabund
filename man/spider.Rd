@@ -73,4 +73,3 @@ spiddat <- as.mvabund(spider$abund)
 plot(spiddat)
 }
 \keyword{datasets}
-

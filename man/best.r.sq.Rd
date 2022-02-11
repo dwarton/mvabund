@@ -61,7 +61,7 @@ Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 best.r.sq( spiddat~X )
 }

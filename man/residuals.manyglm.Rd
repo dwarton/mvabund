@@ -39,7 +39,7 @@ Graphical Statistics 5, 236-244.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 ## obtain residuals for Poisson regression of the spider data, and doing a qqplot:
 glmP.spid  <- manyglm(spiddat~X, family="poisson")

@@ -27,10 +27,9 @@ how to deal with \code{NA} values. Can be one of
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
 
 ## Calculate the deviance:
-deviance(manylm(spiddat~X))
+deviance(manylm(spiddat~., data=spider$x))
 }
 \keyword{models}
 \keyword{multivariate}

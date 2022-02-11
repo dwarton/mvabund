@@ -224,7 +224,7 @@ Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
+X <- as.matrix(spider$x)
 
 #To fit a log-linear model assuming counts are poisson:
 glm.spid <- manyglm(spiddat~X, family="poisson")

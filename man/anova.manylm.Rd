@@ -138,7 +138,7 @@ Yi Wang, Ulrike Naumann and David Warton <David.Warton@unsw.edu.au>.
 data(spider)
 spiddat <- log(spider$abund+1)
 spiddat <- mvabund(spiddat)
-spidx <- spider$x
+spidx <- as.matrix(spider$x)
 
 ## Fit several multivariate linear models:
 fit <- manylm( spiddat ~ spidx ) # model with all explanatory variables

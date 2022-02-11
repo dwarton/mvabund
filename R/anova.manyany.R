@@ -6,25 +6,28 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
   
   object1 = object 
   # get object 2
-    dots <- list(...)
-    ndots <- length(dots)
-    fndObj2 <- FALSE
-    if (ndots==0) {
-       stop("missing a second manyany object")
-    }else {
-       if (ndots>1)
-           warning("current version only compares two manyany objects")
-       for (i in 1:ndots) {
-           if (any(class(dots[[i]])=="manyany")){
-              object2 <- dots[[i]]
-              fndObj2 <- TRUE
-              break
-           }
+  dots <- list(...)
+  ndots <- length(dots)
+  fndObj2 <- FALSE
+  if (ndots==0) {
+     stop("missing a second manyany object")
+  }
+  else
+  {
+    if (ndots>1)
+       warning("current version only compares two manyany objects")
+      for (i in 1:ndots) 
+      {
+       if (any(class(dots[[i]])=="manyany")){
+          object2 <- dots[[i]]
+          fndObj2 <- TRUE
+          break
        }
-       if (!fndObj2) stop("cannot find object 2")
-    }
+      }
+     if (!fndObj2) stop("cannot find object 2")
+  }
 
-    if(any(names(object1$call)=="composition"))
+  if(any(names(object1$call)=="composition"))
   {
     if(object1$call$composition==TRUE) #recode so that it fits compositional models as univariate, to save time and fuss/bother.
     {
@@ -35,23 +38,20 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
       object1$residuals = as.matrix(c(object1$residuals))
       object1$call$composition=FALSE
       object2$call$composition=FALSE
-      assign(as.character(object1$call[[3]]),object1$model$y) 
-      assign(as.character(object2$call[[3]]),object2$model$y) 
     }
   }
-  
 
-    #DW, 18/1/18: check for same composition arguments in each call
-    if(all(names(object1$call)!="composition"))
-      object1$call$composition = FALSE
-    if(all(names(object2$call)!="composition"))
-      object2$call$composition = FALSE
+  #DW, 18/1/18: check for same composition arguments in each call
+  if(all(names(object1$call)!="composition"))
+    object1$call$composition = FALSE
+  if(all(names(object2$call)!="composition"))
+    object2$call$composition = FALSE
 
-    if(object1$call$composition!=object2$call$composition)
-      stop("Sorry, either both manyany objects will need to be compositional, or neither")
+  if(object1$call$composition!=object2$call$composition)
+    stop("Sorry, either both manyany objects will need to be compositional, or neither")
     
     
-    n.rows = dim(object1$resid)[1]
+  n.rows = dim(object1$resid)[1]
   n.vars = dim(object1$resid)[2]
   
   qfn = rep(NA,n.vars)
@@ -103,11 +103,9 @@ anova.manyany = function(object, ..., nBoot=99, p.uni="none", block = object1$bl
     }
   }
   #get observed test stat
-#  ft.1i=eval(object1$call) #this call seems unnecessary
-#  ft.2i=eval(object2$call) #this call seems unnecessary
+  #ft.1i=eval(object1$call) #this call not needed but good to check that eval is working, compare logLik to logLik(object1)
   statj = 2 * ( logLik(object2)-logLik(object1) )
   stat = sum(statj)
-  
 
   if(nCores>1)
   {
@@ -212,8 +210,9 @@ bootAnova = function(bootRows,...)
 
   require(mvabund)
   yMat = matrix(NA,argList$n.rows,argList$n.vars)
-  if(argList$object1$family[[1]]$family=="ordinal")
-    yMat=data.frame(yMat)
+  #next two lines no longer correct, requires matrix input to use formula
+  #  if(argList$object1$family[[1]]$family=="ordinal") 
+  #    yMat=data.frame(yMat)
   argList$object1$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
   argList$object2$call$get.what="none" #to avoid wasting time computing residuals etc when resampling
 
@@ -223,10 +222,11 @@ bootAnova = function(bootRows,...)
   if(is.null(argList$bootID))
     boot.Resamp = rep(NA,argList$n.rows)
 
-  # need to find data frame and call it what it the same as in the original call for analysis
-  whichData = which(names(argList$object2$call)=="data")
-  assign(as.character(argList$object2$call[[whichData]]),argList$object2$model) 
-    
+  # find where in object1$call and object2$call the response matrix is so it can be replaced with bootstrapped version
+  mf              = argList$object2$model
+  nameOfResponse  = as.character(argList$object2$formula[[2]])
+  whichIsResponse = which(names(mf)==nameOfResponse)
+
   #now do the bootstrap
   for(iBoot in 1:length(bootRows))
   {
@@ -244,7 +244,8 @@ bootAnova = function(bootRows,...)
     # resample PIT residuals
     # DW, 1/3/19: pnorm these to get back from Dunn-Smyth resids to PIT-resids
     resid.i = pnorm(as.matrix(argList$object1$residuals[boot.Resamp,]))
-  
+
+    
     # now use PIT-transform to get resampled yMat
     for(i.var in 1:argList$n.vars)
     {
@@ -259,9 +260,11 @@ bootAnova = function(bootRows,...)
       is.zeroton = apply(yMat,2,function(x) length(table(x)))==1
     else
       is.zeroton = apply(yMat,2,sum,na.rm=TRUE)==0
-    assign(as.character(argList$object1$call[[3]]),yMat[,is.zeroton==FALSE]) 
-    assign(as.character(argList$object2$call[[3]]),yMat[,is.zeroton==FALSE]) 
-
+    
+    # replace response matrix:
+    mf[[whichIsResponse]] = yMat[,is.zeroton==FALSE]
+    assign(deparse(argList$object1$call$data), mf) 
+    assign(deparse(argList$object2$call$data), mf) 
     #re-fit manyany functions and calculate test stats using the resampled yMat:
     if(sum(is.zeroton==FALSE)>0)
     {
@@ -276,3 +279,17 @@ bootAnova = function(bootRows,...)
   }
   return(list(stati.i=stati.i,statj.ii=statj.ii))
 } 
+
+
+qordinal = function(p,mu,muAll)
+  ## QORDINAL - finds the level of an ordinal variable from its quantile and a matrix of cumulative probabilities for j-1.
+  ## Input arguments are:
+  ## P, a vector of cumultative probabilities
+  ## MU, an irrelevant list with cumulative probs of answer ($ETA1) and its previous value ($ETA2) as returned by predict("cumprob") function
+  ## MUALL, a matrix of cumulative probabilities for j-1 across all levels j=1,...,J.
+{
+  rank=apply(muAll<=p,1,sum)
+  levels = dimnames(muAll)[[2]] #levels are stored as column labels of muAll
+  y = as.numeric(levels[rank])
+  return(y)
+}

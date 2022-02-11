@@ -215,10 +215,9 @@ Yi Wang, David Warton <David.Warton@unsw.edu.au> and Ulrike Naumann.
 \examples{
 data(spider)
 spiddat <- mvabund(spider$abund)
-X <- spider$x
 
 ## Estimate the coefficients of a multivariate glm
-glm.spid <- manyglm(spiddat[,1:3]~X, family="negative.binomial")
+glm.spid <- manyglm(spiddat[,1:3]~., data=spider$x, family="negative.binomial")
 
 ## Estimate the statistical significance of different multivariate terms in 
 ## the model, using the default settings of LR test, and 100 PIT-trap resamples
