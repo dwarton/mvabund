@@ -4,3 +4,4 @@
 ^Makefile$
 ^\.github
 ^\ignore
+^README\.Rmd$
