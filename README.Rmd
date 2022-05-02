@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
 <!-- badges: end -->
 
-The goal of mvabund is to .
+The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Warton 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data. This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
+
 
 ### Installation
 
@@ -58,3 +59,15 @@ citation("mvabund")
 ### Spot a bug? 
 
 Thanks for finding the bug! We would appreciate it if you can pop over to our [Issues page](https://github.com/aliceyiwang/mvabund/issues) and describe how to reproduce the bug! 
+
+### Other resources
+
+- [Online tutorial](https://environmentalcomputing.net/statistics/mvabund/) for using `mvabund` for comparing species composition across different habitats 
+- [Video introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html) to ``mvabund`
+
+### mvabund in action
+Here are a selection of published studies that uses `mvabund` in their analyses
+
+-
+-
+-
