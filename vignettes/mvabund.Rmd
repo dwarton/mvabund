@@ -21,7 +21,7 @@ This vignette takes you through the main functions in `mvabund` to help you get 
 
 ### First things first
 
-Let's load the package and get our hands on the `Tasmania` data set to look at the effects of disturbance treatment on invertebrate abundances. Note that the `Tasmania` data set is a list object. We will only use the `copepods` data frame for this walk-through. The `copepods` data frame can be accessed using `Tasmania$copepods` or the `attach()` function which will make the contents of `Tasmania` searchable. 
+Let's load the package and get our hands on the `Tasmania` data set to look at the effects of disturbance treatment on invertebrate abundances. Note that the `Tasmania` data set is a list object. We will only look at the `copepods` data frame for this walk-through. The `copepods` data frame can be accessed using `Tasmania$copepods` or the `attach()` function which will make the contents of `Tasmania` searchable. 
 
 ```{r setup}
 library(mvabund)
@@ -40,7 +40,7 @@ We first need to turn our data into a `mvabund` object so functions for this pac
 copepod_abund <- mvabund(copepods)
 ```
 
-Now lets take a look at abundance for each species across our treatment sites (Disturbed vs. Undistrubed). We can set the colour (`col`) of the points to represent that four sampling blocks
+Now lets take a look at abundance for each species across our treatment sites (Disturbed vs. Undisturbed). Observations were collected using a spatially blocked design where researchers took four samples at each block (2 per treatment). We can set the colour (`col`) of the points to represent that four sampling blocks
 
 ```{r, fig.height=6, fig.width= 7}
 plot(copepod_abund~treatment, col = block)
@@ -48,7 +48,7 @@ plot(copepod_abund~treatment, col = block)
 
 ### Fitting Predictive Models
 
-It was hypothesised that the abundance of Ameira and Ectinosoma was reduced in Disturbed sites, whereas the abundance of Mictyricola may have increased. Lets test this hypothesis using the `manyglm()` function. This function fits a generalised linear model for each species. We specified `family =  "negative.binomial"` as count data tends to follow a negative binomial distribution. Other distribtuions are available too! See `?manyglm()`
+It was hypothesised that the abundance of *Ameira* and *Ectinosoma* was reduced in Disturbed sites, whereas the abundance of *Mictyricola* may have increased. Lets test this hypothesis using the `manyglm()` function. This function fits a generalised linear model for each species. We specified `family =  "negative.binomial"` as count data tends to follow a negative binomial distribution. Other distributions are available too! See `?manyglm()`
 
 ```{r}
 cope.nb <- manyglm(copepods ~ treatment*block, family =  "negative.binomial")
@@ -56,13 +56,13 @@ cope.nb <- manyglm(copepods ~ treatment*block, family =  "negative.binomial")
 
 ### Checking Model Assumptions
 
-Before we look at the model output, we should check on the model residuals. What we want to see is *little pattern* as this implies that our choice of negative binomial distribution is appropiate. 
+Before we look at the model output, we should check on the model residuals. What we want to see is *little pattern* as this implies that our choice of negative binomial distribution is appropriate. 
 
 ```{r, fig.height=5, fig.width= 6}
 plot(cope.nb)
 ```
 
-Then lets proceed to check on the *mean-variance relationship*. We want to to see if the *mean-variance relationship* of our data adheres to that of a negative binomial distribution which tends to be quadratic rather than linear. The `meanvar.plot()` function plots the sample variance against the sample mean for each species within each factor level of (`tr.block`). A quadratic relationship seems appropriate for our sample mean and variance.
+Now, lets proceed to check on the *mean-variance relationship*. We want to to see if the *mean-variance relationship* of our data adheres to that of a negative binomial distribution which tends to be quadratic rather than linear. The `meanvar.plot()` function plots the sample variance against the sample mean for each species within each factor level of (`tr.block`). A quadratic relationship seems appropriate for our sample mean and variance.
 
 ```{r, fig.height=5, fig.width= 6}
 meanvar.plot(copepods~tr.block, col = treatment)
@@ -70,14 +70,23 @@ meanvar.plot(copepods~tr.block, col = treatment)
 
 ### Hypothesis Testing
 
-To test whether `treatment` and `block` had an effect on the abundances of copepods we can used the `anova()` function to returns a Analysis of Deviance table testing the significance of each term. Setting `p.uni = "adjusted"` allows for our p-values to be adjusted for multiple testing. 
+To test whether `treatment` and `block` had an effect on the abundances of copepods we can use the `anova()` function. This function returns a Analysis of Deviance table which tests the significance of each model term. Setting `p.uni = "adjusted"` allows for our p-values to be adjusted for multiple testing of different species. 
 
 ```{r, c}
 anova(cope.nb, p.uni = "adjusted")
 ```
 
-We can see that there is a **significant effect of the treatment factor** meaning that treatment has a significant multiplicative effect on mean abundance. The interaction between blocks and treatments is **not significa nt**, meaning that the multiplicative treatment effect is consistent across blocks. h6
+We can see that there is a **significant effect of the treatment factor** meaning that treatment has a significant multiplicative effect on mean abundance. The interaction between blocks and treatments is **not significant**, meaning that the multiplicative treatment effect is consistent across blocks. 
 
+If you do not have a specific hypothesis in mind that you want to test, and are instead interested in which model terms are statistically significant, then the `summary()` function will come in handy. 
 
-### Predicting Fitted Values
+```{r}
+summary(cope.nb) 
+```
+
+If obtaining predicted values from the model is the goal, you can use the `predict()` function. Note that `type = response` will produce values on the scale of the response variable (i.e. counts)
+
+```{r}
+predict(cope.nb, type = "response") 
+```
 
