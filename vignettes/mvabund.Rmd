@@ -78,13 +78,13 @@ anova(cope.nb, p.uni = "adjusted")
 
 We can see that there is a **significant effect of the treatment factor** meaning that treatment has a significant multiplicative effect on mean abundance. The interaction between blocks and treatments is **not significant**, meaning that the multiplicative treatment effect is consistent across blocks. 
 
-If you do not have a specific hypothesis in mind that you want to test, and are instead interested in which model terms are statistically significant, then the `summary()` function will come in handy. 
+If you do not have a specific hypothesis in mind that you want to test, and are instead interested in which model terms are statistically significant, then the `summary()` function will come in handy. However  results aren’t quite as trustworthy as for `anova()`. The reason is that re-samples are taken under the alternative hypothesis for `summary()`, where there is a greater chance of fitted values being zero, especially for rarer taxa (e.g. if there is a treatment combination in which a taxon is never present). Abundances don’t re-sample well if their predicted mean is zero.
 
 ```{r}
 summary(cope.nb) 
 ```
 
-If obtaining predicted values from the model is the goal, you can use the `predict()` function. Note that `type = response` will produce values on the scale of the response variable (i.e. counts)
+If obtaining predicted values from the model is the goal, you may use the `predict()` function. Note that `type = response` will produce values on the scale of the response variable (i.e. counts)
 
 ```{r}
 predict(cope.nb, type = "response") 
