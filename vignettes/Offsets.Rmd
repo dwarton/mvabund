@@ -1,8 +1,8 @@
 ---
-title: "Composition Analysis"
+title: "Using offsets with count data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Composition Analysis}
+  %\VignetteIndexEntry{Using offsets}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,6 +13,13 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+Read the chapter
+Try the examples
+Import from ecostats
+Put example data in mvabund
+Walk through vignette
+Further reading: ecostats book
 
 ```{r setup}
 library(mvabund)
