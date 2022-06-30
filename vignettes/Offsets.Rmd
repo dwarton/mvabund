@@ -53,18 +53,12 @@ attach(reveg)
 skimr::skim(abund$Haplotaxida) # Great function to get an overview of the data
 ```
 
-Now we will use the `manyglm` function. We specified `family =  "negative.binomial"` as count data tends to follow a negative binomial distribution. We have also included an offset term  to deal with variation in sampling effort. Offsets are most commonly used in a log-linear model, where an offset is a predictor known to have an exactly proportional effect on the response. The offset in Anthony's model for is `log(pitfalls)`
+Now we will use the `manyglm` function. We specified `family =  "negative.binomial"` as count data tends to follow a negative binomial distribution. We have also included an offset term  to deal with variation in sampling effort. Offsets are most commonly used in a log-linear model, where an offset is a predictor known to have an exactly proportional effect on the response. The offset in Anthony's model for is `log(pitfalls)`. By including this term, our model changes from predicting mean abundance to modelling mean abundance per pitfall trap. This is what you would be trying to do if you averaged the counts across pitfalls prior to analysing them, but using an offset achieves this without messing with the data and its mean-variance relationship.
 
 
 ```{r fit model}
 worms_offset <-  manyglm(Haplotaxida~treatment+offset(log(pitfalls)), family="negative.binomial", data=abund)
 
 anova(worms_offset)
-```
-
-```{r nooffset}
-worms_fit <- manyglm(Haplotaxida~treatment,family="negative.binomial", data=abund)
-
-anova(worms_fit)
 ```
 
