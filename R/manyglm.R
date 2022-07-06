@@ -25,7 +25,7 @@ manyglm <- function (formula,
 
 
 # start by converting any family objects that can be handled over to character strings
-if(class(family)=="family"){
+if(inherits(family,"family")){
   fam = family
   if(fam$family=="binomial" & fam$link=="cloglog")
     family="cloglog"

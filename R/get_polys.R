@@ -26,7 +26,7 @@ get_polys = function( X, X.des.train=NULL)
     if(is.null(X.des.train$var.type) & is.factor(X[,i])==FALSE)
     {
       testBinary = try(duplicated(X[,i],nmax=2), silent=TRUE)
-      if(class(testBinary)=="logical")
+      if(inherits(testBinary,"logical"))
       {
         X[,i] = factor(X[,i])
         warning(paste0("Binary variable '", names(X)[i], "' found and changed to a factor"))
