@@ -91,7 +91,7 @@ manyany = function(formula, fn, family="negative.binomial", data=NULL, compositi
     n.vars  = 1
     names(yVec) = paste( yNames[[2]][cols], ".", yNames[[1]][rows], sep="")
     yMat    = as.matrix(yVec)
-    if(class(family)!="family" & length(family)>1)
+    if(inherits(family,"family")==FALSE & length(family)>1)
       stop("when using composition=TRUE, family argument must have length one.")
     if(is.null(block))  #to make sure resampling is by row of original data, not of vectorised data.
        block = rows
@@ -100,7 +100,7 @@ manyany = function(formula, fn, family="negative.binomial", data=NULL, compositi
   }
 
   #If family is specified once, turn it into a list of n.vars family objects
-  if(class(family)=="family" || length(family)==1)
+  if(inherits(family,"family") || length(family)==1)
   {
     fam = family #temporary store to slot into a big list
     family = vector("list",n.vars)
