@@ -1,0 +1,18 @@
+url: ~
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    pkgdown-nav-height: 150px
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components: 
+    reference:
+      text: Functions glossary
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/traitecoevo/austraits/
+    
