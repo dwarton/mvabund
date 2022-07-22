@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">mvabund</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">4.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
       <ul class="navbar-nav"><li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/traitecoevo/austraits/">
+  <a class="external-link nav-link" href="https://github.com/aliceyiwang/mvabund">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -179,12 +179,13 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># now estimate the best-fitting model by cross-validation:</span></span></span>
 <span class="r-in"><span><span class="va">cvft</span> <span class="op">=</span> <span class="fu">cv.glm1path</span><span class="op">(</span><span class="va">ft</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>non-convergence!!!</span>
 <span class="r-plt img"><img src="cv.glm1path-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">cvft</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept)      soil.dry     bare.sand fallen.leaves          moss </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    -1.5763776    -0.4952533     0.0000000    -0.2393162     0.1509633 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   -1.85944630   -0.82466361   -0.05235784   -0.27061987    0.12836994 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    herb.layer    reflection </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     0.4754222     0.7257795 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    0.68545396    0.82062722 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

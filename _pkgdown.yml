@@ -2,6 +2,9 @@ url: ~
 template:
   bootstrap: 5
   bootswatch: flatly
+  
+development:
+  mode: auto
 
 navbar:
   structure:

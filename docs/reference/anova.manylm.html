@@ -14,7 +14,7 @@ multivariate abundance data in ecology.'><!-- mathjax --><script src="https://cd
     
     <a class="navbar-brand me-2" href="../index.html">mvabund</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">4.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ multivariate abundance data in ecology.'><!-- mathjax --><script src="https://cd
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
       <ul class="navbar-nav"><li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/traitecoevo/austraits/">
+  <a class="external-link nav-link" href="https://github.com/aliceyiwang/mvabund">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -292,13 +292,13 @@ Regression Analysis.
 <span class="r-out co"><span class="r-pr">#&gt;</span> Test statistics:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Res.Df Df.diff val(F) Pr(&gt;F)   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit0     27                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit1     25       2 231.36  0.002 **</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     24       1  40.44  0.011 * </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit      21       3  22.53  0.046 * </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit1     25       2 229.53  0.002 **</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     24       1  40.12  0.010 **</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit      21       3  22.45  0.039 * </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Arguments:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Test statistics calculated assuming correlated response via ridge regularization with ridge parameter 0.375 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Test statistics calculated assuming correlated response via ridge regularization with ridge parameter 0.393 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  P-value calculated using 999 iterations via residual (without replacement) resampling.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -318,8 +318,8 @@ Regression Analysis.
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Res.Df Df.diff val(F) Pr(&gt;F)    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit0     27                          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit1     25       2 253.06 0.0004 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     24       1  44.33 0.0090 ** </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit      21       3  23.49 0.0434 *  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     24       1  44.33 0.0112 *  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit      21       3  23.49 0.0440 *  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -328,21 +328,21 @@ Regression Analysis.
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Alopacce        Alopcune        Alopfabr        Arctlute        Arctperi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       F value Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)  F value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit0                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit1   27.921 0.0004    9.204 0.0016    39.04 0.0004    8.781 0.0016   21.853</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     1.56 0.7438    0.564 0.7502    0.312 0.7502     0.87 0.7502    1.113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit     3.377 0.3054    1.257 0.7646    2.558 0.4604    0.945 0.8554    2.006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit1   27.921 0.0006    9.204 0.0028    39.04 0.0004    8.781 0.0028   21.853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit2     1.56 0.7404    0.564 0.7496    0.312 0.7496     0.87 0.7496    1.113</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit     3.377 0.3108    1.257 0.7650    2.558 0.4666    0.945 0.8556    2.006</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Auloalbi        Pardlugu        Pardmont        Pardnigr       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit0                                                                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit1 0.0006   11.492 0.0012   19.024 0.0006   16.408 0.0008   21.359 0.0006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit2 0.7502    3.416 0.4298    2.738 0.5268   11.386 0.0278     7.98 0.0772</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit  0.5800    1.819 0.5800    2.971 0.3814    0.841 0.8554     0.74 0.8554</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit1 0.0006   11.492 0.0022   19.024 0.0006   16.408 0.0006   21.359 0.0006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit2 0.7496    3.416 0.4278    2.738 0.5270   11.386 0.0286     7.98 0.0788</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit  0.5842    1.819 0.5842    2.971 0.3828    0.841 0.8556     0.74 0.8556</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Pardpull        Trocterr        Zoraspin       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       F value Pr(&gt;F)  F value Pr(&gt;F)  F value Pr(&gt;F)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fit0                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit1   32.306 0.0004   31.906 0.0004   13.764 0.0008</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit2    1.343 0.7438    8.789 0.0600    4.262 0.3320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fit     0.903 0.8554    2.045 0.5800    4.027 0.2024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit1   32.306 0.0006   31.906 0.0006   13.764 0.0016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit2    1.343 0.7404    8.789 0.0624    4.262 0.3284</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fit     0.903 0.8556    2.045 0.5842    4.027 0.2054</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Arguments: with 4999 resampling iterations using residual (without replacement) resampling and uncorrelated response (for faster computation) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
