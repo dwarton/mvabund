@@ -11,11 +11,9 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-
-
 ```
 
-# mvabund  <img src="inst/figures/mvabund_hex.png" align="right" alt="" width="150" />
+# mvabund  <img src="man/figures/mvabund_hex.png" align="right" alt="" width="150" />
 
 <!-- badges: start -->
 [![](https://img.shields.io/badge/doi-10.1111/j.2041--210X.2012.00190.x-orange.svg)](https://doi.org/10.1111/j.2041-210X.2012.00190.x)
@@ -24,8 +22,9 @@ knitr::opts_chunk$set(
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
 <!-- badges: end -->
 
-The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Yi Wang et al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data. This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
+The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Yi Wang et al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data.
 
+This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
 
 ### Installation
 

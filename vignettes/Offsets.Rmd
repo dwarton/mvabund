@@ -2,7 +2,7 @@
 title: "Using offsets with count data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using offsets}
+  %\VignetteIndexEntry{Using offsets with count data}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

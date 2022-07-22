@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvabund <img src="inst/figures/mvabund_hex.png" align="right" alt="" width="150" />
+# mvabund <img src="man/figures/mvabund_hex.png" align="right" alt="" width="150" />
 
 <!-- badges: start -->
 
@@ -15,9 +15,11 @@ The goal of mvabund is to provide tools for a **model-based approach**
 to the analysis of multivariate abundance data in ecology [(Yi Wang et
 al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x).
 Abundance measures include counts, presence/absence data, oridinal or
-biomass data. This package includes functions for **visualising data,
-fitting predictive models, checking model assumptions, as well as
-testing hypotheses about the community–environment association**.
+biomass data.
+
+This package includes functions for **visualising data, fitting
+predictive models, checking model assumptions, as well as testing
+hypotheses about the community–environment association**.
 
 ### Installation
 
