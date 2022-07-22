@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
 <!-- badges: end -->
 
-The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Warton 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data. This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
+The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Yi Wang et al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data. This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
 
 
 ### Installation
@@ -48,7 +48,14 @@ library(mvabund)
 
 ### Getting Started
 
-We highly recommend you taking a good read of our vignette over at [XXX]() before launching into the `mvabund`
+We highly recommend you taking a good read of our vignette over at [our website]() before launching into the `mvabund`. Alternatively, you can access the vignettes in R by:
+
+```{r, eval = FALSE}
+remotes::install_github("aliceyiwang/mvabund", build_vignettes = TRUE)
+
+vignette("mvabund")
+```
+
 
 ### Show `mvabund` your support
 
@@ -66,8 +73,4 @@ Thanks for finding the bug! We would appreciate it if you can pop over to our [I
 - [Video introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html) to ``mvabund`
 
 ### mvabund in action
-Here are a selection of published studies that uses `mvabund` in their analyses
-
--
--
--
+Check out the list of studies that uses `mvabund` in their analyses [here](https://scholar.google.com.au/scholar?cites=2455431763697722063&as_sdt=2005&sciodt=0,5&hl=en)

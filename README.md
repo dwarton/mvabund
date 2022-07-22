@@ -12,8 +12,8 @@
 <!-- badges: end -->
 
 The goal of mvabund is to provide tools for a **model-based approach**
-to the analysis of multivariate abundance data in ecology [(Warton
-2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x).
+to the analysis of multivariate abundance data in ecology [(Yi Wang et
+al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x).
 Abundance measures include counts, presence/absence data, oridinal or
 biomass data. This package includes functions for **visualising data,
 fitting predictive models, checking model assumptions, as well as
@@ -43,8 +43,15 @@ library(mvabund)
 
 ### Getting Started
 
-We highly recommend you taking a good read of our vignette over at
-[XXX]() before launching into the `mvabund`
+We highly recommend you taking a good read of our vignette over at [our
+website]() before launching into the `mvabund`. Alternatively, you can
+access the vignettes in R by:
+
+``` r
+remotes::install_github("aliceyiwang/mvabund", build_vignettes = TRUE)
+
+vignette("mvabund")
+```
 
 ### Show `mvabund` your support
 
@@ -53,10 +60,9 @@ citation("mvabund")
 #> 
 #> To cite package 'mvabund' in publications use:
 #> 
-#>   Yi Wang, Ulrike Naumann, Dirk Eddelbuettel, John Wilshire and David
-#>   Warton (2022). mvabund: Statistical Methods for Analysing
-#>   Multivariate Abundance Data. R package version 4.2.1.
-#>   https://CRAN.R-project.org/package=mvabund
+#>   Wang Y, Naumann U, Eddelbuettel D, Wilshire J, Warton D (2022).
+#>   _mvabund: Statistical Methods for Analysing Multivariate Abundance
+#>   Data_. R package version 4.2.2.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -64,8 +70,7 @@ citation("mvabund")
 #>     title = {mvabund: Statistical Methods for Analysing Multivariate Abundance Data},
 #>     author = {Yi Wang and Ulrike Naumann and Dirk Eddelbuettel and John Wilshire and David Warton},
 #>     year = {2022},
-#>     note = {R package version 4.2.1},
-#>     url = {https://CRAN.R-project.org/package=mvabund},
+#>     note = {R package version 4.2.2},
 #>   }
 ```
 
@@ -87,9 +92,5 @@ describe how to reproduce the bug!
 
 ### mvabund in action
 
-Here are a selection of published studies that uses `mvabund` in their
-analyses
-
--   
--   
--   
+Check out the list of studies that uses `mvabund` in their analyses
+[here](https://scholar.google.com.au/scholar?cites=2455431763697722063&as_sdt=2005&sciodt=0,5&hl=en)

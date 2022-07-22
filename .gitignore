@@ -174,3 +174,5 @@ pip-log.txt
 .Rproj.user
 inst/doc
 ignore/
+/doc/
+/Meta/
