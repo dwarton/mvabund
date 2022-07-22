@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvabund
+# mvabund <img src="inst/figures/mvabund_hex.png" align="right" alt="" width="150" />
 
 <!-- badges: start -->
 
-[![](https://img.shields.io/badge/doi-10.1111/j.2041--210X.2012.00190.x-blue.svg)](https://doi.org/10.1111/j.2041-210X.2012.00190.x)
+[![](https://img.shields.io/badge/doi-10.1111/j.2041--210X.2012.00190.x-orange.svg)](https://doi.org/10.1111/j.2041-210X.2012.00190.x)
 [![License](http://img.shields.io/badge/license-LGPL%20%28%3E=%202.1%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/mvabund)](https://CRAN.R-project.org/package=mvabund)
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
