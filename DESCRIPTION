@@ -28,13 +28,14 @@ Imports:
     stats,
     tweedie,
     statmod,
-    parallel
+    parallel,
+    ecostats
 LinkingTo: 
     Rcpp,
     RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-RoxygenNote: 6.0.1
+RoxygenNote: 7.2.1
 Suggests:
     knitr,
     rmarkdown,

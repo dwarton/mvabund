@@ -46,6 +46,7 @@ Lets load `mvabund` and the dataset first:
 
 ```{r setup}
 library(mvabund)
+library(ecostats)
 
 data(reveg) 
 attach(reveg)
