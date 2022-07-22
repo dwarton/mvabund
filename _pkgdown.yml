@@ -15,7 +15,7 @@ navbar:
       href: reference/index.html
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/traitecoevo/austraits/
+      href: https://github.com/aliceyiwang/mvabund
       
 reference:
 - title: Included datasets
