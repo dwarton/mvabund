@@ -2,8 +2,6 @@ url: ~
 template:
   bootstrap: 5
   bootswatch: flatly
-  bslib:
-    pkgdown-nav-height: 150px
 
 navbar:
   structure:
