@@ -12,12 +12,15 @@ data(spider)
 A list containing the elements
 \describe{
 \item{abund}{
-A data frame with 28 observations of abundance of 12 hunting spider species}
+A matrix with 28 observations of abundance of 12 hunting spider species}
 \item{x}{
-A matrix of six (transformed) environmental variables at each of the 28 sites.
+A data frame of six (transformed) environmental variables at each of the 28 sites.
+}
+\item{trait}{
+A data frame of three species traits for each of the 12 species.
 }
 }
-The data frame \code{abund} has the following variables
+The matrix \code{abund} has the following variables
    \describe{
     \item{Alopacce}{(numeric) Abundance of the species Alopecosa accentuata }
     \item{Alopcune}{(numeric) Abundance of the species Alopecosa cuneata }
@@ -33,7 +36,7 @@ The data frame \code{abund} has the following variables
     \item{Zoraspin}{(numeric) Abundance of the species Zora spinimana }
    }
 
-The matrix \code{x} has the following variables
+The data frame \code{x} has the following variables
    \describe{
     \item{soil.dry}{(numeric) Soil dry mass }
     \item{bare.sand}{(numeric) Cover bare sand }

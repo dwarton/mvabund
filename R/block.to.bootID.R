@@ -15,8 +15,12 @@ block_to_bootID <- function (block, bootID, nRows, nBoot, resamp) {
   # then each iteration...
   # generate a bootID matrix if required
   if(is.null(bootID)){
-    samp <- matrix(sample(nLevels, nLevels * nBoot, replace=TRUE), ncol=nLevels)
-  } else {
+    if(resamp=="perm.resid")
+        samp <- t( sapply(rep(nLevels,nBoot),sample,replace=FALSE) )
+    else
+        samp <- matrix(sample(nLevels, nLevels * nBoot, replace=TRUE), ncol=nLevels)
+  }
+  else {
     samp <- bootID
   }
   bootID <-  matrix(NA,nBoot,nRows)

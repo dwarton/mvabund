@@ -517,7 +517,7 @@ if (t.lab=="o") {
 	# at the moment transAxis only works with the original name (so 'x' must be used)
 	# and not if there are indices used, then the normal axis is drawn
 	trAxis 	<- try(transAxis(x))
-	if(class(trAxis)=="try-error"){
+	if(inherits(trAxis,"try-error")){
 		axes <- TRUE
 		yaxislabs <- yaxvalues <- NULL
 	} else {
