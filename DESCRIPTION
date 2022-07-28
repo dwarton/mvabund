@@ -28,7 +28,9 @@ Imports:
     stats,
     tweedie,
     statmod,
-    parallel,
+    parallel
+Suggest:
+    skimr
     ecostats
 LinkingTo: 
     Rcpp,
