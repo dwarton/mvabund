@@ -20,9 +20,10 @@ knitr::opts_chunk$set(
 [![License](http://img.shields.io/badge/license-LGPL%20%28%3E=%202.1%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) 
 [![CRAN](http://www.r-pkg.org/badges/version/mvabund)](https://CRAN.R-project.org/package=mvabund) 
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
+[![Codecov test coverage](https://codecov.io/gh/fontikar/mvabund/branch/master/graph/badge.svg)](https://app.codecov.io/gh/fontikar/mvabund?branch=master)
 <!-- badges: end -->
 
-The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Yi Wang et al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). Abundance measures include counts, presence/absence data, oridinal or biomass data.
+The goal of mvabund is to provide tools for a **model-based approach** to the analysis of multivariate abundance data in ecology [(Yi Wang et al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x), in particular, testing hypothesis about the community-environment association. Abundance measures include counts, presence/absence data, ordinal or biomass data. 
 
 This package includes functions for **visualising data, fitting predictive models, checking model assumptions, as well as testing hypotheses about the community–environment association**.
 
@@ -69,7 +70,7 @@ Thanks for finding the bug! We would appreciate it if you can pop over to our [I
 ### Other resources
 
 - [Online tutorial](https://environmentalcomputing.net/statistics/mvabund/) for using `mvabund` for comparing species composition across different habitats 
-- [Video introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html) to ``mvabund`
+- [Video introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html) to `mvabund`
 
 ### mvabund in action
 Check out the list of studies that uses `mvabund` in their analyses [here](https://scholar.google.com.au/scholar?cites=2455431763697722063&as_sdt=2005&sciodt=0,5&hl=en)

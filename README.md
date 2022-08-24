@@ -9,13 +9,16 @@
 [![License](http://img.shields.io/badge/license-LGPL%20%28%3E=%202.1%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/mvabund)](https://CRAN.R-project.org/package=mvabund)
 [![Downloads](http://cranlogs.r-pkg.org/badges/mvabund?color=brightgreen)](https://www.r-pkg.org/pkg/mvabund)
+[![Codecov test
+coverage](https://codecov.io/gh/fontikar/mvabund/branch/master/graph/badge.svg)](https://app.codecov.io/gh/fontikar/mvabund?branch=master)
 <!-- badges: end -->
 
 The goal of mvabund is to provide tools for a **model-based approach**
 to the analysis of multivariate abundance data in ecology [(Yi Wang et
-al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x).
-Abundance measures include counts, presence/absence data, oridinal or
-biomass data.
+al. 2011)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x),
+in particular, testing hypothesis about the community-environment
+association. Abundance measures include counts, presence/absence data,
+ordinal or biomass data.
 
 This package includes functions for **visualising data, fitting
 predictive models, checking model assumptions, as well as testing
@@ -64,7 +67,8 @@ citation("mvabund")
 #> 
 #>   Wang Y, Naumann U, Eddelbuettel D, Wilshire J, Warton D (2022).
 #>   _mvabund: Statistical Methods for Analysing Multivariate Abundance
-#>   Data_. R package version 4.2.2.
+#>   Data_. R package version 4.2.2,
+#>   <https://fontikar.github.io/mvabund/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -73,6 +77,7 @@ citation("mvabund")
 #>     author = {Yi Wang and Ulrike Naumann and Dirk Eddelbuettel and John Wilshire and David Warton},
 #>     year = {2022},
 #>     note = {R package version 4.2.2},
+#>     url = {https://fontikar.github.io/mvabund/},
 #>   }
 ```
 
@@ -90,7 +95,7 @@ describe how to reproduce the bug!
     different habitats
 -   [Video
     introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html)
-    to \``mvabund`
+    to `mvabund`
 
 ### mvabund in action
 
