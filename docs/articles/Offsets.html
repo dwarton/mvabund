@@ -82,16 +82,16 @@
     
 <p>This vignette takes you through a case study where offsets are used
 during analysis with <code>mvabund</code>. We recommend reading the
-“Analysing discrete data” chapter from the <a href="https://link.springer.com/book/10.1007/978-3-030-88443-7" class="external-link">Ecostats</a>
+“Analysing discrete data” chapter from the <a href="https://www.amazon.com/Modern-Regression-Analysis-in-Ecology-_Methods-in-Statistical-Ecology_/dp/3030884422" class="external-link">Ecostats</a>
 textbook.</p>
 <p>Under some circumstances, we may tempted to standardise or average
 our abundance counts across replicates before analysing them. Often this
 is to account for differences in sampling intensity (different sized
 plots, different numbers of replicates), but we caution users from doing
-so! Standardisation/averaging counts can change the distribution of your
+so! Standarisation/averaging counts can change the distribution of your
 data, and affect the mean-variance relationship. Instead you should use
-an <strong>offset</strong>, a term specially designed to account for
-known sources of variation among replicates.</p>
+an <strong>offset</strong>, a term specially designed for variation
+among replicates.</p>
 <p>Lets take a look at a case study that uses an <strong>offset</strong>
 in <code>mvabund</code></p>
 <p>Anthony wants to evaluate how well earthworms numbers were doing
@@ -234,18 +234,17 @@ sampling effort.</p>
 </tr></tbody>
 </table>
 <p>Now we will use the <code>manyglm</code> function. We specified
-<code>family =  "negative.binomial"</code> as count data often follows a
-negative binomial distribution. We have also included an offset term to
-deal with the fact that sampling effort varied across sites – with 5
-pitfall traps at most sites but just 4 at one site. Offsets are most
-commonly used in a log-linear model, where an offset is a predictor
-known to have an exactly proportional effect on the response. The offset
-in Anthony’s model for is <code>log(pitfalls)</code>. By including this
-term, our model changes from predicting mean abundance to modelling mean
-abundance per pitfall trap. This is what you would be trying to do if
-you averaged the counts across pitfalls prior to analysing them, but
-using an offset achieves this without messing with the data and its
-mean-variance relationship.</p>
+<code>family =  "negative.binomial"</code> as count data tends to follow
+a negative binomial distribution. We have also included an offset term
+to deal with variation in sampling effort. Offsets are most commonly
+used in a log-linear model, where an offset is a predictor known to have
+an exactly proportional effect on the response. The offset in Anthony’s
+model for is <code>log(pitfalls)</code>. By including this term, our
+model changes from predicting mean abundance to modelling mean abundance
+per pitfall trap. This is what you would be trying to do if you averaged
+the counts across pitfalls prior to analysing them, but using an offset
+achieves this without messing with the data and its mean-variance
+relationship.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">worms_offset</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/manyglm.html">manyglm</a></span><span class="op">(</span><span class="va">Haplotaxida</span><span class="op">~</span><span class="va">treatment</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">pitfalls</span><span class="op">)</span><span class="op">)</span>, family<span class="op">=</span><span class="st">"negative.binomial"</span>, data<span class="op">=</span><span class="va">abund</span><span class="op">)</span></span>
 <span></span>
@@ -258,7 +257,7 @@ mean-variance relationship.</p>
 <span><span class="co">#&gt; Multivariate test:</span></span>
 <span><span class="co">#&gt;             Res.Df Df.diff   Dev Pr(&gt;Dev)</span></span>
 <span><span class="co">#&gt; (Intercept)      9                       </span></span>
-<span><span class="co">#&gt; treatment        8       1 2.889    0.141</span></span>
+<span><span class="co">#&gt; treatment        8       1 2.889     0.15</span></span>
 <span><span class="co">#&gt; Arguments: P-value calculated using 999 iterations via PIT-trap resampling.</span></span></code></pre></div>
   </main>
 </div>
