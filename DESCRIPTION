@@ -21,10 +21,26 @@ Description: A set of tools for displaying, modeling and analysing
         (<http://dirk.eddelbuettel.com/code/rcpp.html>) 'R' / 'C++' classes.
 Depends: R (>= 3.0.0)
 Encoding: UTF-8
-Imports: Rcpp, MASS, methods, stats, tweedie, statmod, parallel
-LinkingTo: Rcpp, RcppGSL
+Imports: 
+    Rcpp,
+    MASS,
+    methods,
+    stats,
+    tweedie,
+    statmod,
+    parallel
+Suggest:
+    skimr
+    ecostats
+LinkingTo: 
+    Rcpp,
+    RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-RoxygenNote: 6.0.1
+RoxygenNote: 7.2.1
 Suggests:
+    knitr,
+    rmarkdown,
     testthat
+VignetteBuilder: knitr
+LazyData: true

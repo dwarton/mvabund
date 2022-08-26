@@ -3,3 +3,10 @@
 ^\.Rproj\.user$
 ^Makefile$
 ^\.github
+ignore/
+^README\.Rmd$
+^doc$
+^Meta$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

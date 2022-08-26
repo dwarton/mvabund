@@ -1,0 +1,65 @@
+---
+title: "Using offsets with count data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using offsets with count data}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(knitr)
+```
+
+This vignette takes you through a case study where offsets are used during analysis with `mvabund`. We recommend reading the "Analysing discrete data" chapter from the [Ecostats](https://link.springer.com/book/10.1007/978-3-030-88443-7) textbook.
+
+Under some circumstances, we may tempted to standardise or average our abundance counts across replicates before analysing them. Often this is to account for differences in sampling intensity (different sized plots, different numbers of replicates), but we caution users from doing so! Standardisation/averaging counts can change the distribution of your data, and affect the mean-variance relationship. Instead you should use an **offset**, a term specially designed to account for known sources of variation among replicates.
+
+Lets take a look at a case study that uses an **offset** in `mvabund`
+
+Anthony wants to evaluate how well earthworms numbers were doing after some bush regeneration efforts. Here are some worm counts from pitfall traps across each of 10 sites (where C=control, R=bush regen). Notice there were only 4 pitfall traps at one site! 
+
+```{r, include=FALSE}
+worms <- data.frame(matrix(nrow = 3, ncol = 10) )
+rownames(worms) <- c("Treatment", "Count", "# pitfalls")
+names(worms) <- NULL
+
+worms[1,] <- c("C", "R", "R", "R", "C", "R", "R", "R", "R", "R")
+worms[2,] <- c(0,3,1,3,1,2,12,1,18,0)
+worms[3,] <- c(5,5,5,5,5,5,5,4,5,5)
+```
+
+```{r, worm counts}
+knitr::kable(worms, "simple")
+```
+
+Anthony would like to model the number of worms (`Haplotaxida`) from the `reveg` dataset as a function of treatment (bush regeneration) while accounting variation in sampling effort. 
+
+Lets load `mvabund` and the dataset first:
+
+```{r setup}
+library(mvabund)
+library(ecostats)
+
+data(reveg) 
+attach(reveg)
+
+skimr::skim(abund$Haplotaxida) # Great function to get an overview of the data
+```
+
+Now we will use the `manyglm` function. We specified `family =  "negative.binomial"` as count data often follows a negative binomial distribution. We have also included an offset term to deal with the fact that sampling effort varied across sites – with 5 pitfall traps at most sites but just 4 at one site. Offsets are most commonly used in a log-linear model, where an offset is a predictor known to have an exactly proportional effect on the response. The offset in Anthony's model for is `log(pitfalls)`. By including this term, our model changes from predicting mean abundance to modelling mean abundance per pitfall trap. This is what you would be trying to do if you averaged the counts across pitfalls prior to analysing them, but using an offset achieves this without messing with the data and its mean-variance relationship.
+
+
+```{r fit model}
+worms_offset <-  manyglm(Haplotaxida~treatment+offset(log(pitfalls)), family="negative.binomial", data=abund)
+
+anova(worms_offset)
+```
+
