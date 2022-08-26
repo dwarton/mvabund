@@ -1,0 +1,58 @@
+url: ~
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  
+development:
+  mode: auto
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components: 
+    reference:
+      text: Functions glossary
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/aliceyiwang/mvabund
+      
+reference:
+- title: Included datasets
+- contents:
+  - Tasmania
+  - antTraits
+  - solberg
+  - spider
+  - tikus
+- title: Functions for modelling and analysis
+- contents:
+  - starts_with("mv")
+  - starts_with("many")
+  - starts_with("anova")
+  - starts_with("glm")
+  - ends_with("glm")
+  - ridgeParamEst
+  - best.r.sq
+  - formulaUnimva
+  - extend.x.formula
+  - cv.glm1path
+- title: Generic and other helpful functions
+- contents:
+  - starts_with("print")
+  - starts_with("summary")
+  - starts_with("predict")
+  - starts_with("logLik")
+  - starts_with("deviance")
+  - as.mvabund
+  - unabund
+- title: Plotting functions
+- contents:
+  - starts_with("plot")
+  - starts_with("boxplot")
+  - starts_with("coefplot")
+  - starts_with("residuals")
+  - ends_with("plot")
+  - shiftpoints
+  
