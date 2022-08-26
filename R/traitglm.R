@@ -52,7 +52,7 @@ traitglm = function( L, R, Q=NULL, family="negative.binomial", formula = NULL, m
     R.des = get_polys(R)
   else
     R.des = list(X=R)
-    
+  
   if(is.null(Q))
   {
       cat(paste("No traits matrix entered, so will fit SDMs with different env response for each spp","\n"))
