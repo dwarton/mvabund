@@ -19,7 +19,7 @@ Description: A set of tools for displaying, modeling and analysing
         The package is implemented with the Gnu Scientific Library
         (<http://www.gnu.org/software/gsl/>) and 'Rcpp'
         (<http://dirk.eddelbuettel.com/code/rcpp.html>) 'R' / 'C++' classes.
-Depends: R (>= 3.0.0)
+Depends: R (>= 3.5.0)
 Encoding: UTF-8
 Imports: 
     Rcpp,
