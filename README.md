@@ -16,7 +16,7 @@ coverage](https://codecov.io/gh/fontikar/mvabund/branch/master/graph/badge.svg)]
 The goal of mvabund is to provide tools for a **model-based approach**
 to the analysis of multivariate abundance data in ecology [(Yi Wang et
 al. 2012)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x),
-in particular, testing hypothesis about the community-environment
+in particular, testing hypotheses about the community-environment
 association. Abundance measures include counts, presence/absence data,
 ordinal or biomass data.
 
