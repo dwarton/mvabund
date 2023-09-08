@@ -34,10 +34,19 @@ manyany = function(formula, fn, family="negative.binomial", data=NULL, compositi
   
   
   tol=1.e-8 #for truncation of linear predictor
-  if(missing(data)) # Only coerce to model frame if not specified by the user.
-    mf =model.frame(formula, parent.frame())
+  
+  #get the formula for extracting the data frame
+  if(fn=="gam")
+    mFormula = mgcv::interpret.gam(formula)$fake.formula
   else
-    mf = model.frame(formula,data=data)
+    mFormula = formula
+    
+  if(missing(data)) # Only coerce to model frame if not specified by the user.
+  {
+    mf =model.frame(mFormula, parent.frame())
+  }
+  else
+    mf = model.frame(mFormula,data=data)
 
   # get response and its dimensions
   yMat = model.response(mf)
