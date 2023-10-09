@@ -170,7 +170,8 @@ int AnovaTest::resampTest(void) {
   gsl_matrix *bX, *bY;
   bY = gsl_matrix_alloc(nRows, nVars);
   bX = gsl_matrix_alloc(nRows, nParam);
-
+  nSamp = 0;
+  
   // initialize permid
   unsigned int *permid = NULL;
   if (bootID == NULL) {
@@ -185,7 +186,6 @@ int AnovaTest::resampTest(void) {
 
   // resampling options
   if (mmRef->resamp == CASEBOOT) {
-    nSamp = 0;
     for (i = 0; i < maxiter; i++) {
       for (j = 0; j < nRows; j++) {
         // resampling index
@@ -203,7 +203,6 @@ int AnovaTest::resampTest(void) {
       nSamp++;
     }
   } else if (mmRef->resamp == RESIBOOT) {
-    nSamp = 0;
     for (i = 0; i < maxiter; i++) {
       for (p = 1; p < nModels; p++) {
         if (mmRef->reprand != TRUE) {
@@ -237,7 +236,6 @@ int AnovaTest::resampTest(void) {
       nSamp++;
     }
   } else if (mmRef->resamp == SCOREBOOT) {
-    nSamp = 0;
     for (i = 0; i < maxiter; i++) {
       for (p = 1; p < nModels; p++) {
         for (j = 0; j < nRows; j++) {
@@ -265,10 +263,11 @@ int AnovaTest::resampTest(void) {
       nSamp++;
     }
   } else if (mmRef->resamp == PERMUTE) {
-    gsl_matrix_add_constant(Pstatj, 1.0);
-    for (p = 0; p < nModels - 1; p++)
-      Pmultstat[p] = 1.0; // include itself
-    nSamp = 1;
+    // DW, 10/10/23: remove the 1+ on PERMUTE because this is already handled by adding data as first row
+    // gsl_matrix_add_constant(Pstatj, 1.0);
+    // for (p = 0; p < nModels - 1; p++)
+    //   Pmultstat[p] = 1.0; // include itself
+    // nSamp = 1;
     for (i = 0; i < maxiter - 1; i++) { // 999
       for (p = 1; p < nModels; p++) {
         if (bootID == NULL)
