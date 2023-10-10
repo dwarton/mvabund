@@ -25,22 +25,22 @@ Imports:
     Rcpp,
     MASS,
     methods,
+    mgcv,
     stats,
     tweedie,
     statmod,
     parallel
-Suggest:
-    skimr
-    ecostats
 LinkingTo: 
     Rcpp,
     RcppGSL
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests:
+    ecostats,
     knitr,
     rmarkdown,
+    skimr,
     testthat
 VignetteBuilder: knitr
 LazyData: true

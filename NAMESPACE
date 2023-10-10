@@ -9,7 +9,7 @@ export(RcppVersion,
        boxplot.mvabund,
        boxplot.mvformula,
        best.r.sq,
-       coefplot,
+#       coefplot, #see if this fixes warning
        coefplot.manyglm,
        cv.glm1path,
        deviance.manylm,
@@ -108,3 +108,4 @@ importFrom("stats", ".getXlevels", "as.formula", "binomial", "coef", "contrasts"
            "sd", "symnum", "terms", "update", "var", "variable.names", "weighted.residuals",
            "weights", "Gamma")
 importFrom("utils", "data", "flush.console", "installed.packages")
+importFrom("mgcv", "interpret.gam")
