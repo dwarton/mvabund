@@ -41,7 +41,7 @@ from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("aliceyiwang/mvabund")
+remotes::install_github("dwarton/mvabund")
 
 library(mvabund)
 ```
@@ -53,7 +53,7 @@ website]() before launching into the `mvabund`. Alternatively, you can
 access the vignettes in R by:
 
 ``` r
-remotes::install_github("aliceyiwang/mvabund", build_vignettes = TRUE)
+remotes::install_github("dwarton/mvabund", build_vignettes = TRUE)
 
 vignette("mvabund")
 ```
@@ -84,7 +84,7 @@ citation("mvabund")
 ### Spot a bug?
 
 Thanks for finding the bug! We would appreciate it if you can pop over
-to our [Issues page](https://github.com/aliceyiwang/mvabund/issues) and
+to our [Issues page](https://github.com/dwarton/mvabund/issues) and
 describe how to reproduce the bug!
 
 ### Other resources
