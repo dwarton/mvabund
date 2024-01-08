@@ -36,6 +36,8 @@ LinkingTo:
 License: LGPL (>= 2.1)
 NeedsCompilation: yes
 RoxygenNote: 7.2.3
+URL: https://github.com/dwarton/mvabund
+BugReports: https://github.com/dwarton/mvabund/issues
 Suggests:
     ecostats,
     knitr,
