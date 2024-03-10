@@ -39,6 +39,3 @@ library(mvabund)
 This is an **archived version** -- you can access the development version of `mvabund`
 at [ecostats/mvabund](https://github.com/eco-stats/mvabund).
 ### mvabund in action
-
-Check out the list of studies that uses `mvabund` in their analyses
-[here](https://scholar.google.com.au/scholar?cites=2455431763697722063&as_sdt=2005&sciodt=0,5&hl=en)
