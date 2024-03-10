@@ -38,4 +38,3 @@ library(mvabund)
 
 This is an **archived version** -- you can access the development version of `mvabund`
 at [ecostats/mvabund](https://github.com/eco-stats/mvabund).
-### mvabund in action
