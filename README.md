@@ -36,67 +36,8 @@ install.packages("mvabund")
 library(mvabund)
 ```
 
-Alternatively, you can install the **development** version of `mvabund`
-from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("remotes")
-remotes::install_github("dwarton/mvabund")
-
-library(mvabund)
-```
-
-### Getting Started
-
-We highly recommend you taking a good read of our vignette over at [our
-website]() before launching into the `mvabund`. Alternatively, you can
-access the vignettes in R by:
-
-``` r
-remotes::install_github("dwarton/mvabund", build_vignettes = TRUE)
-
-vignette("mvabund")
-```
-
-### Show `mvabund` your support
-
-``` r
-citation("mvabund")
-#> 
-#> To cite package 'mvabund' in publications use:
-#> 
-#>   Wang Y, Naumann U, Eddelbuettel D, Wilshire J, Warton D (2022).
-#>   _mvabund: Statistical Methods for Analysing Multivariate Abundance
-#>   Data_. R package version 4.2.2,
-#>   <https://fontikar.github.io/mvabund/>.
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {mvabund: Statistical Methods for Analysing Multivariate Abundance Data},
-#>     author = {Yi Wang and Ulrike Naumann and Dirk Eddelbuettel and John Wilshire and David Warton},
-#>     year = {2022},
-#>     note = {R package version 4.2.2},
-#>     url = {https://fontikar.github.io/mvabund/},
-#>   }
-```
-
-### Spot a bug?
-
-Thanks for finding the bug! We would appreciate it if you can pop over
-to our [Issues page](https://github.com/dwarton/mvabund/issues) and
-describe how to reproduce the bug!
-
-### Other resources
-
--   [Online
-    tutorial](https://environmentalcomputing.net/statistics/mvabund/)
-    for using `mvabund` for comparing species composition across
-    different habitats
--   [Video
-    introduction](http://eco-stats.blogspot.com/2012/03/introducing-mvabund-package-and-why.html)
-    to `mvabund`
-
+This is an **archived version** -- you can access the development version of `mvabund`
+at [ecostats/mvabund](https://github.com/eco-stats/mvabund).
 ### mvabund in action
 
 Check out the list of studies that uses `mvabund` in their analyses
